@@ -9,6 +9,16 @@
 </head>
 <body>
 
+<div class="promo-bar">
+  <button class="promo-arrow promo-arrow--prev" aria-label="Previous announcement">&#8249;</button>
+  <div class="promo-track">
+    <div class="promo-slide is-active">Custom Wedding &amp; Hari Guru orders now open &mdash; <a href="/contact.html">WhatsApp for a quote</a></div>
+    <div class="promo-slide">Rated 5.0 on Google &mdash; loved by teachers &amp; newlyweds</div>
+    <div class="promo-slide">Placed an order? <a href="/track-order.html">Track it here</a></div>
+  </div>
+  <button class="promo-arrow promo-arrow--next" aria-label="Next announcement">&#8250;</button>
+</div>
+
 <header class="site-header" data-scrolled="false">
   <div class="container site-header__inner">
     <a href="index.html" class="site-header__logo" aria-label="Azam Reka">
@@ -34,9 +44,10 @@
     </div>
 
     <h1 class="h-display-2" style="margin-bottom: 0.5em;">Order Confirmed!</h1>
-    <p class="body-lg" style="color: var(--color-structural); max-width: 60ch; margin-bottom: var(--space-4);">
+    <p class="body-lg" style="color: var(--color-structural); max-width: 60ch; margin-bottom: var(--space-2);">
       Thank you for your order. Your payment has been received and we're excited to bring your vision to life.
     </p>
+    <p class="mono-label" id="orderIdDisplay" style="margin-bottom: var(--space-4);"></p>
 
     <div style="border: var(--hairline); padding: var(--space-4); margin-bottom: var(--space-4); background: var(--color-bone);">
       <p class="mono-label" style="margin-bottom: 0.5em;">What happens next:</p>
@@ -54,6 +65,7 @@
 
     <div style="display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap;">
       <a href="https://wa.me/601110852324" class="btn btn-primary">Chat on WhatsApp</a>
+      <a href="track-order.html" class="btn btn-outline">Track Your Order</a>
       <a href="catalog.html" class="btn btn-outline">Continue Shopping</a>
     </div>
   </div>
@@ -91,6 +103,7 @@
         <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Company</p>
         <a href="about.html">About</a>
         <a href="contact.html">Custom Order Inquiry</a>
+        <a href="track-order.html">Track Your Order</a>
       </div>
       <div>
         <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Reach Us</p>
@@ -110,6 +123,16 @@
 <script>
 // Clear cart on order confirmation
 localStorage.removeItem('azamReka_cart');
+
+// ToyyibPay redirects back with billcode in the URL — surface it so the
+// customer has their Order ID in hand to use on the tracking page.
+const params = new URLSearchParams(window.location.search);
+const billCode = params.get('billcode') || params.get('order_id');
+if (billCode) {
+  document.getElementById('orderIdDisplay').textContent = `Order ID: ${billCode}`;
+  const trackLink = document.querySelector('a[href="track-order.html"]');
+  if (trackLink) trackLink.href = `track-order.html?billCode=${encodeURIComponent(billCode)}`;
+}
 </script>
 </body>
 </html>

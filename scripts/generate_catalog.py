@@ -13,6 +13,7 @@ import sys
 import re
 import html
 import os
+import json
 import openpyxl
 
 
@@ -91,6 +92,7 @@ def build_media_html(images, video, alt_text, on_sale=False):
 
 
 def build_product_card(row):
+    row = row[:13]
     (sku, name, category, price, sale_price, tag,
      img1, img2, img3, img4, video, description, active) = row
 
@@ -136,7 +138,15 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
 </head>
 <body>
 
-<div class="promo-bar">Custom Wedding &amp; Hari Guru orders now open — <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20ask%20about%20a%20custom%20order.">WhatsApp for a quote</a></div>
+<div class="promo-bar">
+  <button class="promo-arrow promo-arrow--prev" aria-label="Previous announcement">&#8249;</button>
+  <div class="promo-track">
+    <div class="promo-slide is-active">Custom Wedding &amp; Hari Guru orders now open &mdash; <a href="/contact.html">WhatsApp for a quote</a></div>
+    <div class="promo-slide">Rated 5.0 on Google &mdash; loved by teachers &amp; newlyweds</div>
+    <div class="promo-slide">Placed an order? <a href="/track-order.html">Track it here</a></div>
+  </div>
+  <button class="promo-arrow promo-arrow--next" aria-label="Next announcement">&#8250;</button>
+</div>
 
 <header class="site-header" data-scrolled="false">
   <div class="container site-header__inner">
@@ -157,7 +167,13 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
         <span data-cart-count class="cart-count"></span>
       </button>
       <a href="https://wa.me/601110852324" class="btn btn-primary" style="padding: 0.6em 1.2em;">WhatsApp Us</a>
+      <button class="site-header__mobile-toggle" data-mobile-nav-toggle aria-label="Open menu" aria-expanded="false">&#9776;</button>
     </div>
+  </div>
+  <div class="mobile-nav" data-mobile-nav data-open="false" style="display:none; flex-direction:column; padding: 1rem clamp(1.25rem,4vw,4rem); border-top: 1px solid var(--color-ash); background: var(--color-bone);">
+    <a href="../catalog.html" style="padding-block:0.5em;">Catalogue</a>
+    <a href="../about.html" style="padding-block:0.5em;">About</a>
+    <a href="../contact.html" style="padding-block:0.5em;">Custom Orders</a>
   </div>
 </header>
 
@@ -243,6 +259,7 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
 
 
 def build_product_detail_page(row):
+    row = row[:13]
     (sku, name, category, price, sale_price, tag,
      img1, img2, img3, img4, video, description, active) = row
 
@@ -279,6 +296,24 @@ def build_product_detail_page(row):
         cart_price=cart_price,
     )
     return slugify(name), html_out
+
+
+def build_zoho_item_map(ws):
+    """Read the Zoho Item ID column and build a name->item_id map for the backend."""
+    header_row = [cell.value for cell in ws[1]]
+    try:
+        name_col = header_row.index("Product Name")
+        zoho_id_col = header_row.index("Zoho Item ID")
+    except ValueError:
+        return {}
+
+    mapping = {}
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        name = row[name_col]
+        zoho_id = row[zoho_id_col] if zoho_id_col < len(row) else None
+        if name and zoho_id:
+            mapping[str(name).strip()] = str(zoho_id).strip()
+    return mapping
 
 
 def main():
@@ -333,8 +368,15 @@ def main():
         with open(page_path, "w", encoding="utf-8") as f:
             f.write(page_html)
 
+    zoho_map = build_zoho_item_map(ws)
+    zoho_map_path = os.path.join(site_dir, "api", "zoho-item-map.json")
+    os.makedirs(os.path.dirname(zoho_map_path), exist_ok=True)
+    with open(zoho_map_path, "w", encoding="utf-8") as f:
+        json.dump(zoho_map, f, indent=2)
+
     print(f"Generated {len(cards)} product cards into {html_path}")
     print(f"Generated {len(detail_pages)} product detail pages into {products_dir}/")
+    print(f"Wrote {len(zoho_map)} Zoho item mappings to {zoho_map_path}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Admin — Azam Reka</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+.admin-gate { max-width: 360px; margin: 15vh auto 0; text-align: center; }
+.admin-gate input {
+  width: 100%;
+  padding: 0.75em;
+  border: 1px solid var(--color-ash);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  margin-bottom: 1em;
+}
+.order-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.order-table th, .order-table td {
+  text-align: left;
+  padding: 0.75em 0.6em;
+  border-bottom: 1px solid var(--color-ash);
+  vertical-align: top;
+}
+.order-table th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-structural);
+}
+.order-table select {
+  padding: 0.4em 0.6em;
+  border: 1px solid var(--color-ash);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.stage-badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  background: var(--color-ember-soft);
+  color: var(--color-ember);
+}
+.stage-badge.shipped { background: #4a7c5922; color: #2f5f3a; }
+.zoho-badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+.zoho-badge.synced { background: #4a7c5922; color: #2f5f3a; }
+.zoho-badge.failed { background: #c0392b22; color: #c0392b; cursor: help; }
+.zoho-badge.pending { background: var(--color-ash); color: var(--color-structural); }
+#adminPanel { display: none; }
+</style>
+</head>
+<body>
+
+<header class="site-header" data-scrolled="false">
+  <div class="container site-header__inner">
+    <a href="index.html" class="site-header__logo" aria-label="Azam Reka">
+      <img src="assets/logo.png" alt="Azam Reka" style="height:42px; width:auto;">
+    </a>
+    <span class="mono-label">Order Admin</span>
+  </div>
+</header>
+
+<div class="admin-gate" id="gate">
+  <p class="eyebrow">Restricted</p>
+  <h1 class="h-heading" style="margin-bottom: var(--space-3);">Enter admin password</h1>
+  <input type="password" id="passwordInput" placeholder="Password">
+  <button class="btn btn-primary" style="width:100%;" id="unlockBtn">Unlock</button>
+  <p id="gateError" style="display:none; color:#B5694A; font-size: var(--text-sm); margin-top: 1em;">Incorrect password.</p>
+</div>
+
+<div id="adminPanel" class="section">
+  <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-2);">
+      <h1 class="h-display-3">Orders</h1>
+      <button class="btn btn-outline" id="refreshBtn">Refresh</button>
+    </div>
+    <p class="body-sm" style="color: var(--color-structural); margin-bottom: var(--space-4);">Changing a stage below automatically emails the customer an update.</p>
+    <div style="overflow-x:auto;">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Paid</th>
+            <th>Zoho</th>
+            <th>Stage</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+    <p id="emptyMsg" style="display:none; text-align:center; color: var(--color-structural); padding: var(--space-4) 0;">No paid orders yet.</p>
+  </div>
+</div>
+
+<script>
+const STAGES = [
+  { key: 'confirmed', label: 'Order Confirmed' },
+  { key: 'design', label: 'Design Proof' },
+  { key: 'cutting', label: 'Cutting' },
+  { key: 'engraving', label: 'Engraving' },
+  { key: 'finishing_qc', label: 'Finishing & QC' },
+  { key: 'shipped', label: 'Shipped' }
+];
+
+let adminPassword = sessionStorage.getItem('azamReka_adminPw') || '';
+
+function stageLabel(key) {
+  const s = STAGES.find(s => s.key === key);
+  return s ? s.label : key;
+}
+
+function renderOrders(orders) {
+  const tbody = document.getElementById('ordersBody');
+  const emptyMsg = document.getElementById('emptyMsg');
+
+  if (!orders.length) {
+    tbody.innerHTML = '';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  tbody.innerHTML = orders.map(order => {
+    const itemsSummary = (order.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
+    const paidDate = order.paidAt ? new Date(order.paidAt).toLocaleDateString() : '—';
+    const currentStage = order.productionStage || 'confirmed';
+    const badgeClass = currentStage === 'shipped' ? 'stage-badge shipped' : 'stage-badge';
+
+    let zohoBadge;
+    if (order.zohoSalesOrderId) {
+      const unmappedNote = (order.zohoUnmappedItems && order.zohoUnmappedItems.length)
+        ? ` title="Unmapped items: ${order.zohoUnmappedItems.join(', ')} — check the Sales Order in Zoho"` : '';
+      zohoBadge = `<span class="zoho-badge synced"${unmappedNote}>#${order.zohoSalesOrderNumber || order.zohoSalesOrderId}${order.zohoUnmappedItems && order.zohoUnmappedItems.length ? ' ⚠' : ''}</span>`;
+    } else if (order.zohoSyncError) {
+      zohoBadge = `<span class="zoho-badge failed" title="${order.zohoSyncError.replace(/"/g, '&quot;')}">Sync Failed</span>`;
+    } else {
+      zohoBadge = `<span class="zoho-badge pending">Pending</span>`;
+    }
+
+    const options = STAGES.map(s =>
+      `<option value="${s.key}" ${s.key === currentStage ? 'selected' : ''}>${s.label}</option>`
+    ).join('');
+
+    return `
+      <tr>
+        <td><strong>${order.billCode}</strong></td>
+        <td>${order.customerName}<br><span style="color:var(--color-structural); font-size:0.8em;">${order.customerPhone}</span></td>
+        <td style="max-width:220px;">${itemsSummary}</td>
+        <td>RM ${Number(order.totalAmount).toFixed(2)}</td>
+        <td>${paidDate}</td>
+        <td>${zohoBadge}</td>
+        <td><span class="${badgeClass}">${stageLabel(currentStage)}</span></td>
+        <td>
+          <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.stage-select').forEach(select => {
+    select.addEventListener('change', async (e) => {
+      const billCode = e.target.dataset.billCode;
+      const newStage = e.target.value;
+      e.target.disabled = true;
+      try {
+        const res = await fetch('/api/admin/update-stage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: adminPassword, billCode, stage: newStage })
+        });
+        if (!res.ok) throw new Error('Update failed');
+        await loadOrders();
+        const toast = document.createElement('div');
+        toast.textContent = `Updated — customer emailed automatically`;
+        toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--color-char); color:var(--color-bone); padding:0.75em 1.25em; border-radius:4px; font-size:0.85rem; z-index:100;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+      } catch (err) {
+        alert('Failed to update stage. Please try again.');
+      } finally {
+        e.target.disabled = false;
+      }
+    });
+  });
+}
+
+async function loadOrders() {
+  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(adminPassword)}`);
+  if (!res.ok) {
+    document.getElementById('gate').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('gateError').style.display = 'block';
+    sessionStorage.removeItem('azamReka_adminPw');
+    return;
+  }
+  const data = await res.json();
+  renderOrders(data.orders || []);
+}
+
+async function tryUnlock(password) {
+  adminPassword = password;
+  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(password)}`);
+  if (res.ok) {
+    sessionStorage.setItem('azamReka_adminPw', password);
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    const data = await res.json();
+    renderOrders(data.orders || []);
+  } else {
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+document.getElementById('unlockBtn').addEventListener('click', () => {
+  tryUnlock(document.getElementById('passwordInput').value);
+});
+document.getElementById('passwordInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') tryUnlock(document.getElementById('passwordInput').value);
+});
+document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+
+// Auto-unlock if password already in this session
+if (adminPassword) {
+  tryUnlock(adminPassword);
+}
+</script>
+</body>
+</html>

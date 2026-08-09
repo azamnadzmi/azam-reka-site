@@ -1,8 +1,10 @@
 // api/webhook/toyyibpay.js
 // Handles payment confirmation from ToyyibPay + sends confirmation email
+// + creates a Sales Order in Zoho Books
 
 const { MongoClient, ObjectId } = require('mongodb');
 const { Resend } = require('resend');
+const { createSalesOrder } = require('../_lib/zoho-books');
 
 const mongoUri = process.env.MONGODB_URI;
 const resendApiKey = process.env.RESEND_API_KEY;
@@ -83,7 +85,9 @@ module.exports = async function handler(req, res) {
         $set: {
           status: 'paid',
           paidAmount: parseInt(amount) / 100, // ToyyibPay sends in sen
-          paidAt: new Date()
+          paidAt: new Date(),
+          productionStage: 'confirmed',
+          stageUpdatedAt: new Date()
         }
       },
       { returnDocument: 'after' }
@@ -92,6 +96,35 @@ module.exports = async function handler(req, res) {
     if (result.value) {
       // Send confirmation email
       await sendConfirmationEmail(result.value);
+
+      // Create the Sales Order in Zoho Books — guarded so a duplicate webhook
+      // fire (ToyyibPay can retry) never creates two Sales Orders for one order.
+      if (!result.value.zohoSalesOrderId) {
+        try {
+          const zohoResult = await createSalesOrder(result.value);
+          await orders.updateOne(
+            { billCode },
+            {
+              $set: {
+                zohoSalesOrderId: zohoResult.salesOrderId,
+                zohoSalesOrderNumber: zohoResult.salesOrderNumber,
+                zohoUnmappedItems: zohoResult.unmappedItems
+              }
+            }
+          );
+          if (zohoResult.unmappedItems.length > 0) {
+            console.warn(`Order ${billCode} has unmapped items in Zoho: ${zohoResult.unmappedItems.join(', ')}`);
+          }
+        } catch (zohoError) {
+          // Don't fail the whole webhook if Zoho sync fails — payment is still
+          // confirmed and the customer still gets their email either way.
+          console.error(`Zoho Books sync failed for order ${billCode}:`, zohoError);
+          await orders.updateOne(
+            { billCode },
+            { $set: { zohoSyncError: String(zohoError.message || zohoError) } }
+          );
+        }
+      }
     }
 
     return res.status(200).json({ received: true, updated: !!result.value });

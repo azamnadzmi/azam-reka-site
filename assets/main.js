@@ -194,6 +194,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Promo bar — auto-rotating announcement carousel
+  const promoTrack = document.querySelector('.promo-track');
+  if (promoTrack) {
+    const slides = promoTrack.querySelectorAll('.promo-slide');
+    if (slides.length > 1) {
+      let promoIndex = 0;
+      let promoTimer;
+
+      function showPromo(index) {
+        const current = slides[promoIndex];
+        current.classList.remove('is-active');
+        current.classList.add('is-leaving');
+        setTimeout(() => current.classList.remove('is-leaving'), 400);
+
+        promoIndex = (index + slides.length) % slides.length;
+        slides[promoIndex].classList.add('is-active');
+      }
+
+      function startPromoTimer() {
+        clearInterval(promoTimer);
+        promoTimer = setInterval(() => showPromo(promoIndex + 1), 4500);
+      }
+
+      document.querySelectorAll('.promo-arrow--prev').forEach(btn => {
+        btn.addEventListener('click', () => { showPromo(promoIndex - 1); startPromoTimer(); });
+      });
+      document.querySelectorAll('.promo-arrow--next').forEach(btn => {
+        btn.addEventListener('click', () => { showPromo(promoIndex + 1); startPromoTimer(); });
+      });
+
+      startPromoTimer();
+    }
+  }
+
   // Product image/video carousels
   document.querySelectorAll('.product-card__media[data-carousel]').forEach(media => {
     const slides = media.querySelectorAll('.carousel-slide');
