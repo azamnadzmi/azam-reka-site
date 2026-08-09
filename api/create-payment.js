@@ -24,8 +24,9 @@ async function createToyyibPayBill(orderData) {
   billParams.append('billDescription', `${orderData.items.length} item(s)`);
   billParams.append('billPriceSetting', 1); // Fixed amount
   billParams.append('billAmount', Math.round(orderData.total * 100)); // in sen
-  billParams.append('billReturnUrl', `${process.env.VERCEL_URL || 'https://azamreka.com'}/order-confirmation`);
-  billParams.append('billCallbackUrl', `${process.env.VERCEL_URL || 'https://azamreka.com'}/api/webhook/toyyibpay`);
+  const siteUrl = process.env.SITE_URL || 'https://azamreka.com';
+  billParams.append('billReturnUrl', `${siteUrl}/order-confirmation`);
+  billParams.append('billCallbackUrl', `${siteUrl}/api/webhook/toyyibpay`);
   billParams.append('billExpiryDate', new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0]);
   billParams.append('billContentEmail', orderData.email);
   billParams.append('billContentPhone', orderData.phone);
@@ -47,7 +48,7 @@ async function createToyyibPayBill(orderData) {
   return data.data.billCode;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
