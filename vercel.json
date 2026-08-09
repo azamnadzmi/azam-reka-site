@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm install",
+  "devCommand": "vercel dev",
+  "env": [
+    "MONGODB_URI",
+    "RESEND_API_KEY",
+    "TOYYIBPAY_API_KEY",
+    "TOYYIBPAY_CATEGORY_CODE"
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}

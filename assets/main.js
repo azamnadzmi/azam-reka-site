@@ -1,6 +1,64 @@
-/* AZAM REKA — main.js (static catalog site) */
+/* AZAM REKA — main.js (static catalog site with cart) */
+
+// ============ CART MANAGEMENT ============
+const Cart = {
+  getCart() {
+    return JSON.parse(localStorage.getItem('azamReka_cart') || '[]');
+  },
+  saveCart(cart) {
+    localStorage.setItem('azamReka_cart', JSON.stringify(cart));
+    this.updateCartCount();
+  },
+  addItem(name, price) {
+    const cart = this.getCart();
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    this.saveCart(cart);
+  },
+  removeItem(name) {
+    let cart = this.getCart();
+    cart = cart.filter(item => item.name !== name);
+    this.saveCart(cart);
+  },
+  updateQty(name, qty) {
+    const cart = this.getCart();
+    const item = cart.find(item => item.name === name);
+    if (item) item.qty = Math.max(1, qty);
+    this.saveCart(cart);
+  },
+  clear() {
+    localStorage.removeItem('azamReka_cart');
+    this.updateCartCount();
+  },
+  updateCartCount() {
+    const cart = this.getCart();
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const badge = document.querySelector('[data-cart-count]');
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+  },
+  getTotal() {
+    const cart = this.getCart();
+    return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  },
+  generateWhatsAppMessage() {
+    const cart = this.getCart();
+    if (cart.length === 0) return '';
+    const items = cart.map(item => `• ${item.name} (RM ${item.price.toFixed(2)}) x${item.qty}`).join('\n');
+    const total = this.getTotal();
+    return `Hi Azam Reka, I'd like to order:\n\n${items}\n\nTotal: RM ${total.toFixed(2)}`;
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
+  Cart.updateCartCount();
+
   const header = document.querySelector('.site-header');
   if (header) {
     const setScrolled = () => {
@@ -18,6 +76,121 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileNav.dataset.open = isOpen ? 'false' : 'true';
       mobileNav.style.display = isOpen ? 'none' : 'flex';
       mobileToggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+
+  // Cart modal
+  const cartBtn = document.querySelector('[data-cart-btn]');
+  const cartModal = document.querySelector('[data-cart-modal]');
+  const cartClose = document.querySelector('[data-cart-close]');
+  
+  if (cartBtn && cartModal) {
+    cartBtn.addEventListener('click', () => {
+      cartModal.dataset.open = 'true';
+      cartModal.style.display = 'flex';
+      renderCart();
+    });
+  }
+  if (cartClose && cartModal) {
+    cartClose.addEventListener('click', () => {
+      cartModal.dataset.open = 'false';
+      cartModal.style.display = 'none';
+    });
+  }
+  if (cartModal) {
+    cartModal.addEventListener('click', (e) => {
+      if (e.target === cartModal) {
+        cartModal.dataset.open = 'false';
+        cartModal.style.display = 'none';
+      }
+    });
+  }
+
+  // Add to cart buttons
+  document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const name = btn.dataset.addToCart;
+      const price = parseFloat(btn.dataset.price);
+      Cart.addItem(name, price);
+      alert(`${name} added to cart!`);
+    });
+  });
+
+  function renderCart() {
+    const cartItems = document.querySelector('[data-cart-items]');
+    const cartEmpty = document.querySelector('[data-cart-empty]');
+    const cartCheckout = document.querySelector('[data-cart-checkout]');
+    const cart = Cart.getCart();
+
+    if (!cartItems) return;
+
+    if (cart.length === 0) {
+      cartItems.style.display = 'none';
+      if (cartEmpty) cartEmpty.style.display = 'block';
+      if (cartCheckout) cartCheckout.style.display = 'none';
+      return;
+    }
+
+    cartItems.style.display = 'block';
+    if (cartEmpty) cartEmpty.style.display = 'none';
+    if (cartCheckout) cartCheckout.style.display = 'flex';
+
+    cartItems.innerHTML = cart.map(item => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding: 1rem 0; border-bottom: 1px solid var(--color-ash);">
+        <div>
+          <p style="margin:0; font-weight:600;">${item.name}</p>
+          <p style="margin:0; color: var(--color-structural); font-size:0.9rem;">RM ${item.price.toFixed(2)}</p>
+        </div>
+        <div style="display:flex; align-items:center; gap: 0.5rem;">
+          <button data-qty-minus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">−</button>
+          <span style="width:32px; text-align:center;">${item.qty}</span>
+          <button data-qty-plus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">+</button>
+          <button data-remove="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer; color:var(--color-ember);">×</button>
+        </div>
+      </div>
+    `).join('');
+
+    // Quantity controls
+    document.querySelectorAll('[data-qty-plus]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.qtyPlus;
+        const cart = Cart.getCart();
+        const item = cart.find(i => i.name === name);
+        if (item) Cart.updateQty(name, item.qty + 1);
+        renderCart();
+      });
+    });
+    document.querySelectorAll('[data-qty-minus]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.qtyMinus;
+        const cart = Cart.getCart();
+        const item = cart.find(i => i.name === name);
+        if (item && item.qty > 1) Cart.updateQty(name, item.qty - 1);
+        renderCart();
+      });
+    });
+    document.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Cart.removeItem(btn.dataset.remove);
+        renderCart();
+      });
+    });
+
+    // Update total
+    const total = Cart.getTotal();
+    const totalEl = document.querySelector('[data-cart-total]');
+    if (totalEl) totalEl.textContent = `RM ${total.toFixed(2)}`;
+  }
+
+  // Checkout via payment form
+  const checkoutBtn = document.querySelector('[data-cart-whatsapp]');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+      const cart = Cart.getCart();
+      if (cart.length > 0) {
+        window.location.href = 'checkout.html';
+      }
     });
   }
 

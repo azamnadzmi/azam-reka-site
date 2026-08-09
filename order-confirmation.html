@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Confirmed — Azam Reka</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header" data-scrolled="false">
+  <div class="container site-header__inner">
+    <a href="index.html" class="site-header__logo" aria-label="Azam Reka">
+      <img src="assets/logo.png" alt="Azam Reka" style="height:42px; width:auto;">
+    </a>
+    <nav class="site-header__nav">
+      <a href="catalog.html">Catalogue</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Custom Orders</a>
+    </nav>
+    <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
+      <a href="catalog.html" class="btn btn-primary" style="padding: 0.6em 1.2em;">Shop Again</a>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" style="max-width: 800px; text-align: center;">
+    <div style="margin-bottom: var(--space-4);">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--color-ember)" stroke-width="2" style="margin: 0 auto; display: block;">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+
+    <h1 class="h-display-2" style="margin-bottom: 0.5em;">Order Confirmed!</h1>
+    <p class="body-lg" style="color: var(--color-structural); max-width: 60ch; margin-bottom: var(--space-4);">
+      Thank you for your order. Your payment has been received and we're excited to bring your vision to life.
+    </p>
+
+    <div style="border: var(--hairline); padding: var(--space-4); margin-bottom: var(--space-4); background: var(--color-bone);">
+      <p class="mono-label" style="margin-bottom: 0.5em;">What happens next:</p>
+      <ol style="text-align: left; max-width: 500px; margin: 0 auto;">
+        <li style="margin-bottom: 1em;"><strong>We'll be in touch</strong> — within 24 hours via WhatsApp to confirm design details and timeline</li>
+        <li style="margin-bottom: 1em;"><strong>Design & personalization</strong> — we'll finalize your custom specifications</li>
+        <li style="margin-bottom: 1em;"><strong>Crafting</strong> — your pieces are cut and finished with precision</li>
+        <li><strong>Shipped</strong> — carefully packaged and sent to you</li>
+      </ol>
+    </div>
+
+    <p class="body-base" style="margin-bottom: var(--space-4);">
+      A confirmation email has been sent to your inbox. Check your WhatsApp too — we'll be reaching out soon!
+    </p>
+
+    <div style="display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap;">
+      <a href="https://wa.me/601110852324" class="btn btn-primary">Chat on WhatsApp</a>
+      <a href="catalog.html" class="btn btn-outline">Continue Shopping</a>
+    </div>
+  </div>
+</section>
+
+<section class="section hairline-top" style="background: #f9f5f0;">
+  <div class="container" style="max-width: 600px; text-align: center;">
+    <h2 class="h-heading">Questions?</h2>
+    <p class="body-base">We're here to help. Reach us anytime:</p>
+    <ul style="list-style: none; padding: 0;">
+      <li><a href="https://wa.me/601110852324" style="text-decoration: underline;">WhatsApp +60 11-1085 2324</a></li>
+      <li><a href="mailto:azam.r3ka@gmail.com" style="text-decoration: underline;">Email azam.r3ka@gmail.com</a></li>
+      <li><a href="https://instagram.com/azam.reka" style="text-decoration: underline;">Instagram @azam.reka</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <div class="h-heading" style="color: var(--color-bone); margin-bottom: var(--space-2);">AZAM REKA</div>
+        <p class="body-sm" style="color: var(--color-structural); max-width: 34ch; margin-bottom: var(--space-2);">
+          We're more than just a laser cutting business — we're a team of dreamers, creators, and perfectionists, bringing your ideas to life with passion, precision, and a touch of artistry.
+        </p>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Catalogue</p>
+        <a href="catalog.html?category=plaques">Plaques &amp; Awards</a>
+        <a href="catalog.html?category=keychains">Keychains &amp; Accessories</a>
+        <a href="catalog.html?category=wedding">Wedding &amp; Mas Kahwin</a>
+        <a href="catalog.html?category=decor">Home D&eacute;cor</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Company</p>
+        <a href="about.html">About</a>
+        <a href="contact.html">Custom Order Inquiry</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Reach Us</p>
+        <a href="https://wa.me/601110852324">WhatsApp</a>
+        <a href="https://instagram.com/azam.reka">Instagram @azam.reka</a>
+        <a href="mailto:azam.r3ka@gmail.com">Email</a>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 Azam Reka. All rights reserved.</span>
+      <span>Kuala Lumpur, Malaysia</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+<script>
+// Clear cart on order confirmation
+localStorage.removeItem('azamReka_cart');
+</script>
+</body>
+</html>

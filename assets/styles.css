@@ -674,6 +674,73 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 /* =========================================================
+   CART MODAL
+   ========================================================= */
+
+.cart-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-modal[data-open="true"] {
+  display: flex;
+}
+
+.cart-modal__content {
+  background: var(--color-bone);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.cart-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-char);
+}
+
+.cart-modal__close:hover {
+  color: var(--color-ember);
+}
+
+.cart-button {
+  position: relative;
+}
+
+.cart-count {
+  display: none;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--color-ember);
+  color: var(--color-bone);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* =========================================================
    CATALOG SITE ADDITIONS — WhatsApp CTA, filter chips
    ========================================================= */
 

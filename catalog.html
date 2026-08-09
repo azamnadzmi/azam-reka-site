@@ -20,7 +20,14 @@
       <a href="about.html">About</a>
       <a href="contact.html">Custom Orders</a>
     </nav>
-    <div class="site-header__actions">
+    <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
+      <button data-cart-btn class="cart-button" aria-label="Shopping cart" style="background:none; border:none; cursor:pointer; font-size:0;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--color-char)">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span data-cart-count class="cart-count"></span>
+      </button>
       <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20ask%20about%20your%20products." class="btn btn-primary" style="padding: 0.6em 1.2em;">WhatsApp Us</a>
       <button class="site-header__mobile-toggle" data-mobile-nav-toggle aria-label="Open menu" aria-expanded="false">&#9776;</button>
     </div>
@@ -51,118 +58,111 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         PRODUCT GRID
-         To add a new product: copy one <a class="product-card"> block
-         and edit: data-category, image src, tag text, title, price,
-         and the WhatsApp message text in the href.
-         ============================================================ -->
     <div class="grid-3" id="productGrid">
-
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Plaque%20(RM%2020.00)" class="product-card" data-category="plaques">
+      <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=700&q=80" alt="Plaque" loading="lazy">
         </div>
         <span class="product-card__title">Plaque</span>
         <span class="mono-price">RM 20.00</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Plaque" data-price="20.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Desk%20Name%20Plaque%20(RM%2019.99)" class="product-card" data-category="plaques">
+      <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=700&q=80" alt="Desk Name Plaque" loading="lazy">
         </div>
         <span class="product-card__tag">Flor&eacute; Minimal</span>
         <span class="product-card__title">Desk Name Plaque</span>
         <span class="mono-price">RM 19.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Desk Name Plaque" data-price="19.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Plaque%20Wood%2BAcrylic%20(RM%2060.00)" class="product-card" data-category="plaques">
+      <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=700&q=80" alt="Plaque Wood and Acrylic" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=700&q=80" alt="Plaque Wood+Acrylic" loading="lazy">
         </div>
         <span class="product-card__title">Plaque Wood+Acrylic</span>
         <span class="mono-price">RM 60.00</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Plaque Wood+Acrylic" data-price="60.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Plaque%20Portrait%20A4%20(RM%2075.00)" class="product-card" data-category="plaques">
+      <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&q=80" alt="Plaque Portrait A4" loading="lazy">
         </div>
         <span class="product-card__title">Plaque Portrait A4</span>
         <span class="mono-price">RM 75.00</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Plaque Portrait A4" data-price="75.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Personalised%20Bookmark%20(RM%203.00)" class="product-card" data-category="keychains">
+      <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&q=80" alt="Personalised Bookmark" loading="lazy">
         </div>
         <span class="product-card__tag">Flor&eacute; Minimal</span>
         <span class="product-card__title">Personalised Bookmark</span>
         <span class="mono-price">RM 3.00</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Personalised Bookmark" data-price="3.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Bookmark%20(RM%206.99)" class="product-card" data-category="keychains">
+      <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80" alt="Bookmark" loading="lazy">
         </div>
         <span class="product-card__title">Bookmark</span>
         <span class="mono-price">RM 6.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Bookmark" data-price="6.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20HG25%20Keychain%20(RM%204.99)" class="product-card" data-category="keychains">
+      <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=700&q=80" alt="HG25 Keychain" loading="lazy">
         </div>
         <span class="product-card__title">HG25 Keychain</span>
         <span class="mono-price">RM 4.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="HG25 Keychain" data-price="4.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Keychain%20(RM%204.99)" class="product-card" data-category="keychains">
+      <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&q=80" alt="Keychain" loading="lazy">
         </div>
         <span class="product-card__title">Keychain</span>
         <span class="mono-price">RM 4.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Keychain" data-price="4.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Phone%20Holder%20(RM%2019.99)" class="product-card" data-category="keychains">
+      <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&q=80" alt="Phone Holder" loading="lazy">
         </div>
         <span class="product-card__title">Phone Holder</span>
         <span class="mono-price">RM 19.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Phone Holder" data-price="19.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Mas%20Kahwin%2FHantaran%20Plaque%20(RM%2079.99)" class="product-card" data-category="wedding">
+      <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80" alt="Mas Kahwin Hantaran Plaque" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Mas Kahwin/Hantaran Plaque</span>
         <span class="mono-price">RM 79.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Mas Kahwin/Hantaran Plaque" data-price="79.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Rehal%20Lite%20(RM%2079.99)" class="product-card" data-category="wedding">
+      <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&q=80" alt="Rehal Lite" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Rehal Lite</span>
         <span class="mono-price">RM 79.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Rehal Lite" data-price="79.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Mas%20Kahwin%20Frame%202025%20(RM%2075.00)" class="product-card" data-category="wedding">
+      <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80" alt="Mas Kahwin Frame 2025" loading="lazy">
           <span class="mono-label" style="position:absolute; top: 0.75rem; left: 0.75rem; background: var(--color-ember); color: var(--color-bone); padding: 0.25em 0.6em; z-index:2;">Sale</span>
@@ -170,52 +170,74 @@
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Mas Kahwin Frame 2025</span>
         <span class="mono-price">RM 75.00 <span style="text-decoration: line-through; color: var(--color-structural); margin-left: 0.4em;">RM 95.00</span></span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Mas Kahwin Frame 2025" data-price="75.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Arah%20Sujud%20(RM%2029.99)" class="product-card" data-category="wedding">
+      <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&q=80" alt="Arah Sujud" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Arah Sujud</span>
         <span class="mono-price">RM 29.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Arah Sujud" data-price="29.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Magnetic%20Mini%20Frame%20(RM%2014.99)" class="product-card" data-category="decor">
+      <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&q=80" alt="Magnetic Mini Frame" loading="lazy">
         </div>
         <span class="product-card__tag">Lace &amp; Love</span>
         <span class="product-card__title">Magnetic Mini Frame</span>
         <span class="mono-price">RM 14.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Magnetic Mini Frame" data-price="14.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Customized%20Mini%20Boards%20(RM%2019.99)" class="product-card" data-category="decor">
+      <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=700&q=80" alt="Customized Mini Boards" loading="lazy">
         </div>
         <span class="product-card__title">Customized Mini Boards</span>
         <span class="mono-price">RM 19.99</span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
+        <button data-add-to-cart="Customized Mini Boards" data-price="19.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
 
-      <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20order%3A%20Thank%20You%20Succulent%20HG25%20(RM%207.00)" class="product-card" data-category="decor">
+      <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
           <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&q=80" alt="Thank You Succulent HG25" loading="lazy">
         </div>
         <span class="product-card__title">Thank You Succulent HG25</span>
         <span class="mono-price">RM 7.00 <span style="text-decoration: line-through; color: var(--color-structural); margin-left: 0.4em;">RM 10.00</span></span>
-        <span class="btn btn-whatsapp" style="margin-top: 0.5rem;">Order via WhatsApp</span>
-      </a>
-
+        <button data-add-to-cart="Thank You Succulent HG25" data-price="7.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+      </div>
     </div>
 
     <p id="emptyState" class="body-base" style="display:none; color: var(--color-structural); text-align:center; padding-block: var(--space-4);">No products in this category yet.</p>
   </div>
 </section>
+
+<!-- CART MODAL -->
+<div data-cart-modal class="cart-modal" style="display:none;">
+  <div class="cart-modal__content">
+    <button data-cart-close class="cart-modal__close">×</button>
+    <h2 class="h-heading" style="margin-top:0;">Your Cart</h2>
+    
+    <div data-cart-items style="display:none;"></div>
+    
+    <div data-cart-empty style="text-align:center; padding: 2rem 0;">
+      <p class="body-base" style="color: var(--color-structural);">Your cart is empty.</p>
+      <p class="body-sm" style="color: var(--color-structural);">Browse our catalogue and add items to get started.</p>
+    </div>
+
+    <div data-cart-checkout style="display:none; flex-direction:column; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-ash);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <p class="h-heading" style="margin:0;">Total</p>
+        <p class="h-heading" style="margin:0;" data-cart-total>RM 0.00</p>
+      </div>
+      <button data-cart-whatsapp class="btn btn-primary" style="width:100%;">Proceed to Checkout</button>
+    </div>
+  </div>
+</div>
 
 <footer class="site-footer">
   <div class="container">
@@ -275,7 +297,6 @@
     });
   });
 
-  // Support linking directly to a category, e.g. catalog.html?category=wedding
   var params = new URLSearchParams(window.location.search);
   var initialCategory = params.get('category');
   if (initialCategory) {
