@@ -59,9 +59,27 @@
     </div>
 
     <div class="grid-3" id="productGrid">
+<!-- PRODUCTS_START -->
       <div class="product-card" data-category="plaques">
-        <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=700&q=80" alt="Plaque" loading="lazy">
+        <div class="product-card__media kerf-card" data-carousel>
+          <div class="carousel-track">
+            <div class="carousel-slide is-active">
+              <img src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=700&amp;q=80" alt="Plaque photo 1" loading="lazy">
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=700&amp;q=80" alt="Plaque photo 2" loading="lazy">
+            </div>
+            <div class="carousel-slide">
+              <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=700&amp;q=80" alt="Plaque photo 3" loading="lazy">
+            </div>
+          </div>
+          <button class="carousel-arrow carousel-arrow--prev" aria-label="Previous">&#8249;</button>
+          <button class="carousel-arrow carousel-arrow--next" aria-label="Next">&#8250;</button>
+          <div class="carousel-dots">
+            <button class="carousel-dot is-active" data-index="0" aria-label="View item 1"></button>
+            <button class="carousel-dot" data-index="1" aria-label="View item 2"></button>
+            <button class="carousel-dot" data-index="2" aria-label="View item 3"></button>
+          </div>
         </div>
         <span class="product-card__title">Plaque</span>
         <span class="mono-price">RM 20.00</span>
@@ -70,9 +88,9 @@
 
       <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=700&q=80" alt="Desk Name Plaque" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=700&amp;q=80" alt="Desk Name Plaque" loading="lazy">
         </div>
-        <span class="product-card__tag">Flor&eacute; Minimal</span>
+        <span class="product-card__tag">Flore Minimal</span>
         <span class="product-card__title">Desk Name Plaque</span>
         <span class="mono-price">RM 19.99</span>
         <button data-add-to-cart="Desk Name Plaque" data-price="19.99" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
@@ -80,7 +98,7 @@
 
       <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=700&q=80" alt="Plaque Wood+Acrylic" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=700&amp;q=80" alt="Plaque Wood+Acrylic" loading="lazy">
         </div>
         <span class="product-card__title">Plaque Wood+Acrylic</span>
         <span class="mono-price">RM 60.00</span>
@@ -89,7 +107,7 @@
 
       <div class="product-card" data-category="plaques">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&q=80" alt="Plaque Portrait A4" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&amp;q=80" alt="Plaque Portrait A4" loading="lazy">
         </div>
         <span class="product-card__title">Plaque Portrait A4</span>
         <span class="mono-price">RM 75.00</span>
@@ -98,9 +116,9 @@
 
       <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&q=80" alt="Personalised Bookmark" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&amp;q=80" alt="Personalised Bookmark" loading="lazy">
         </div>
-        <span class="product-card__tag">Flor&eacute; Minimal</span>
+        <span class="product-card__tag">Flore Minimal</span>
         <span class="product-card__title">Personalised Bookmark</span>
         <span class="mono-price">RM 3.00</span>
         <button data-add-to-cart="Personalised Bookmark" data-price="3.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
@@ -108,7 +126,7 @@
 
       <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80" alt="Bookmark" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&amp;q=80" alt="Bookmark" loading="lazy">
         </div>
         <span class="product-card__title">Bookmark</span>
         <span class="mono-price">RM 6.99</span>
@@ -117,7 +135,7 @@
 
       <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=700&q=80" alt="HG25 Keychain" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=700&amp;q=80" alt="HG25 Keychain" loading="lazy">
         </div>
         <span class="product-card__title">HG25 Keychain</span>
         <span class="mono-price">RM 4.99</span>
@@ -126,7 +144,7 @@
 
       <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&q=80" alt="Keychain" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&amp;q=80" alt="Keychain" loading="lazy">
         </div>
         <span class="product-card__title">Keychain</span>
         <span class="mono-price">RM 4.99</span>
@@ -135,7 +153,7 @@
 
       <div class="product-card" data-category="keychains">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&q=80" alt="Phone Holder" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&amp;q=80" alt="Phone Holder" loading="lazy">
         </div>
         <span class="product-card__title">Phone Holder</span>
         <span class="mono-price">RM 19.99</span>
@@ -144,7 +162,7 @@
 
       <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80" alt="Mas Kahwin Hantaran Plaque" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&amp;q=80" alt="Mas Kahwin/Hantaran Plaque" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Mas Kahwin/Hantaran Plaque</span>
@@ -154,7 +172,7 @@
 
       <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&q=80" alt="Rehal Lite" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1601045148554-27a17e0b8b0d?w=700&amp;q=80" alt="Rehal Lite" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Rehal Lite</span>
@@ -163,9 +181,22 @@
       </div>
 
       <div class="product-card" data-category="wedding">
-        <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80" alt="Mas Kahwin Frame 2025" loading="lazy">
-          <span class="mono-label" style="position:absolute; top: 0.75rem; left: 0.75rem; background: var(--color-ember); color: var(--color-bone); padding: 0.25em 0.6em; z-index:2;">Sale</span>
+        <div class="product-card__media kerf-card" data-carousel>
+          <div class="carousel-track">
+            <div class="carousel-slide is-active">
+              <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&amp;q=80" alt="Mas Kahwin Frame 2025 photo 1" loading="lazy">
+            </div>
+            <div class="carousel-slide">
+              <span class="video-badge">Video</span>
+              <video src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" muted loop playsinline preload="metadata" controls></video>
+            </div>
+          </div>
+          <button class="carousel-arrow carousel-arrow--prev" aria-label="Previous">&#8249;</button>
+          <button class="carousel-arrow carousel-arrow--next" aria-label="Next">&#8250;</button>
+          <div class="carousel-dots">
+            <button class="carousel-dot is-active" data-index="0" aria-label="View item 1"></button>
+            <button class="carousel-dot" data-index="1" aria-label="View item 2"></button>
+          </div>
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Mas Kahwin Frame 2025</span>
@@ -175,7 +206,7 @@
 
       <div class="product-card" data-category="wedding">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&q=80" alt="Arah Sujud" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1520950237264-2ee63e1a71a0?w=700&amp;q=80" alt="Arah Sujud" loading="lazy">
         </div>
         <span class="product-card__tag">Wedding</span>
         <span class="product-card__title">Arah Sujud</span>
@@ -185,7 +216,7 @@
 
       <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&q=80" alt="Magnetic Mini Frame" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&amp;q=80" alt="Magnetic Mini Frame" loading="lazy">
         </div>
         <span class="product-card__tag">Lace &amp; Love</span>
         <span class="product-card__title">Magnetic Mini Frame</span>
@@ -195,7 +226,7 @@
 
       <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=700&q=80" alt="Customized Mini Boards" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=700&amp;q=80" alt="Customized Mini Boards" loading="lazy">
         </div>
         <span class="product-card__title">Customized Mini Boards</span>
         <span class="mono-price">RM 19.99</span>
@@ -204,13 +235,13 @@
 
       <div class="product-card" data-category="decor">
         <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&q=80" alt="Thank You Succulent HG25" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?w=700&amp;q=80" alt="Thank You Succulent HG25" loading="lazy">
         </div>
         <span class="product-card__title">Thank You Succulent HG25</span>
         <span class="mono-price">RM 7.00 <span style="text-decoration: line-through; color: var(--color-structural); margin-left: 0.4em;">RM 10.00</span></span>
         <button data-add-to-cart="Thank You Succulent HG25" data-price="7.00" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
       </div>
-    </div>
+<!-- PRODUCTS_END -->
 
     <p id="emptyState" class="body-base" style="display:none; color: var(--color-structural); text-align:center; padding-block: var(--space-4);">No products in this category yet.</p>
   </div>
