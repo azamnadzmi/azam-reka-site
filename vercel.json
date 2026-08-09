@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm install",
-  "devCommand": "vercel dev",
+  "outputDirectory": ".",
   "functions": {
     "api/**/*.js": {
       "memory": 1024,

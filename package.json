@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Azam Reka - Custom laser cutting and engraving e-commerce",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Static site, no build needed'"
+    "dev": "vercel dev"
   },
   "dependencies": {
     "mongodb": "^6.3.0",
