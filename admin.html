@@ -151,6 +151,34 @@
 }
 .source-badge.whatsapp { background: #e8f5e9; color: #2e7d32; }
 .source-badge.online { background: var(--color-ember-soft); color: var(--color-ember); }
+
+/* Manual order panel */
+.manual-order-panel { border: 1px solid var(--color-ash); border-radius: 4px; padding: var(--space-3); margin-bottom: var(--space-4); background: #faf7f2; }
+.manual-order-panel h2 { margin: 0 0 0.4em; }
+.order-form-section { margin: var(--space-3) 0; }
+.order-form-section h3 { font-size: 0.95rem; margin: 0 0 0.6em; color: var(--color-char); font-weight: 600; }
+.customer-radios { display: flex; gap: 1.5rem; margin: var(--space-2) 0; }
+.customer-radios label { display: flex; align-items: center; gap: 0.4em; cursor: pointer; }
+.customer-radios input[type="radio"] { cursor: pointer; }
+.customer-section-content { margin: var(--space-2) 0; padding: var(--space-2); background: white; border-radius: 3px; }
+.form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: var(--space-2); }
+.form-field { display: flex; flex-direction: column; gap: 0.3em; flex: 1; min-width: 150px; }
+.form-field label { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-structural); }
+.form-field input, .form-field select { padding: 0.6em 0.8em; border: 1px solid var(--color-ash); border-radius: 2px; font-family: var(--font-body); }
+.form-field input[type="number"] { font-family: var(--font-mono); }
+.line-items-list { margin: var(--space-2) 0; padding: var(--space-2); background: white; border-radius: 3px; }
+.line-item { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-ash); }
+.line-item:last-child { border-bottom: none; }
+.line-item-field { display: flex; flex-direction: column; gap: 0.2em; }
+.line-item-field label { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; color: var(--color-structural); }
+.line-item-field input, .line-item-field select { padding: 0.4em 0.6em; border: 1px solid var(--color-ash); border-radius: 2px; font-size: 0.9rem; }
+.line-item-remove { padding: 0.4em 0.8em; background: #c0392b22; color: #c0392b; border: 1px solid #c0392b33; border-radius: 2px; cursor: pointer; font-size: 0.8rem; }
+.add-line-item-btn { padding: 0.4em 0.8em; background: var(--color-ash); border: 1px solid var(--color-structural); border-radius: 2px; cursor: pointer; font-size: 0.85rem; }
+.order-total { font-size: 1.1rem; font-weight: 600; margin: var(--space-2) 0; padding: var(--space-2); background: #f0f0f0; border-radius: 3px; }
+.payment-status-badge { display: inline-block; padding: 0.3em 0.6em; border-radius: 3px; font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; }
+.payment-status-badge.pending { background: #ffc10722; color: #e67e22; }
+.payment-status-badge.paid { background: #4a7c5922; color: #2f5f3a; }
+.mark-paid-btn { padding: 0.3em 0.6em; background: #4a7c5922; color: #2f5f3a; border: 1px solid #2f5f3a33; border-radius: 2px; cursor: pointer; font-size: 0.75rem; }
 #adminPanel { display: none; }
 </style>
 </head>
@@ -183,6 +211,74 @@
       <button class="btn btn-outline" id="refreshBtn">Refresh</button>
     </div>
     <p class="body-sm" style="color: var(--color-structural); margin-bottom: var(--space-4);">Changing a stage below automatically emails the customer an update.</p>
+
+    <!-- Create Manual Order panel -->
+    <div class="manual-order-panel">
+      <h2 class="h-heading" style="font-size:1rem;">Create Manual Order</h2>
+      <p class="body-sm" style="color: var(--color-structural); margin: 0 0 1em;">Create order for WhatsApp/phone customers. Automatically creates Sales Order in Zoho.</p>
+
+      <!-- Customer Section -->
+      <div class="order-form-section">
+        <h3>Customer</h3>
+        <div class="customer-radios">
+          <label><input type="radio" name="customerAction" value="create" checked> Create New</label>
+          <label><input type="radio" name="customerAction" value="select"> Select Existing</label>
+        </div>
+
+        <div id="customerCreate" class="customer-section-content">
+          <div class="form-row">
+            <div class="form-field" style="flex: 2;">
+              <label>Customer Name</label>
+              <input type="text" id="manualCustomerName" placeholder="e.g., Ahmad Hassan">
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" id="manualCustomerEmail" placeholder="ahmad@example.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Phone</label>
+              <input type="tel" id="manualCustomerPhone" placeholder="0111085234">
+            </div>
+            <div class="form-field" style="flex: 2;">
+              <label>Address</label>
+              <input type="text" id="manualCustomerAddress" placeholder="123 Jalan Merdeka, KL">
+            </div>
+          </div>
+        </div>
+
+        <div id="customerSelect" class="customer-section-content" style="display:none;">
+          <div class="form-field">
+            <label>Search & Select Customer</label>
+            <input type="text" id="customerSearch" placeholder="Search by name, email, or phone...">
+            <select id="customerDropdown" style="margin-top: 0.5em; width: 100%;">
+              <option value="">Loading customers...</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Section -->
+      <div class="order-form-section">
+        <h3>Products</h3>
+        <div class="line-items-list" id="lineItemsList"></div>
+        <button class="add-line-item-btn" id="addLineItemBtn">+ Add Product</button>
+      </div>
+
+      <!-- Notes Section -->
+      <div class="order-form-section">
+        <div class="form-field">
+          <label>Notes (optional)</label>
+          <input type="text" id="manualOrderNotes" placeholder="e.g., Custom engraving text...">
+        </div>
+      </div>
+
+      <!-- Total & Submit -->
+      <div class="order-total">Total: RM <span id="orderTotal">0.00</span></div>
+      <button class="btn btn-primary" id="createManualOrderBtn" style="width: 100%;">Create Sales Order & Order</button>
+      <p id="manualOrderError" style="display:none; color:#B5694A; font-size:var(--text-sm); margin-top:0.75em;"></p>
+    </div>
 
     <!-- Import from Zoho panel -->
     <div class="import-panel">
@@ -276,6 +372,13 @@ function renderOrders(orders) {
     const shareBtn = isWhatsApp
       ? `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showWaMessage('${order.billCode}','${order.customerName.replace(/'/g,"\\'")}','${order.customerPhone}')">Share ID</button>`
       : '';
+
+    // Payment status badge and mark paid button
+    const isPending = order.status === 'pending';
+    const paymentStatusBadge = isPending
+      ? `<span class="payment-status-badge pending">Pending</span><br><button class="mark-paid-btn" onclick="markOrderPaid('${order.billCode}')">Mark Paid</button>`
+      : `<span class="payment-status-badge paid">Paid</span>`;
+
     const currentStage = order.productionStage || 'confirmed';
     const badgeClass = currentStage === 'shipped' ? 'stage-badge shipped' : 'stage-badge';
 
@@ -301,7 +404,7 @@ function renderOrders(orders) {
         <td>${order.customerName}<br><span style="color:var(--color-structural); font-size:0.8em;">${order.customerPhone}</span></td>
         <td style="max-width:220px;">${itemsSummary}</td>
         <td>RM ${Number(order.totalAmount).toFixed(2)}</td>
-        <td>${paidDate}</td>
+        <td>${paymentStatusBadge}</td>
         <td>${zohoBadge}</td>
         <td><span class="${badgeClass}">${stageLabel(currentStage)}</span></td>
         <td>
@@ -474,6 +577,246 @@ document.getElementById('passwordInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') tryUnlock(document.getElementById('passwordInput').value);
 });
 document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+
+// ===== MANUAL ORDER CREATION =====
+
+const PRODUCTS = [
+  'Desk Name Plaque', 'Plaque Wood+Acrylic', 'Plaque Portrait A4', 'Personalised Bookmark',
+  'Bookmark', 'HG25 Keychain', 'Keychain', 'Phone Holder', 'Mas Kahwin/Hantaran Plaque',
+  'Rehal Lite', 'Thank You Succulent HG25'
+];
+
+const PRODUCT_PRICES = {
+  'Desk Name Plaque': 65, 'Plaque Wood+Acrylic': 85, 'Plaque Portrait A4': 45,
+  'Personalised Bookmark': 15, 'Bookmark': 12, 'HG25 Keychain': 20, 'Keychain': 15,
+  'Phone Holder': 35, 'Mas Kahwin/Hantaran Plaque': 75, 'Rehal Lite': 120,
+  'Thank You Succulent HG25': 25
+};
+
+let manualOrderLineItems = [];
+
+function renderLineItems() {
+  const container = document.getElementById('lineItemsList');
+  if (manualOrderLineItems.length === 0) {
+    container.innerHTML = '<p style="color:var(--color-structural); text-align:center; padding:1em;">No products added yet</p>';
+    return;
+  }
+
+  container.innerHTML = manualOrderLineItems.map((item, idx) => `
+    <div class="line-item">
+      <div class="line-item-field" style="flex:2;">
+        <label>Product</label>
+        <select class="product-select" data-idx="${idx}" onchange="updateLineItemPrice(${idx})">
+          <option value="">Select product...</option>
+          ${PRODUCTS.map(p => `<option value="${p}" ${item.name === p ? 'selected' : ''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="line-item-field">
+        <label>Qty</label>
+        <input type="number" class="qty-input" data-idx="${idx}" value="${item.qty}" min="1" onchange="updateLineItemPrice(${idx})">
+      </div>
+      <div class="line-item-field">
+        <label>Price (RM)</label>
+        <input type="number" class="price-input" data-idx="${idx}" value="${item.price}" min="0" step="0.01" onchange="updateLineItemPrice(${idx})">
+      </div>
+      <div class="line-item-field">
+        <label>Subtotal</label>
+        <div style="padding:0.6em 0.8em; background:white; border:1px solid var(--color-ash); border-radius:2px;">RM ${(item.qty * item.price).toFixed(2)}</div>
+      </div>
+      <button class="line-item-remove" onclick="removeLineItem(${idx})">Remove</button>
+    </div>
+  `).join('');
+
+  updateOrderTotal();
+}
+
+function updateLineItemPrice(idx) {
+  const select = document.querySelector(`.product-select[data-idx="${idx}"]`);
+  const qtyInput = document.querySelector(`.qty-input[data-idx="${idx}"]`);
+  const priceInput = document.querySelector(`.price-input[data-idx="${idx}"]`);
+
+  if (!select.value) return;
+
+  const product = select.value;
+  const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+  const price = parseFloat(priceInput.value) || PRODUCT_PRICES[product] || 0;
+
+  manualOrderLineItems[idx] = { name: product, qty, price };
+  qtyInput.value = qty;
+  priceInput.value = price.toFixed(2);
+
+  renderLineItems();
+}
+
+function removeLineItem(idx) {
+  manualOrderLineItems.splice(idx, 1);
+  renderLineItems();
+}
+
+function updateOrderTotal() {
+  const total = manualOrderLineItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
+  document.getElementById('orderTotal').textContent = total.toFixed(2);
+}
+
+async function fetchZohoCustomers(search = '') {
+  try {
+    const url = new URL('/api/admin/zoho-customers', window.location.origin);
+    url.searchParams.set('password', adminPassword);
+    if (search) url.searchParams.set('search', search);
+
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.customers || [];
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    return [];
+  }
+}
+
+async function loadZohoCustomers() {
+  const customers = await fetchZohoCustomers();
+  const dropdown = document.getElementById('customerDropdown');
+  if (customers.length === 0) {
+    dropdown.innerHTML = '<option value="">No customers found</option>';
+  } else {
+    dropdown.innerHTML = '<option value="">Select a customer...</option>' +
+      customers.map(c => `<option value="${c.id}" data-name="${c.name}">${c.name} (${c.phone || c.email})</option>`).join('');
+  }
+}
+
+async function createManualOrder() {
+  const errorEl = document.getElementById('manualOrderError');
+  errorEl.style.display = 'none';
+
+  try {
+    const customerAction = document.querySelector('input[name="customerAction"]:checked').value;
+    let customerData = {};
+    let customerId = null;
+
+    if (customerAction === 'create') {
+      const name = document.getElementById('manualCustomerName').value.trim();
+      const email = document.getElementById('manualCustomerEmail').value.trim();
+      const phone = document.getElementById('manualCustomerPhone').value.trim();
+      const address = document.getElementById('manualCustomerAddress').value.trim();
+
+      if (!name || !email || !phone || !address) {
+        throw new Error('All customer fields required');
+      }
+
+      customerData = { name, email, phone, address };
+    } else {
+      customerId = document.getElementById('customerDropdown').value;
+      if (!customerId) throw new Error('Please select a customer');
+    }
+
+    if (manualOrderLineItems.length === 0) throw new Error('Add at least one product');
+
+    const totalAmount = manualOrderLineItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
+    const notes = document.getElementById('manualOrderNotes').value.trim();
+
+    const body = {
+      password: adminPassword,
+      customerAction,
+      items: manualOrderLineItems,
+      totalAmount,
+      notes: notes || null,
+      source: 'whatsapp'
+    };
+
+    if (customerAction === 'create') {
+      body.customerName = customerData.name;
+      body.customerEmail = customerData.email;
+      body.customerPhone = customerData.phone;
+      body.customerAddress = customerData.address;
+    } else {
+      body.zohoCustomerId = customerId;
+    }
+
+    const res = await fetch('/api/admin/create-manual-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to create order');
+    }
+
+    const result = await res.json();
+
+    // Show success message with tracking URL
+    const msg = `Order created! 🎉\nOrder ID: ${result.billCode}\nSO #: ${result.zohoSalesOrderNumber}\nTracking: ${result.trackingUrl}`;
+    alert(msg);
+
+    // Reset form
+    document.getElementById('manualCustomerName').value = '';
+    document.getElementById('manualCustomerEmail').value = '';
+    document.getElementById('manualCustomerPhone').value = '';
+    document.getElementById('manualCustomerAddress').value = '';
+    document.getElementById('manualOrderNotes').value = '';
+    manualOrderLineItems = [];
+    renderLineItems();
+
+    // Refresh orders
+    loadOrders();
+  } catch (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+  }
+}
+
+async function markOrderPaid(billCode) {
+  if (!confirm('Mark this order as paid?')) return;
+
+  try {
+    const res = await fetch('/api/admin/mark-order-paid', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminPassword, billCode })
+    });
+
+    if (!res.ok) throw new Error('Failed to mark as paid');
+
+    loadOrders();
+    const toast = document.createElement('div');
+    toast.textContent = `Order marked as paid`;
+    toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--color-char); color:var(--color-bone); padding:0.75em 1.25em; border-radius:4px; font-size:0.85rem; z-index:100;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+// Event listeners for manual order form
+document.querySelectorAll('input[name="customerAction"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    document.getElementById('customerCreate').style.display = e.target.value === 'create' ? 'block' : 'none';
+    document.getElementById('customerSelect').style.display = e.target.value === 'select' ? 'block' : 'none';
+    if (e.target.value === 'select') loadZohoCustomers();
+  });
+});
+
+document.getElementById('customerSearch').addEventListener('input', async (e) => {
+  const search = e.target.value.trim();
+  const customers = await fetchZohoCustomers(search);
+  const dropdown = document.getElementById('customerDropdown');
+  dropdown.innerHTML = customers.length === 0
+    ? '<option value="">No results</option>'
+    : customers.map(c => `<option value="${c.id}">${c.name} (${c.phone || c.email})</option>`).join('');
+});
+
+document.getElementById('addLineItemBtn').addEventListener('click', () => {
+  manualOrderLineItems.push({ name: '', qty: 1, price: 0 });
+  renderLineItems();
+});
+
+document.getElementById('createManualOrderBtn').addEventListener('click', createManualOrder);
+
+// Initialize
+renderLineItems();
+loadZohoCustomers();
 
 // Auto-unlock if password already in this session
 if (adminPassword) {
