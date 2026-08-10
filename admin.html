@@ -365,7 +365,7 @@ function renderOrders(orders) {
 }
 
 async function loadOrders() {
-  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(adminPassword)}`);
+  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(adminPassword)}`);
   if (!res.ok) {
     document.getElementById('gate').style.display = 'block';
     document.getElementById('adminPanel').style.display = 'none';
@@ -379,7 +379,7 @@ async function loadOrders() {
 
 async function tryUnlock(password) {
   adminPassword = password;
-  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(password)}`);
+  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(password)}`);
   if (res.ok) {
     sessionStorage.setItem('azamReka_adminPw', password);
     document.getElementById('gate').style.display = 'none';
