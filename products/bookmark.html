@@ -56,8 +56,25 @@
     </p>
     <div class="grid-2" style="align-items: flex-start; gap: var(--space-5);">
       <div>
-        <div class="product-card__media kerf-card">
-          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&amp;q=80" alt="Bookmark" loading="lazy">
+        <div class="product-card__media kerf-card" data-carousel>
+          <div class="carousel-track">
+            <div class="carousel-slide is-active">
+              <img src="assets/products/bookmark-03.jpg" alt="Bookmark photo 1" loading="lazy">
+            </div>
+            <div class="carousel-slide">
+              <img src="assets/products/bookmark-01.jpg" alt="Bookmark photo 2" loading="lazy">
+            </div>
+            <div class="carousel-slide">
+              <img src="assets/products/bookmark-02.jpg" alt="Bookmark photo 3" loading="lazy">
+            </div>
+          </div>
+          <button class="carousel-arrow carousel-arrow--prev" aria-label="Previous">&#8249;</button>
+          <button class="carousel-arrow carousel-arrow--next" aria-label="Next">&#8250;</button>
+          <div class="carousel-dots">
+            <button class="carousel-dot is-active" data-index="0" aria-label="View item 1"></button>
+            <button class="carousel-dot" data-index="1" aria-label="View item 2"></button>
+            <button class="carousel-dot" data-index="2" aria-label="View item 3"></button>
+          </div>
         </div>
       </div>
       <div>

@@ -1,0 +1,200 @@
+{
+  "_comment": [
+    "Website presentation layer for the catalogue. Zoho Books is the source of truth for",
+    "NAME, PRICE and DESCRIPTION - those come from the linked zoho_item_id and are never set here.",
+    "This file only holds what Zoho does not know about: which items appear online, their",
+    "category, collection tag, and their photos/video.",
+    "",
+    "Media order is exactly the carousel order. Video, when present, always shows first.",
+    "",
+    "display_name overrides the Zoho item name on the website (Zoho names are internal/SKU-ish).",
+    "Leave display_name null to use the Zoho name verbatim.",
+    "",
+    "zoho_item_id: null means UNLINKED - the product still renders using fallback_price,",
+    "but orders for it cannot post a line item to Zoho. Resolve these."
+  ],
+  "products": [
+    {
+      "zoho_item_id": "4895811000000137024",
+      "display_name": "Plaque",
+      "category": "plaques",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/plaque-01.jpg",
+        "assets/products/plaque-02.jpg",
+        "assets/products/plaque-03.jpg",
+        "assets/products/plaque-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000088051",
+      "display_name": "Desk Name Plaque",
+      "category": "plaques",
+      "tag": "Flore Minimal",
+      "video": null,
+      "images": [
+        "assets/products/desk-name-plaque-01.jpg",
+        "assets/products/desk-name-plaque-02.jpg",
+        "assets/products/desk-name-plaque-03.jpg",
+        "assets/products/desk-name-plaque-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000164046",
+      "display_name": "Plaque Wood+Acrylic",
+      "category": "plaques",
+      "tag": null,
+      "video": "assets/products/plaque-wood-acrylic-video.mp4",
+      "images": [
+        "assets/products/plaque-wood-acrylic-01.jpg",
+        "assets/products/plaque-wood-acrylic-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000421019",
+      "display_name": "Plaque Portrait A4",
+      "category": "plaques",
+      "tag": null,
+      "video": "assets/products/plaque-portrait-a4-video.mp4",
+      "images": [
+        "assets/products/plaque-portrait-a4-01.jpg",
+        "assets/products/plaque-portrait-a4-02.jpg",
+        "assets/products/plaque-portrait-a4-03.jpg",
+        "assets/products/plaque-portrait-a4-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000114117",
+      "display_name": "Personalised Bookmark",
+      "category": "keychains",
+      "tag": "Flore Minimal",
+      "video": null,
+      "images": [
+        "assets/products/bookmark-01.jpg",
+        "assets/products/bookmark-02.jpg",
+        "assets/products/bookmark-03.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000177003",
+      "display_name": "HG25 Keychain",
+      "category": "keychains",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/keychain-01.jpg",
+        "assets/products/keychain-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000405019",
+      "display_name": "Keychain",
+      "category": "keychains",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/keychain-03.jpg",
+        "assets/products/keychain-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000186019",
+      "display_name": "Phone Holder",
+      "category": "keychains",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/phone-holder-01.jpg",
+        "assets/products/phone-holder-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000320029",
+      "display_name": "Mas Kahwin/Hantaran Plaque",
+      "category": "wedding",
+      "tag": "Wedding",
+      "video": null,
+      "images": [
+        "assets/products/maskahwin-plaque-01.jpg",
+        "assets/products/maskahwin-plaque-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000114001",
+      "display_name": "Rehal Lite",
+      "category": "wedding",
+      "tag": "Wedding",
+      "video": "assets/products/rehal-lite-video.mp4",
+      "images": [
+        "assets/products/rehal-lite-01.jpg",
+        "assets/products/rehal-lite-02.jpg",
+        "assets/products/rehal-lite-03.jpg",
+        "assets/products/rehal-lite-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": null,
+      "_unresolved": "No Zoho item matches. Candidates: 'HG Mini Frame 12X10' (RM12), 'HG Mini Frame 8X10' (RM10), 'Aqiqah Board' (RM74.99).",
+      "fallback_price": 75.0,
+      "fallback_sale_price": 95.0,
+      "display_name": "Mas Kahwin Frame 2025",
+      "category": "wedding",
+      "tag": "Wedding",
+      "video": null,
+      "images": [
+        "assets/products/maskahwin-frame-01.jpg",
+        "assets/products/maskahwin-frame-02.jpg",
+        "assets/products/maskahwin-frame-03.jpg",
+        "assets/products/maskahwin-frame-04.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": null,
+      "_unresolved": "No Zoho item matches. Candidates: 'Quran Cover - DQ' (RM99.99), 'Penunjuk Al-Quran (2 side)' (RM5).",
+      "fallback_price": 29.99,
+      "display_name": "Arah Sujud",
+      "category": "wedding",
+      "tag": "Wedding",
+      "video": null,
+      "images": [
+        "assets/products/quran-cover-01.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": null,
+      "_unresolved": "No Zoho item matches. Candidates: 'HG Mini Frame 12X10' (RM12), 'Fridge Magnet 70mm' (RM5).",
+      "fallback_price": 14.99,
+      "display_name": "Magnetic Mini Frame",
+      "category": "decor",
+      "tag": "Lace & Love",
+      "video": null,
+      "images": [
+        "assets/products/magnetic-frame-01.jpg",
+        "assets/products/magnetic-frame-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": null,
+      "_unresolved": "No Zoho item matches. Candidates: 'Custom Letters' (RM5), 'Aqiqah Board' (RM74.99).",
+      "fallback_price": 19.99,
+      "display_name": "Customized Mini Boards",
+      "category": "decor",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/custom-signage-01.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000379019",
+      "display_name": "Thank You Succulent HG25",
+      "category": "decor",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/keychain-02.jpg"
+      ]
+    }
+  ]
+}

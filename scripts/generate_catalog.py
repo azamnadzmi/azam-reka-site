@@ -46,7 +46,7 @@ def build_media_html(images, video, alt_text, on_sale=False):
 
     media_items = [{"type": "image", "src": img} for img in images]
     if video:
-        media_items.append({"type": "video", "src": video})
+        media_items.insert(0, {"type": "video", "src": video})
 
     sale_badge = '<span class="sale-badge">Sale</span>\n          ' if on_sale else ""
 
@@ -61,6 +61,7 @@ def build_media_html(images, video, alt_text, on_sale=False):
         </div>'''
 
     slides_parts = []
+    photo_num = 0
     for i, item in enumerate(media_items):
         active_class = " is-active" if i == 0 else ""
         if item["type"] == "video":
@@ -69,8 +70,9 @@ def build_media_html(images, video, alt_text, on_sale=False):
               <video src="{esc(item['src'])}" muted loop playsinline preload="metadata" controls></video>
             </div>''')
         else:
+            photo_num += 1
             slides_parts.append(f'''            <div class="carousel-slide{active_class}">
-              <img src="{esc(item['src'])}" alt="{esc(alt_text)} photo {i+1}" loading="lazy">
+              <img src="{esc(item['src'])}" alt="{esc(alt_text)} photo {photo_num}" loading="lazy">
             </div>''')
     slides = "\n".join(slides_parts)
 
