@@ -26,6 +26,7 @@
   --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-micro: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
 
   /* Type scale — fluid, architectural (based on 1.25 ratio) */
   --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
@@ -147,14 +148,25 @@ h1, h2, h3, h4, p { margin: 0; }
    annotations on a technical drawing.
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Inter+Tight:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 .h-display-1 {
   font-family: var(--font-display);
   font-size: clamp(3.5rem, 2rem + 8vw, 6.4rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 0.9;
+  line-height: 0.88;
+}
+
+/* Micro/UI voice — buttons, nav, eyebrows, tags. Distinct from --font-mono
+   (used for body copy and prices): tighter, uppercase, always 0.1em tracking. */
+.font-micro {
+  font-family: var(--font-micro);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.5;
 }
 
 .h-display-2 {
@@ -233,9 +245,10 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .coord-label {
   position: absolute;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.05em;
+  font-family: var(--font-micro);
+  font-size: 0.625rem; /* 10px */
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-structural);
   opacity: 0.6;
@@ -248,9 +261,11 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 .section-num {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  font-family: var(--font-micro);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-ember);
 }
 
