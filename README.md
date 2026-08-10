@@ -70,25 +70,34 @@ refresh token, same shape as the Zoho integration, not a single API key.
 Confirmed by the account's own Developer Hub "Configuration" screen, not by
 trusting a summary of it.
 
-**If you're ever re-deriving this integration from scratch: do not trust
-prose summaries of easyparcel.github.io/OpenAPI, including from WebFetch-type
-tools even when explicitly asked for verbatim content.** Multiple fetches of
-that site returned confident, detailed, *wrong* content — one used a field
-named `"state"` that directly contradicts the real API's actual field name
-(`subdivison_code`, with EasyParcel's own typo). The only content that held up
-under cross-checking was the repo's raw **Postman collection JSON**
-(`source/Open API Live.postman_collection.json` / `_v3.json`) — a machine
-format that gets honestly truncated rather than confidently rewritten — and
-`_authentication.md`, which was detailed and internally consistent enough
-(real GitHub asset URLs, specific non-generic numbers) to trust. Everything
-in `checkRates()` is verified against that JSON. `bookShipment()` and
-`trackParcel()` are **not** — see the file's header comment before trusting
-them for a real order; test on one low-value shipment first.
+**If you're ever re-deriving this integration from scratch: do not fully
+trust prose summaries of easyparcel.github.io/OpenAPI, including from
+WebFetch-type tools even when explicitly asked for verbatim content, and
+verify by actually running the flow rather than stopping once a source looks
+detailed and internally consistent.** Multiple fetches of that site returned
+confident, detailed, *wrong* content — one used a field named `"state"` that
+directly contradicts the real API's actual field name (`subdivison_code`,
+with EasyParcel's own typo). The repo's raw **Postman collection JSON**
+(`source/Open API Live.postman_collection.json` / `_v3.json`) held up under
+cross-checking — it's a machine format that gets honestly truncated rather
+than confidently rewritten — and `checkRates()` is verified against it.
+`_authentication.md` looked equally trustworthy by the same signals (real
+GitHub asset URLs, specific non-generic numbers like the 36000s token
+expiry) but still had it wrong: it gives the authorization endpoint as
+`api.easyparcel.com/oauth/login`, when the account's own EasyParcel-hosted
+Postman documentation (screenshotted by the account owner, not fetched by
+any tool) shows it's actually `developer.easyparcel.com/oauth/login` — a
+different host. Only the *token exchange* endpoint
+(`api.easyparcel.com/oauth/token`) was correct in both sources. `bookShipment()`
+and `trackParcel()` are unverified beyond this — see the file's header
+comment before trusting them for a real order; test on one low-value
+shipment first.
 
 **One-time setup**, once `EASYPARCEL_CLIENT_ID`/`_SECRET` are in Vercel and
 the app's Redirect URI is set to `https://azamreka.com/api/admin/easyparcel-oauth-callback`:
-visit `https://api.easyparcel.com/oauth/login?client_id=<id>&redirect_uri=https://azamreka.com/api/admin/easyparcel-oauth-callback&state=setup`,
-log in, click Allow, then open the resulting callback URL with
+visit `https://developer.easyparcel.com/oauth/login?client_id=<id>&redirect_uri=https://azamreka.com/api/admin/easyparcel-oauth-callback&state=setup`
+(note: `developer.easyparcel.com`, not `api.easyparcel.com`, for this step
+only), log in, click Allow, then open the resulting callback URL with
 `&password=<ADMIN_PASSWORD>` appended — it shows the refresh token to save as
 `EASYPARCEL_REFRESH_TOKEN`. Delete the callback file afterward.
 
