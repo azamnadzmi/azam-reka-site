@@ -1,7 +1,7 @@
 // api/calculate-shipping.js
 // Live shipping quote from EasyParcel, limited to MelPlus (Poslaju) and J&T.
 
-const { checkRates, SENDER_ADDRESS } = require('./_lib/easyparcel');
+const { checkRates, debugRawRates, SENDER_ADDRESS } = require('./_lib/easyparcel');
 
 const MIN_DELIVERY_FEE = 10;
 
@@ -13,10 +13,29 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { items, postcode, state } = req.body;
+    const { items, postcode, state, debug } = req.body;
 
     if (!items || !postcode || !state) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // TEMPORARY diagnostic path — remove once live EasyParcel rates are
+    // confirmed working. Returns the raw, unfiltered EasyParcel response so
+    // we can see the real error or the real courier/service names instead
+    // of guessing. Not a secret-exposure risk (no credentials in the output).
+    if (debug === 'azamreka-debug') {
+      try {
+        const raw = await debugRawRates({
+          pickCode: SENDER_ADDRESS.postcode,
+          pickState: SENDER_ADDRESS.state,
+          sendCode: postcode,
+          sendState: state,
+          weight: 0.5
+        });
+        return res.status(200).json({ debug: true, raw });
+      } catch (debugError) {
+        return res.status(200).json({ debug: true, error: debugError.message });
+      }
     }
 
     let totalWeight = 0;

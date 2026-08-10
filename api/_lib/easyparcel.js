@@ -256,11 +256,31 @@ async function trackParcel(awbNo) {
   };
 }
 
+// Same call as checkRates but returns EasyParcel's raw, unfiltered rate list
+// (every courier, not just MelPlus/J&T) — for diagnosing "0 matched rates"
+// without guessing what the live account's courier/service names actually are.
+async function debugRawRates({ pickCode, pickState, sendCode, sendState, weight, dateColl }) {
+  const [row] = await callEasyParcel('EPRateCheckingBulk', {
+    bulk: [{
+      pick_code: pickCode,
+      pick_state: pickState,
+      pick_country: 'MY',
+      send_code: sendCode,
+      send_state: sendState,
+      send_country: 'MY',
+      weight: weight.toFixed(2),
+      date_coll: dateColl
+    }]
+  });
+  return row;
+}
+
 module.exports = {
   checkRates,
   bookShipment,
   trackParcel,
   classifyCourier,
+  debugRawRates,
   ALLOWED_COURIERS,
   SENDER_ADDRESS,
   MY_STATES
