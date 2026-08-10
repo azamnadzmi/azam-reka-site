@@ -572,6 +572,14 @@ body {
 
 <script src="assets/main.js"></script>
 <script>
+// Product image mapping
+const productImages = {
+  'Plaque': 'https://photos.app.goo.gl/RM7dZxYnxFAsGpgTA',
+  'Desk Name Plaque': 'https://photos.app.goo.gl/3qMVbXZeDLta9jrQ9',
+  'Plaque Wood+Acrylic': 'https://photos.app.goo.gl/XNrE9MMMDPcTyQ5n9',
+  'Plaque Portrait A4': 'https://photos.app.goo.gl/wbDYc1zMewnhU8NJ8'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const cart = JSON.parse(localStorage.getItem('azamReka_cart') || '[]');
 
@@ -584,10 +592,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render items
   const itemsHTML = cart.map(item => {
     const itemTotal = (item.price * item.qty).toFixed(2);
+    const imageUrl = productImages[item.name] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop';
     return `
       <div class="summary-item">
         <div class="summary-item-image">
-          <img src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop" alt="${item.name}">
+          <img src="${imageUrl}" alt="${item.name}">
         </div>
         <div class="summary-item-details">
           <div class="summary-item-name">${item.name}</div>
