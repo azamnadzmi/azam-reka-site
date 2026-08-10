@@ -181,11 +181,11 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
 
 <section class="section">
   <div class="container">
-    <p class="body-sm" style="color: var(--color-structural); margin-bottom: var(--space-3);">
+    <p class="font-micro" style="color: var(--color-structural); margin-bottom: var(--space-3);">
       <a href="../catalog.html" style="color: var(--color-structural);">Catalogue</a> &rsaquo; {name}
     </p>
     <div class="grid-2" style="align-items: flex-start; gap: var(--space-5);">
-      <div>
+      <div class="corner-frame">
         {media_html}
       </div>
       <div>
