@@ -60,6 +60,79 @@
 .zoho-badge.synced { background: #4a7c5922; color: #2f5f3a; }
 .zoho-badge.failed { background: #c0392b22; color: #c0392b; cursor: help; }
 .zoho-badge.pending { background: var(--color-ash); color: var(--color-structural); }
+
+/* Import panel */
+.import-panel {
+  border: 1px solid var(--color-ash);
+  border-radius: 4px;
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  background: #faf7f2;
+}
+.import-panel h2 { margin: 0 0 0.4em; }
+.import-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+.import-field { display: flex; flex-direction: column; gap: 0.3em; }
+.import-field label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-structural);
+}
+.import-field input {
+  padding: 0.6em 0.8em;
+  border: 1px solid var(--color-ash);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  min-width: 160px;
+}
+
+/* WhatsApp share modal */
+.wa-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.wa-modal.open { display: flex; }
+.wa-modal__content {
+  background: var(--color-bone);
+  border-radius: 8px;
+  padding: var(--space-4);
+  max-width: 480px;
+  width: 90%;
+}
+.wa-message {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  background: #f0f0f0;
+  padding: 1em;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  margin: var(--space-2) 0;
+}
+.source-badge {
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  background: #e8f0e8;
+  color: #2f5f3a;
+}
+.source-badge.whatsapp { background: #e8f5e9; color: #2e7d32; }
+.source-badge.online { background: var(--color-ember-soft); color: var(--color-ember); }
 #adminPanel { display: none; }
 </style>
 </head>
@@ -89,11 +162,30 @@
       <button class="btn btn-outline" id="refreshBtn">Refresh</button>
     </div>
     <p class="body-sm" style="color: var(--color-structural); margin-bottom: var(--space-4);">Changing a stage below automatically emails the customer an update.</p>
+
+    <!-- Import from Zoho panel -->
+    <div class="import-panel">
+      <h2 class="h-heading" style="font-size:1rem;">Import WhatsApp order from Zoho</h2>
+      <p class="body-sm" style="color: var(--color-structural); margin: 0;">Enter the Zoho Sales Order number to generate an Order ID the customer can use for tracking.</p>
+      <div class="import-row">
+        <div class="import-field">
+          <label>Sales Order Number</label>
+          <input type="text" id="soNumberInput" placeholder="SO-00012">
+        </div>
+        <div class="import-field">
+          <label>Customer Phone (if not in Zoho)</label>
+          <input type="tel" id="soPhoneInput" placeholder="0111085234">
+        </div>
+        <button class="btn btn-primary" id="importBtn">Import from Zoho</button>
+      </div>
+      <p id="importError" style="display:none; color:#B5694A; font-size:var(--text-sm); margin-top:0.75em;"></p>
+    </div>
     <div style="overflow-x:auto;">
       <table class="order-table">
         <thead>
           <tr>
             <th>Order ID</th>
+            <th>Source</th>
             <th>Customer</th>
             <th>Items</th>
             <th>Total</th>
@@ -107,6 +199,20 @@
       </table>
     </div>
     <p id="emptyMsg" style="display:none; text-align:center; color: var(--color-structural); padding: var(--space-4) 0;">No paid orders yet.</p>
+  </div>
+</div>
+
+<!-- WhatsApp Order ID share modal -->
+<div class="wa-modal" id="waModal">
+  <div class="wa-modal__content">
+    <h2 class="h-heading" style="margin-top:0;">Share Order ID via WhatsApp</h2>
+    <p class="body-sm" style="color:var(--color-structural);">Copy this message and send it to the customer on WhatsApp:</p>
+    <div class="wa-message" id="waMessageText"></div>
+    <div style="display:flex; gap:0.75rem; margin-top:var(--space-3); flex-wrap:wrap;">
+      <button class="btn btn-primary" id="waCopyBtn">Copy Message</button>
+      <a class="btn btn-outline" id="waOpenBtn" href="#" target="_blank">Open in WhatsApp</a>
+      <button class="btn btn-outline" onclick="document.getElementById('waModal').classList.remove('open')">Close</button>
+    </div>
   </div>
 </div>
 
@@ -141,6 +247,14 @@ function renderOrders(orders) {
   tbody.innerHTML = orders.map(order => {
     const itemsSummary = (order.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
     const paidDate = order.paidAt ? new Date(order.paidAt).toLocaleDateString() : '—';
+    const isWhatsApp = order.source === 'whatsapp';
+    const sourceBadge = isWhatsApp
+      ? `<span class="source-badge whatsapp">WhatsApp</span>`
+      : `<span class="source-badge online">Online</span>`;
+
+    const shareBtn = isWhatsApp
+      ? `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showWaMessage('${order.billCode}','${order.customerName.replace(/'/g,"\\'")}','${order.customerPhone}')">Share ID</button>`
+      : '';
     const currentStage = order.productionStage || 'confirmed';
     const badgeClass = currentStage === 'shipped' ? 'stage-badge shipped' : 'stage-badge';
 
@@ -161,7 +275,8 @@ function renderOrders(orders) {
 
     return `
       <tr>
-        <td><strong>${order.billCode}</strong></td>
+        <td><strong>${order.billCode}</strong>${shareBtn ? '<br>' + shareBtn : ''}</td>
+        <td>${sourceBadge}</td>
         <td>${order.customerName}<br><span style="color:var(--color-structural); font-size:0.8em;">${order.customerPhone}</span></td>
         <td style="max-width:220px;">${itemsSummary}</td>
         <td>RM ${Number(order.totalAmount).toFixed(2)}</td>
@@ -228,6 +343,75 @@ async function tryUnlock(password) {
     document.getElementById('gateError').style.display = 'block';
   }
 }
+
+function showWaMessage(billCode, customerName, phone) {
+  const msg = `Hi ${customerName}! 👋\n\nYour Azam Reka order has been recorded. You can track your order progress anytime at:\n\nhttps://azamreka.com/track-order.html\n\nYour Order ID: *${billCode}*\nPhone used: ${phone}\n\nFeel free to WhatsApp us if you have any questions! 😊`;
+  document.getElementById('waMessageText').textContent = msg;
+  document.getElementById('waCopyBtn').onclick = () => {
+    navigator.clipboard.writeText(msg).then(() => {
+      document.getElementById('waCopyBtn').textContent = 'Copied!';
+      setTimeout(() => document.getElementById('waCopyBtn').textContent = 'Copy Message', 2000);
+    });
+  };
+  const waUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('waOpenBtn').href = waUrl;
+  document.getElementById('waModal').classList.add('open');
+}
+
+document.getElementById('waModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('waModal')) {
+    document.getElementById('waModal').classList.remove('open');
+  }
+});
+
+document.getElementById('importBtn').addEventListener('click', async () => {
+  const soNumber = document.getElementById('soNumberInput').value.trim();
+  const phone = document.getElementById('soPhoneInput').value.trim();
+  const errorEl = document.getElementById('importError');
+  const btn = document.getElementById('importBtn');
+
+  if (!soNumber) {
+    errorEl.textContent = 'Please enter a Sales Order number.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Importing...';
+
+  try {
+    const res = await fetch('/api/admin/import-from-zoho', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminPassword, soNumber, customerPhone: phone })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Import failed');
+
+    await loadOrders();
+
+    document.getElementById('soNumberInput').value = '';
+    document.getElementById('soPhoneInput').value = '';
+
+    if (data.alreadyImported) {
+      errorEl.style.color = '#2f5f3a';
+      errorEl.textContent = data.message;
+      errorEl.style.display = 'block';
+      setTimeout(() => errorEl.style.display = 'none', 4000);
+    } else {
+      showWaMessage(data.billCode, data.customerName, data.customerPhone || phone);
+    }
+  } catch (err) {
+    errorEl.style.color = '#B5694A';
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Import from Zoho';
+  }
+});
 
 document.getElementById('unlockBtn').addEventListener('click', () => {
   tryUnlock(document.getElementById('passwordInput').value);
