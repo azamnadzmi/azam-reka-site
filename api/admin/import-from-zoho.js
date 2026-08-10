@@ -17,7 +17,12 @@ const zohoApiDomain = process.env.ZOHO_API_DOMAIN || 'https://www.zohoapis.com';
 let cachedClient = null;
 async function getMongoClient() {
   if (cachedClient) return cachedClient;
-  cachedClient = new MongoClient(mongoUri);
+  cachedClient = new MongoClient(mongoUri, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 10000,
+    retryWrites: true,
+    maxPoolSize: 1
+  });
   await cachedClient.connect();
   return cachedClient;
 }
