@@ -4,7 +4,8 @@
   "description": "Azam Reka - Custom laser cutting and engraving e-commerce",
   "scripts": {
     "dev": "vercel dev",
-    "sync-catalog": "node scripts/sync-catalog.js"
+    "build-catalog": "python scripts/build_catalog.py",
+    "build-catalog:refresh": "python scripts/build_catalog.py --refresh"
   },
   "dependencies": {
     "mongodb": "^6.3.0",
