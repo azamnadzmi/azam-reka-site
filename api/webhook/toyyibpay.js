@@ -6,7 +6,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const { Resend } = require('resend');
 const { createSalesOrder } = require('../_lib/zoho-books');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const resendApiKey = process.env.RESEND_API_KEY;
 
 let cachedClient = null;

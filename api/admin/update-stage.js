@@ -6,7 +6,7 @@
 const { MongoClient } = require('mongodb');
 const { Resend } = require('resend');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const adminPassword = process.env.ADMIN_PASSWORD;
 const resendApiKey = process.env.RESEND_API_KEY;
 const siteUrl = process.env.SITE_URL || 'https://azamreka.com';

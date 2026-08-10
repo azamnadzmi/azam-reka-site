@@ -5,7 +5,7 @@
 
 const { MongoClient } = require('mongodb');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 let cachedClient = null;
 
 async function getMongoClient() {

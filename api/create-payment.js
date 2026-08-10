@@ -3,7 +3,7 @@
 
 const { MongoClient } = require('mongodb');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const toyyibPayApiKey = process.env.TOYYIBPAY_API_KEY;
 const toyyibPayCategoryCode = process.env.TOYYIBPAY_CATEGORY_CODE;
 

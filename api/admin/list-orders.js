@@ -6,7 +6,7 @@
 
 const { MongoClient } = require('mongodb');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const adminPassword = process.env.ADMIN_PASSWORD;
 
 let cachedClient = null;

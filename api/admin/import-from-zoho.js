@@ -5,7 +5,7 @@
 
 const { MongoClient } = require('mongodb');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const adminPassword = process.env.ADMIN_PASSWORD;
 const zohoClientId = process.env.ZOHO_CLIENT_ID;
 const zohoClientSecret = process.env.ZOHO_CLIENT_SECRET;
