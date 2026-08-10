@@ -3,6 +3,11 @@
 // pays for it immediately, and saves the resulting tracking number + label
 // onto the order. This spends real EasyParcel wallet credit — only call it
 // when the piece is actually ready to ship.
+//
+// bookShipment()'s request field names (in api/_lib/easyparcel.js) are NOT
+// verified against a real response — see that file's header. checkRates()
+// (the rate lookup just above it in this file) IS verified. Test this on one
+// low-value order before trusting it for real customer shipments.
 
 const { MongoClient } = require('mongodb');
 const { checkRates, bookShipment, SENDER_ADDRESS, ALLOWED_COURIERS } = require('../_lib/easyparcel');

@@ -51,24 +51,46 @@ build would change before committing to it.
 | `MONGODB_URI` | order storage — `api/create-payment.js`, `api/order-status.js`, `api/admin/*` |
 | `TOYYIBPAY_API_KEY`, `TOYYIBPAY_CATEGORY_CODE` | `api/create-payment.js` |
 | `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`, `ZOHO_ORGANIZATION_ID` | Zoho Books sync, order creation |
-| `EASYPARCEL_API_KEY`, `EASYPARCEL_ENV` | shipping rate check, admin shipment booking, tracking — `api/calculate-shipping.js`, `api/admin/book-shipment.js`, `api/order-status.js` |
+| `EASYPARCEL_CLIENT_ID`, `EASYPARCEL_CLIENT_SECRET`, `EASYPARCEL_REFRESH_TOKEN` | shipping rate check, admin shipment booking, tracking — `api/calculate-shipping.js`, `api/admin/book-shipment.js`, `api/order-status.js` |
 | `ADMIN_PASSWORD` | gates `admin.html` and every `api/admin/*` endpoint |
 | `RESEND_API_KEY` | order status emails |
 
 See `.env.local.example` for the full list with placeholder values.
 
 **Vercel Hobby's 12-function cap:** count `api/**/*.js` (excluding
-`api/_lib/`) before adding a new endpoint — currently 11/12.
+`api/_lib/`) before adding a new endpoint — currently 11/12 in normal
+operation (12/12 while `api/admin/easyparcel-oauth-callback.js` still exists —
+delete it once EasyParcel setup is done, see below).
 
 ## Shipping (EasyParcel)
 
-`api/_lib/easyparcel.js` is the one place that talks to EasyParcel. Their real
-API is form-encoded POST to `http://connect.easyparcel.my/?ac=<Action>` with a
-single `api` key param — **not** the OAuth/REST API that some AI summaries of
-their GitHub repo invent (verified against the actual PDF at
-developers.easyparcel.com; if you're ever re-deriving this integration from
-scratch, don't trust a web-search summary of it without fetching the PDF and
-reading the real parameter tables).
+`api/_lib/easyparcel.js` is the one place that talks to EasyParcel. It's a
+real OAuth 2.0 (Authorization Code grant) API — Client ID/Secret + a stored
+refresh token, same shape as the Zoho integration, not a single API key.
+Confirmed by the account's own Developer Hub "Configuration" screen, not by
+trusting a summary of it.
+
+**If you're ever re-deriving this integration from scratch: do not trust
+prose summaries of easyparcel.github.io/OpenAPI, including from WebFetch-type
+tools even when explicitly asked for verbatim content.** Multiple fetches of
+that site returned confident, detailed, *wrong* content — one used a field
+named `"state"` that directly contradicts the real API's actual field name
+(`subdivison_code`, with EasyParcel's own typo). The only content that held up
+under cross-checking was the repo's raw **Postman collection JSON**
+(`source/Open API Live.postman_collection.json` / `_v3.json`) — a machine
+format that gets honestly truncated rather than confidently rewritten — and
+`_authentication.md`, which was detailed and internally consistent enough
+(real GitHub asset URLs, specific non-generic numbers) to trust. Everything
+in `checkRates()` is verified against that JSON. `bookShipment()` and
+`trackParcel()` are **not** — see the file's header comment before trusting
+them for a real order; test on one low-value shipment first.
+
+**One-time setup**, once `EASYPARCEL_CLIENT_ID`/`_SECRET` are in Vercel and
+the app's Redirect URI is set to `https://azamreka.com/api/admin/easyparcel-oauth-callback`:
+visit `https://api.easyparcel.com/oauth/login?client_id=<id>&redirect_uri=https://azamreka.com/api/admin/easyparcel-oauth-callback&state=setup`,
+log in, click Allow, then open the resulting callback URL with
+`&password=<ADMIN_PASSWORD>` appended — it shows the refresh token to save as
+`EASYPARCEL_REFRESH_TOKEN`. Delete the callback file afterward.
 
 Bookings are restricted to two couriers — MelPlus (a branded service run by
 Poslaju, matched by courier/service name containing "melplus" or "poslaju")

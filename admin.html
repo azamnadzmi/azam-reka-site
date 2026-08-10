@@ -436,7 +436,7 @@ function renderOrders(orders) {
       const prefSelect = e.target.closest('div').querySelector('.book-courier-pref');
       const preferCourier = prefSelect ? prefSelect.value : '';
 
-      if (!confirm(`Book a real shipment for ${billCode} via ${preferCourier || 'the cheapest of MelPlus/J&T'}? This charges your EasyParcel wallet.`)) {
+      if (!confirm(`Book a real shipment for ${billCode} via ${preferCourier || 'the cheapest of MelPlus/J&T'}? This charges your EasyParcel wallet.\n\nThe booking request's field names haven't been confirmed against a real EasyParcel response yet — if this is your first time using this button, test on a low-value order first.`)) {
         return;
       }
 
