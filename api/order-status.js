@@ -4,9 +4,12 @@
 // other customers' names, addresses, or order contents.
 
 const { MongoClient } = require('mongodb');
+const { trackParcel } = require('./_lib/easyparcel');
 
 const mongoUri = process.env.MONGODB_URI;
 let cachedClient = null;
+
+const COURIER_LABELS = { MELPLUS: 'MelPlus (Poslaju)', JNT: 'J&T Express' };
 
 async function getMongoClient() {
   if (cachedClient) return cachedClient;
@@ -67,6 +70,23 @@ module.exports = async function handler(req, res) {
     const stage = order.productionStage || 'confirmed';
     const stageIndex = STAGE_ORDER.indexOf(stage);
 
+    let tracking = null;
+    if (order.trackingNumber) {
+      tracking = {
+        courier: order.courier,
+        courierLabel: COURIER_LABELS[order.courier] || order.courier,
+        trackingNumber: order.trackingNumber,
+        live: null
+      };
+      // Best-effort — a customer refreshing this page shouldn't see a 500
+      // just because EasyParcel's tracking endpoint is slow or unreachable.
+      try {
+        tracking.live = await trackParcel(order.trackingNumber);
+      } catch (trackError) {
+        console.error(`Live tracking lookup failed for ${order.billCode}:`, trackError);
+      }
+    }
+
     return res.status(200).json({
       billCode: order.billCode,
       customerName: order.customerName,
@@ -81,6 +101,7 @@ module.exports = async function handler(req, res) {
         label: STAGE_LABELS[s],
         completed: i <= stageIndex
       })),
+      tracking,
       createdAt: order.createdAt,
       stageUpdatedAt: order.stageUpdatedAt || order.paidAt
     });

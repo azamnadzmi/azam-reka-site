@@ -51,14 +51,42 @@ build would change before committing to it.
 | `MONGODB_URI` | order storage — `api/create-payment.js`, `api/order-status.js`, `api/admin/*` |
 | `TOYYIBPAY_API_KEY`, `TOYYIBPAY_CATEGORY_CODE` | `api/create-payment.js` |
 | `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`, `ZOHO_ORGANIZATION_ID` | Zoho Books sync, order creation |
-| `EASYPARCEL_ID`, `EASYPARCEL_KEY` | `api/calculate-shipping.js` |
+| `EASYPARCEL_API_KEY`, `EASYPARCEL_ENV` | shipping rate check, admin shipment booking, tracking — `api/calculate-shipping.js`, `api/admin/book-shipment.js`, `api/order-status.js` |
 | `ADMIN_PASSWORD` | gates `admin.html` and every `api/admin/*` endpoint |
 | `RESEND_API_KEY` | order status emails |
 
 See `.env.local.example` for the full list with placeholder values.
 
 **Vercel Hobby's 12-function cap:** count `api/**/*.js` (excluding
-`api/_lib/`) before adding a new endpoint — currently 10/12.
+`api/_lib/`) before adding a new endpoint — currently 11/12.
+
+## Shipping (EasyParcel)
+
+`api/_lib/easyparcel.js` is the one place that talks to EasyParcel. Their real
+API is form-encoded POST to `http://connect.easyparcel.my/?ac=<Action>` with a
+single `api` key param — **not** the OAuth/REST API that some AI summaries of
+their GitHub repo invent (verified against the actual PDF at
+developers.easyparcel.com; if you're ever re-deriving this integration from
+scratch, don't trust a web-search summary of it without fetching the PDF and
+reading the real parameter tables).
+
+Bookings are restricted to two couriers — MelPlus (a branded service run by
+Poslaju, matched by courier/service name containing "melplus" or "poslaju")
+and J&T. Everything else EasyParcel returns is filtered out.
+
+- **Checkout** calls `/api/calculate-shipping` for a live quote as the
+  customer fills in postcode + state.
+- **Nothing books or spends money automatically.** After payment, an order
+  just sits with a structured `shippingAddress` on it. An admin books the
+  actual shipment from `admin.html`'s Shipped row ("📦 Book" button) once the
+  piece is ready — that's the only thing that calls `EPSubmitOrderBulk` +
+  `EPPayOrderBulk` and spends EasyParcel wallet credit.
+- **`track-order.html`** shows live tracking once an order has a
+  `trackingNumber`, via `EPTrackingBulk`.
+
+Orders placed before this integration existed have no `shippingAddress` —
+the Book button won't appear for those; enter tracking numbers by hand
+instead, same as before.
 
 ## Design tokens
 

@@ -1,96 +1,11 @@
 // api/calculate-shipping.js
-// Calculate shipping cost via EasyParcel based on weight and destination
+// Live shipping quote from EasyParcel, limited to MelPlus (Poslaju) and J&T.
 
-const EASYPARCEL_ID = process.env.EASYPARCEL_ID;
-const EASYPARCEL_KEY = process.env.EASYPARCEL_KEY;
-const ORIGIN_POSTCODE = '80200';
-const ORIGIN_STATE = 'Johor Bahru';
+const { checkRates, SENDER_ADDRESS } = require('./_lib/easyparcel');
+
 const MIN_DELIVERY_FEE = 10;
 
-const productWeights = {
-  "Plaque": 50,
-  "Desk Name Plaque": 55,
-  "Plaque Wood+Acrylic": 80,
-  "Plaque Portrait A4": 100,
-  "Personalised Bookmark": 15,
-  "Bookmark": 12,
-  "HG25 Keychain": 20,
-  "Keychain": 18,
-  "Phone Holder": 35,
-  "Mas Kahwin/Hantaran Plaque": 120,
-  "Rehal Lite": 150,
-  "Mas Kahwin Frame 2025": 180,
-  "Arah Sujud": 200,
-  "Magnetic Mini Frame": 40,
-  "Customized Mini Boards": 70,
-  "Thank You Succulent HG25": 25
-};
-
-async function getEasyParcelRate(weight, destPostcode, destState) {
-  try {
-    // Format weight in kg
-    const weightKg = (weight / 1000).toFixed(2);
-
-    // Call EasyParcel API
-    const response = await fetch('https://api.easyparcel.my/shipping/rate', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${EASYPARCEL_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pickup_postcode: ORIGIN_POSTCODE,
-        pickup_state: ORIGIN_STATE,
-        delivery_postcode: destPostcode,
-        delivery_state: destState,
-        weight: parseFloat(weightKg),
-        service_type: 'standard'
-      })
-    });
-
-    if (!response.ok) {
-      console.error('EasyParcel API error:', response.status);
-      return null;
-    }
-
-    const data = await response.json();
-
-    // Filter for MelPlus or J&T and extract shipping cost
-    if (data.data && data.data.rates && data.data.rates.length > 0) {
-      // Look for MelPlus or J&T service (prefer MelPlus first)
-      const preferred = data.data.rates.find(rate =>
-        rate.courier_name?.toLowerCase().includes('melplus') ||
-        rate.service_name?.toLowerCase().includes('melplus')
-      );
-
-      if (preferred) {
-        const shippingCost = parseFloat(preferred.total_price) || 0;
-        return Math.max(shippingCost, MIN_DELIVERY_FEE);
-      }
-
-      // If MelPlus not found, try J&T
-      const jnt = data.data.rates.find(rate =>
-        rate.courier_name?.toLowerCase().includes('j&t') ||
-        rate.service_name?.toLowerCase().includes('j&t')
-      );
-
-      if (jnt) {
-        const shippingCost = parseFloat(jnt.total_price) || 0;
-        return Math.max(shippingCost, MIN_DELIVERY_FEE);
-      }
-
-      // Fallback to first available rate if neither found
-      const rate = data.data.rates[0];
-      const shippingCost = parseFloat(rate.total_price) || 0;
-      return Math.max(shippingCost, MIN_DELIVERY_FEE);
-    }
-
-    return MIN_DELIVERY_FEE;
-  } catch (error) {
-    console.error('Shipping calculation error:', error);
-    return MIN_DELIVERY_FEE;
-  }
-}
+const productWeights = require('./product-weights.json');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -104,21 +19,60 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Calculate total weight from items
     let totalWeight = 0;
     for (const item of items) {
       const itemWeight = productWeights[item.name] || 30; // Default 30g if not found
       totalWeight += itemWeight * item.qty;
     }
+    const weightKg = Math.max(totalWeight / 1000, 0.1); // EasyParcel rejects a 0kg parcel
 
-    // Get shipping cost from EasyParcel
-    const shippingCost = await getEasyParcelRate(totalWeight, postcode, state);
+    let rates;
+    try {
+      rates = await checkRates({
+        pickCode: SENDER_ADDRESS.postcode,
+        pickState: SENDER_ADDRESS.state,
+        sendCode: postcode,
+        sendState: state,
+        weight: weightKg
+      });
+    } catch (rateError) {
+      console.error('EasyParcel rate check failed:', rateError);
+      // Fall back to the minimum fee rather than blocking checkout entirely —
+      // the admin still books manually via EasyParcel's own site if this happens.
+      return res.status(200).json({
+        success: true,
+        weight: totalWeight,
+        shippingCost: MIN_DELIVERY_FEE,
+        minFee: MIN_DELIVERY_FEE,
+        courier: null,
+        degraded: true
+      });
+    }
+
+    if (rates.length === 0) {
+      return res.status(200).json({
+        success: true,
+        weight: totalWeight,
+        shippingCost: MIN_DELIVERY_FEE,
+        minFee: MIN_DELIVERY_FEE,
+        courier: null,
+        degraded: true
+      });
+    }
+
+    const cheapest = rates[0];
+    const shippingCost = Math.max(cheapest.price, MIN_DELIVERY_FEE);
 
     return res.status(200).json({
       success: true,
       weight: totalWeight,
-      shippingCost: shippingCost || MIN_DELIVERY_FEE,
-      minFee: MIN_DELIVERY_FEE
+      shippingCost,
+      minFee: MIN_DELIVERY_FEE,
+      courier: cheapest.courier,
+      courierName: cheapest.courierName,
+      serviceId: cheapest.serviceId,
+      serviceName: cheapest.serviceName,
+      delivery: cheapest.delivery
     });
   } catch (error) {
     console.error('Calculate shipping error:', error);

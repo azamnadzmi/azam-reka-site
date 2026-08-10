@@ -54,15 +54,28 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { name, email, phone, address, notes, items, total } = req.body;
+    const { name, email, phone, shippingAddress, shipping, notes, items, total } = req.body;
 
     // Validate
-    if (!name || !email || !phone || !address || !items || items.length === 0) {
+    if (!name || !email || !phone || !items || items.length === 0) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    if (!shippingAddress || !shippingAddress.address1 || !shippingAddress.city ||
+        !shippingAddress.state || !shippingAddress.postcode) {
+      return res.status(400).json({ error: 'Missing shipping address' });
+    }
+
+    // Single-line address for Zoho / confirmation emails, built from the
+    // structured fields EasyParcel needs to actually book the shipment.
+    const addressLine = [
+      shippingAddress.address1,
+      shippingAddress.address2,
+      `${shippingAddress.postcode} ${shippingAddress.city}`,
+      shippingAddress.stateName || shippingAddress.state
+    ].filter(Boolean).join(', ');
 
     // Create ToyyibPay bill first
-    const billCode = await createToyyibPayBill({ name, email, phone, address, notes, items, total });
+    const billCode = await createToyyibPayBill({ name, email, phone, address: addressLine, notes, items, total });
 
     // Save order to MongoDB
     const client = await getMongoClient();
@@ -74,7 +87,9 @@ module.exports = async function handler(req, res) {
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
-      customerAddress: address,
+      customerAddress: addressLine,
+      shippingAddress,
+      shipping: shipping || null,
       notes: notes || '',
       items: items.map(item => ({ name: item.name, price: item.price, qty: item.qty })),
       totalAmount: total,

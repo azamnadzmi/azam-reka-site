@@ -254,6 +254,64 @@ function stageLabel(key) {
   return s ? s.label : key;
 }
 
+const COURIER_LABELS = {
+  MELPLUS: 'MelPlus (Poslaju)', JNT: 'J&T Express', POSLAJU: 'Pos Laju',
+  GDEX: 'GDEX', DHL: 'DHL', NINJA: 'Ninja Van'
+};
+
+// The Shipped row's tracking box has three states:
+//  1. Already booked via EasyParcel (easyparcelOrderNo present) — show the
+//     result, read-only, with a link to the shipping label.
+//  2. Bookable (order has a structured shippingAddress, from checkout after
+//     the EasyParcel integration) — show the "Book with EasyParcel" button.
+//  3. Not bookable (older order, no structured address, or manually created)
+//     — fall back to typing in a courier + tracking number by hand.
+function buildShippingBookingHtml(order) {
+  if (order.easyparcelOrderNo) {
+    const courierName = COURIER_LABELS[order.courier] || order.courier || 'Unknown courier';
+    const label = order.easyparcelLabelUrl
+      ? `<a href="${order.easyparcelLabelUrl}" target="_blank" rel="noopener" style="font-size:0.7rem;">View label</a>`
+      : '';
+    return `
+      <div style="font-size:0.75rem; color:#2f5f3a; background:#eef5ef; padding:0.4em; border-radius:2px;">
+        ✅ Booked — ${courierName}<br>
+        <span style="font-family:var(--font-mono);">${order.trackingNumber || ''}</span>
+        ${label ? '<br>' + label : ''}
+      </div>
+    `;
+  }
+
+  const bookButton = order.shippingAddress
+    ? `
+      <div style="display:flex; gap:0.25rem; margin-bottom:0.4rem;">
+        <select class="book-courier-pref" style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; flex:1;">
+          <option value="">Cheapest (MelPlus/J&T)</option>
+          <option value="MELPLUS">MelPlus only</option>
+          <option value="JNT">J&T only</option>
+        </select>
+        <button class="book-shipment-btn" data-bill-code="${order.billCode}" type="button"
+          style="font-size:0.7rem; padding:0.3em 0.6em; border:1px solid var(--color-ember,#b87333); border-radius:2px; background:var(--color-ember,#b87333); color:#fff; cursor:pointer; white-space:nowrap;">📦 Book</button>
+      </div>
+    `
+    : `<div style="font-size:0.7rem; color:#888; margin-bottom:0.4rem;">No structured address on file — book manually below.</div>`;
+
+  return `
+    ${bookButton}
+    <select class="courier-select" style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; margin-bottom:0.25rem;">
+      <option value="MELPLUS" ${(order.courier||'') === 'MELPLUS' ? 'selected' : ''}>MelPlus (Poslaju)</option>
+      <option value="JNT" ${(order.courier||'') === 'JNT' ? 'selected' : ''}>J&T Express</option>
+      <option value="POSLAJU" ${(order.courier||'') === 'POSLAJU' ? 'selected' : ''}>Pos Laju</option>
+      <option value="GDEX" ${(order.courier||'') === 'GDEX' ? 'selected' : ''}>GDEX</option>
+      <option value="DHL" ${(order.courier||'') === 'DHL' ? 'selected' : ''}>DHL</option>
+      <option value="NINJA" ${(order.courier||'') === 'NINJA' ? 'selected' : ''}>Ninja Van</option>
+    </select>
+    <input class="tracking-input" type="text" placeholder="Tracking no." value="${order.trackingNumber || ''}"
+      style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; font-family:var(--font-mono); margin-bottom:0.25rem;">
+    <button class="tracking-save" data-bill-code="${order.billCode}" type="button"
+      style="font-size:0.7rem; padding:0.3em 0.6em; border:1px solid var(--color-ash); border-radius:2px; background:var(--color-bone); cursor:pointer;">Save Tracking</button>
+  `;
+}
+
 function renderOrders(orders) {
   const tbody = document.getElementById('ordersBody');
   const emptyMsg = document.getElementById('emptyMsg');
@@ -308,17 +366,7 @@ function renderOrders(orders) {
           <div style="display:flex; flex-direction:column; gap:0.4rem;">
             <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
             <div class="tracking-row" data-for="${order.billCode}" style="${currentStage === 'shipped' ? '' : 'display:none;'}">
-              <select class="courier-select" style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; margin-bottom:0.25rem;">
-                <option value="JNT" ${(order.courier||'') === 'JNT' ? 'selected' : ''}>J&T Express</option>
-                <option value="POSLAJU" ${(order.courier||'') === 'POSLAJU' ? 'selected' : ''}>Pos Laju</option>
-                <option value="GDEX" ${(order.courier||'') === 'GDEX' ? 'selected' : ''}>GDEX</option>
-                <option value="DHL" ${(order.courier||'') === 'DHL' ? 'selected' : ''}>DHL</option>
-                <option value="NINJA" ${(order.courier||'') === 'NINJA' ? 'selected' : ''}>Ninja Van</option>
-              </select>
-              <input class="tracking-input" type="text" placeholder="Tracking no." value="${order.trackingNumber || ''}"
-                style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; font-family:var(--font-mono); margin-bottom:0.25rem;">
-              <button class="tracking-save" data-bill-code="${order.billCode}" type="button"
-                style="font-size:0.7rem; padding:0.3em 0.6em; border:1px solid var(--color-ash); border-radius:2px; background:var(--color-bone); cursor:pointer;">Save Tracking</button>
+              ${buildShippingBookingHtml(order)}
             </div>
           </div>
         </td>
@@ -377,6 +425,43 @@ function renderOrders(orders) {
         toggleEl: e.target,
         toastMessage: 'Tracking saved — customer emailed automatically'
       });
+    });
+  });
+
+  // Books a real shipment with EasyParcel and spends wallet credit — the
+  // button only appears on orders that have a structured shipping address.
+  document.querySelectorAll('.book-shipment-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const billCode = e.target.dataset.billCode;
+      const prefSelect = e.target.closest('div').querySelector('.book-courier-pref');
+      const preferCourier = prefSelect ? prefSelect.value : '';
+
+      if (!confirm(`Book a real shipment for ${billCode} via ${preferCourier || 'the cheapest of MelPlus/J&T'}? This charges your EasyParcel wallet.`)) {
+        return;
+      }
+
+      e.target.disabled = true;
+      e.target.textContent = 'Booking…';
+      try {
+        const res = await fetch('/api/admin/book-shipment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: adminPassword, billCode, preferCourier: preferCourier || undefined })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Booking failed');
+
+        await loadOrders();
+        const toast = document.createElement('div');
+        toast.textContent = `Booked ${data.booking.courierName} — tracking ${data.booking.trackingNumber}`;
+        toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--color-char); color:var(--color-bone); padding:0.75em 1.25em; border-radius:4px; font-size:0.85rem; z-index:100;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      } catch (err) {
+        alert(`Booking failed: ${err.message}`);
+        e.target.disabled = false;
+        e.target.textContent = '📦 Book';
+      }
     });
   });
 }
