@@ -15,8 +15,26 @@
   border: 1px solid var(--color-ash);
   border-radius: 2px;
   font-family: var(--font-body);
+  margin-bottom: 0;
+}
+.password-wrap {
+  position: relative;
   margin-bottom: 1em;
 }
+.password-toggle {
+  position: absolute;
+  right: 0.75em;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-structural);
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+}
+.password-toggle:hover { color: var(--color-char); }
 .order-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
 .order-table th, .order-table td {
   text-align: left;
@@ -150,7 +168,10 @@
 <div class="admin-gate" id="gate">
   <p class="eyebrow">Restricted</p>
   <h1 class="h-heading" style="margin-bottom: var(--space-3);">Enter admin password</h1>
-  <input type="password" id="passwordInput" placeholder="Password">
+  <div class="password-wrap">
+    <input type="password" id="passwordInput" placeholder="Password">
+    <button class="password-toggle" id="togglePw" type="button" aria-label="Show password">👁</button>
+  </div>
   <button class="btn btn-primary" style="width:100%;" id="unlockBtn">Unlock</button>
   <p id="gateError" style="display:none; color:#B5694A; font-size: var(--text-sm); margin-top: 1em;">Incorrect password.</p>
 </div>
@@ -411,6 +432,13 @@ document.getElementById('importBtn').addEventListener('click', async () => {
     btn.disabled = false;
     btn.textContent = 'Import from Zoho';
   }
+});
+
+document.getElementById('togglePw').addEventListener('click', () => {
+  const input = document.getElementById('passwordInput');
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  document.getElementById('togglePw').textContent = isHidden ? '🙈' : '👁';
 });
 
 document.getElementById('unlockBtn').addEventListener('click', () => {
