@@ -2,15 +2,15 @@
 // TEMPORARY — delete this file after diagnosing the password issue.
 
 module.exports = async function handler(req, res) {
-  const { password } = req.query;
-  const stored = process.env.ADMIN_PASSWORD;
-  return res.status(200).json({
-    hasAdminPassword: !!stored,
-    storedLength: stored ? stored.length : 0,
-    storedCharCodes: stored ? [...stored].map(c => c.charCodeAt(0)) : [],
-    receivedPassword: password || '(none)',
-    receivedLength: password ? password.length : 0,
-    receivedCharCodes: password ? [...password].map(c => c.charCodeAt(0)) : [],
-    match: password === stored
-  });
+  const p = req.query.password;
+  const s = process.env.ADMIN_PASSWORD;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({
+    v: 2,
+    sl: s ? s.length : 0,
+    sc: s ? Array.from(s).map(c => c.charCodeAt(0)) : [],
+    pl: p ? p.length : 0,
+    pc: p ? Array.from(p).map(c => c.charCodeAt(0)) : [],
+    ok: p === s
+  }));
 }
