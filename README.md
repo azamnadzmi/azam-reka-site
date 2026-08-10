@@ -1,65 +1,66 @@
-# Azam Reka — Catalogue Website (Static, WhatsApp Ordering)
+# Azam Reka — E-Commerce Site
 
-No cart, no checkout, no monthly platform fee. This is a plain HTML/CSS/JS
-site: browse the catalogue, tap a product, land in WhatsApp with the item
-and price already filled in as a message.
+Full checkout flow: browse the catalogue, add to cart, pay via ToyyibPay,
+order lands in Zoho Books and MongoDB, shipping quoted through EasyParcel.
+Admin manages production stage and shipment tracking from `admin.html`.
 
-## Pages
+## Where things live
 
-- `index.html` — homepage
-- `catalog.html` — full product grid with category filtering
-- `about.html` — brand story
-- `contact.html` — custom/bespoke order form (Zoho embed) + WhatsApp link
-- `assets/styles.css` — the full design system (same one built for the Shopify version — tokens, kerf-line hover effect, typography, components)
-- `assets/main.js` — header scroll state, mobile nav, scroll-reveal animations
-- `assets/logo.png` / `assets/logo-dark.png` — your logo
+- `index.html`, `catalog.html`, `about.html`, `contact.html` — public pages
+- `checkout.html` — cart, shipping, payment
+- `track-order.html` — customer-facing order status lookup
+- `admin.html` — order management (password-gated; see Environment below)
+- `products/*.html` — one page per product, **generated** (see below — don't hand-edit)
+- `assets/` — styles, scripts, logo, product photos (`assets/products/`)
+- `api/` — Vercel serverless functions (payment, shipping, Zoho sync, admin actions)
+- `scripts/` — the catalogue build pipeline (see below)
 
-## How to host this for free
+## The catalogue is generated, not hand-edited
 
-**Option A — Netlify (easiest, drag and drop):**
-1. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
-2. Drag the whole `azam-reka-site` folder onto the page
-3. You'll get a live URL immediately (e.g. `random-name.netlify.app`)
-4. To use your own domain: Site settings → Domain management → Add a domain — Netlify walks you through pointing your domain's DNS at it
+Zoho Books is the source of truth for product **name, price, and
+description**. `scripts/catalog-media.json` is the source of truth for
+everything Zoho doesn't know: which items are sold online, their category,
+collection tag, and their photos/video.
 
-**Option B — GitHub Pages (free, slightly more setup):**
-1. Create a free GitHub account and a new repository
-2. Upload this folder's contents to it
-3. Repository Settings → Pages → set source to the main branch
-4. Your site is live at `yourusername.github.io/reponame` (or connect a custom domain the same way)
+To change a price or product name → edit it in Zoho Books.
+To add/remove/re-photograph a product → edit `scripts/catalog-media.json`.
+Either way, then run:
 
-**Option C — Vercel:** same idea as Netlify, drag-and-drop deploy at [vercel.com/new](https://vercel.com/new).
+```bash
+npm run build-catalog          # rebuild from the last Zoho snapshot
+npm run build-catalog:refresh  # re-fetch from Zoho first (needs ZOHO_* env vars locally)
+```
 
-**Buying a domain:** any registrar works (Namecheap, GoDaddy, Google Domains successor Squarespace Domains) — typically $10–15/year for a `.com`. Point it at whichever host you choose using their DNS instructions.
+This regenerates `catalog.html`, every `products/*.html` page,
+`api/zoho-item-map.json`, the homepage's hardcoded product cards, and
+checkout's thumbnail map — all from those two inputs. It refuses to run if
+any product has no collection tag, or if two Zoho items would collide.
 
-## How to add a new product
+Product photos/videos live in `assets/products/`, named `<slug>-NN.jpg`
+(sequence order = carousel order) with an optional `<slug>-video.mp4`, which
+always renders first in the carousel when present. Source originals are kept
+outside this repo, in `E:\AZAMREKA\website\catalog\`.
 
-Open `catalog.html`, find the `<!-- PRODUCT GRID -->` comment, and copy one
-entire product block (an `<a class="product-card">...</a>` element). Paste
-it, then edit these five things:
-1. `data-category="..."` — one of `plaques`, `keychains`, `wedding`, `decor`
-2. The `href="https://wa.me/601110852324?text=..."` — change the product
-   name/price in the text after `text=` (keep the `%20` in place of spaces,
-   or just retype the whole message using a URL encoder like
-   [urlencoder.org](https://www.urlencoder.org/) if that's easier)
-3. The `<img src="...">` — swap in your real product photo
-4. The `<span class="product-card__title">` — product name
-5. The `<span class="mono-price">` — price
+Run `python scripts/build_catalog.py --dry-run` any time to preview what a
+build would change before committing to it.
 
-If it's part of a named sub-collection (Floré Minimal, Lace & Love), add a
-line above the title: `<span class="product-card__tag">Your Collection</span>`
+## Environment variables (set in Vercel → Project Settings)
 
-## How to change the WhatsApp number
+| Variable | Used by |
+|---|---|
+| `MONGODB_URI` | order storage — `api/create-payment.js`, `api/order-status.js`, `api/admin/*` |
+| `TOYYIBPAY_API_KEY`, `TOYYIBPAY_CATEGORY_CODE` | `api/create-payment.js` |
+| `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`, `ZOHO_ORGANIZATION_ID` | Zoho Books sync, order creation |
+| `EASYPARCEL_ID`, `EASYPARCEL_KEY` | `api/calculate-shipping.js` |
+| `ADMIN_PASSWORD` | gates `admin.html` and every `api/admin/*` endpoint |
+| `RESEND_API_KEY` | order status emails |
 
-The number `601110852324` appears in several places (header button, every
-product card, the floating WhatsApp button, the footer, the contact page).
-Use your text editor's "Find and Replace across files" — every file in this
-folder is plain text, so a simple find/replace of the old number for the
-new one covers everything in one pass.
+See `.env.local.example` for the full list with placeholder values.
 
-## Design system reference
+**Vercel Hobby's 12-function cap:** count `api/**/*.js` (excluding
+`api/_lib/`) before adding a new endpoint — currently 10/12.
 
-Same tokens as the Shopify build:
+## Design tokens
 
 | Token | Value |
 |---|---|
@@ -70,5 +71,5 @@ Same tokens as the Shopify build:
 | Ash (borders) | `#DEDACF` |
 | Ember (accent) | `#B87333` |
 
-The `.kerf-card` class on any element gives it the signature copper
-hover-trace effect used throughout.
+The `.kerf-card` class gives any element the copper hover-trace effect used
+throughout the site.
