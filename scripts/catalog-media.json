@@ -135,25 +135,19 @@
     },
     {
       "zoho_item_id": null,
-      "_unresolved": "No Zoho item matches. Candidates: 'HG Mini Frame 12X10' (RM12), 'HG Mini Frame 8X10' (RM10), 'Aqiqah Board' (RM74.99).",
-      "fallback_price": 75.0,
-      "fallback_sale_price": 95.0,
-      "display_name": "Mas Kahwin Frame 2025",
+      "_unresolved": "Qiblat direction indicator - no matching Zoho item yet. Create one in Zoho, then set zoho_item_id here. Photo is a placeholder (custom signage).",
+      "fallback_price": 29.99,
+      "display_name": "Arah Sujud",
       "category": "wedding",
       "tag": "Wedding",
       "video": null,
       "images": [
-        "assets/products/maskahwin-frame-01.jpg",
-        "assets/products/maskahwin-frame-02.jpg",
-        "assets/products/maskahwin-frame-03.jpg",
-        "assets/products/maskahwin-frame-04.jpg"
+        "assets/products/arah-sujud-01.jpg"
       ]
     },
     {
-      "zoho_item_id": null,
-      "_unresolved": "No Zoho item matches. Candidates: 'Quran Cover - DQ' (RM99.99), 'Penunjuk Al-Quran (2 side)' (RM5).",
-      "fallback_price": 29.99,
-      "display_name": "Arah Sujud",
+      "zoho_item_id": "4895811000000199031",
+      "display_name": "Quran Cover",
       "category": "wedding",
       "tag": "Wedding",
       "video": null,
@@ -162,28 +156,61 @@
       ]
     },
     {
-      "zoho_item_id": null,
-      "_unresolved": "No Zoho item matches. Candidates: 'HG Mini Frame 12X10' (RM12), 'Fridge Magnet 70mm' (RM5).",
-      "fallback_price": 14.99,
-      "display_name": "Magnetic Mini Frame",
-      "category": "decor",
-      "tag": "Lace & Love",
-      "video": null,
-      "images": [
-        "assets/products/magnetic-frame-01.jpg",
-        "assets/products/magnetic-frame-02.jpg"
-      ]
-    },
-    {
-      "zoho_item_id": null,
-      "_unresolved": "No Zoho item matches. Candidates: 'Custom Letters' (RM5), 'Aqiqah Board' (RM74.99).",
-      "fallback_price": 19.99,
-      "display_name": "Customized Mini Boards",
+      "zoho_item_id": "4895811000000360029",
+      "display_name": "Aqiqah Board",
       "category": "decor",
       "tag": null,
       "video": null,
       "images": [
-        "assets/products/custom-signage-01.jpg"
+        "assets/products/maskahwin-plaque-01.jpg",
+        "assets/products/maskahwin-plaque-02.jpg"
+      ]
+    },
+    {
+      "_comment": "One card, two Zoho items behind a picker. Each variant carts under its own name so it still resolves to the right Zoho line item. Photo is a placeholder.",
+      "display_name": "Penunjuk Al-Quran",
+      "category": "decor",
+      "tag": null,
+      "video": null,
+      "variants": [
+        { "zoho_item_id": "4895811000000185277", "label": "1 side" },
+        { "zoho_item_id": "4895811000000171001", "label": "2 side" }
+      ],
+      "images": [
+        "assets/products/penunjuk-quran-01.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000182040",
+      "display_name": "Mini Frame 12x10",
+      "category": "decor",
+      "tag": "Lace & Love",
+      "video": null,
+      "images": [
+        "assets/products/mini-frame-12x10-01.jpg",
+        "assets/products/mini-frame-12x10-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000182019",
+      "display_name": "Mini Frame 8x10",
+      "category": "decor",
+      "tag": "Lace & Love",
+      "video": null,
+      "images": [
+        "assets/products/mini-frame-8x10-01.jpg",
+        "assets/products/mini-frame-8x10-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000164001",
+      "display_name": "Fridge Magnet 70mm",
+      "category": "decor",
+      "tag": null,
+      "video": null,
+      "images": [
+        "assets/products/magnetic-frame-01.jpg",
+        "assets/products/magnetic-frame-02.jpg"
       ]
     },
     {

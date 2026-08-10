@@ -106,6 +106,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Variant pickers — point the sibling add-to-cart button at the chosen variant
+  document.querySelectorAll('[data-variant-picker]').forEach(select => {
+    const btn = select.parentElement.querySelector('[data-add-to-cart]');
+    if (!btn) return;
+    select.addEventListener('change', () => {
+      const opt = select.selectedOptions[0];
+      btn.dataset.addToCart = opt.value;
+      btn.dataset.price = opt.dataset.price;
+    });
+  });
+
   // Add to cart buttons
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
     btn.addEventListener('click', (e) => {

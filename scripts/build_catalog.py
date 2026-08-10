@@ -123,28 +123,48 @@ def resolve_products(media, zoho):
     products, warnings = [], []
 
     for entry in media["products"]:
-        item_id = entry.get("zoho_item_id")
-        item = by_id.get(item_id) if item_id else None
-
-        if item_id and not item:
-            warnings.append(f"{entry['display_name']}: zoho_item_id {item_id} not found in Zoho - skipped")
-            continue
-
-        if item:
-            name = entry.get("display_name") or item["name"]
-            price = float(item["rate"])
-            description = item.get("description") or ""
-        else:
-            name = entry["display_name"]
-            price = float(entry.get("fallback_price", 0))
-            description = ""
-            warnings.append(f"{name}: not linked to Zoho, using fallback price RM {price:.2f}")
-
+        name = entry["display_name"]
         images = [img for img in entry.get("images") or [] if img] or [PLACEHOLDER_IMG]
+        variants = []
+
+        if entry.get("variants"):
+            # One card, several Zoho items behind a picker. Each variant carts under
+            # its own name so it still resolves to the right Zoho line item.
+            for v in entry["variants"]:
+                item = by_id.get(v["zoho_item_id"])
+                if not item:
+                    warnings.append(f"{name} / {v['label']}: zoho_item_id {v['zoho_item_id']} not found - skipped")
+                    continue
+                variants.append({
+                    "label": v["label"],
+                    "zoho_item_id": v["zoho_item_id"],
+                    "name": f"{name} ({v['label']})",
+                    "price": float(item["rate"]),
+                })
+            if not variants:
+                warnings.append(f"{name}: no resolvable variants - skipped")
+                continue
+            price = min(v["price"] for v in variants)
+            description = ""
+            item_id = None
+        else:
+            item_id = entry.get("zoho_item_id")
+            item = by_id.get(item_id) if item_id else None
+
+            if item_id and not item:
+                warnings.append(f"{name}: zoho_item_id {item_id} not found in Zoho - skipped")
+                continue
+
+            if item:
+                price = float(item["rate"])
+                description = item.get("description") or ""
+            else:
+                price = float(entry.get("fallback_price", 0))
+                description = ""
+                warnings.append(f"{name}: not linked to Zoho, using fallback price RM {price:.2f}")
 
         products.append({
             "zoho_item_id": item_id,
-            "zoho_name": item["name"] if item else None,
             "name": name,
             "slug": slugify(name),
             "category": entry["category"],
@@ -154,6 +174,7 @@ def resolve_products(media, zoho):
             "description": description or f"Custom laser-cut {name.lower()}, made to order by Azam Reka.",
             "images": images,
             "video": entry.get("video"),
+            "variants": variants,
         })
 
     return products, warnings
@@ -215,11 +236,37 @@ def build_media_html(product, indent="        "):
 
 
 def price_html(product):
+    if product["variants"]:
+        lo = min(v["price"] for v in product["variants"])
+        hi = max(v["price"] for v in product["variants"])
+        return f'RM {lo:.2f}' if lo == hi else f'RM {lo:.2f} &ndash; RM {hi:.2f}'
     if product["sale_price"]:
         return (f'RM {product["price"]:.2f} '
                 f'<span style="text-decoration: line-through; color: var(--color-structural); '
                 f'margin-left: 0.4em;">RM {float(product["sale_price"]):.2f}</span>')
     return f'RM {product["price"]:.2f}'
+
+
+def build_variant_picker(product, indent="        "):
+    """A <select> that rewrites the add-to-cart button's dataset on change."""
+    if not product["variants"]:
+        return ""
+    opts = "\n".join(
+        f'{indent}  <option value="{esc(v["name"])}" data-price="{v["price"]:.2f}">'
+        f'{esc(v["label"])} &mdash; RM {v["price"]:.2f}</option>'
+        for v in product["variants"]
+    )
+    return (f'\n{indent}<select data-variant-picker aria-label="Choose {esc(product["name"])} option" '
+            f'style="width:100%; margin-top:0.5rem; padding:0.5em; border:1px solid var(--color-ash); '
+            f'background: var(--color-bone); font: inherit; font-size:0.9rem;">\n{opts}\n{indent}</select>')
+
+
+def build_add_button(product):
+    first = product["variants"][0] if product["variants"] else None
+    name = first["name"] if first else product["name"]
+    price = first["price"] if first else product["price"]
+    return (f'<button data-add-to-cart="{esc(name)}" data-price="{price:.2f}" '
+            f'class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>')
 
 
 def build_product_card(product):
@@ -230,8 +277,8 @@ def build_product_card(product):
           {build_media_html(product)}
         </a>
         {tag}<a href="products/{product["slug"]}.html" style="text-decoration:none; color:inherit;"><span class="product-card__title">{esc(product["name"])}</span></a>
-        <span class="mono-price">{price_html(product)}</span>
-        <button data-add-to-cart="{esc(product["name"])}" data-price="{product["price"]:.2f}" class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>
+        <span class="mono-price">{price_html(product)}</span>{build_variant_picker(product)}
+        {build_add_button(product)}
       </div>'''
 
 
@@ -247,7 +294,7 @@ def build_detail_page(product, template):
                  if product["category"] == "wedding" else "")
     tag = (f'<span class="product-card__tag"{tag_style}>{esc(product["tag"])}</span>'
            if product["tag"] else "")
-    return template.format(
+    page = template.format(
         name=esc(product["name"]),
         name_attr=esc(product["name"]),
         name_url=urllib.parse.quote(product["name"]),
@@ -257,6 +304,15 @@ def build_detail_page(product, template):
         price_html=price_html(product),
         cart_price=product["price"],
     )
+    if product["variants"]:
+        picker = build_variant_picker(product, indent="          ").lstrip("\n")
+        page = page.replace(
+            f'<button data-add-to-cart="{esc(product["name"])}" data-price="{product["price"]:.2f}"',
+            picker + "\n          " + build_add_button(product).replace(
+                ' class="btn btn-whatsapp" style="margin-top: 0.5rem;">Add to Cart</button>', ""),
+            1,
+        )
+    return page
 
 
 # --------------------------------------------------------------------------- #
@@ -330,8 +386,12 @@ def sync_checkout_thumbnails(products, dry_run=False):
     with open(path, encoding="utf-8") as f:
         content = f.read()
 
-    lines = ",\n".join(f"  '{p['name']}': '{p['images'][0]}'" for p in products)
-    block = ("const productImages = {\n" + lines + "\n};")
+    entries = []
+    for p in products:
+        thumb = p["images"][0]
+        names = [v["name"] for v in p["variants"]] if p["variants"] else [p["name"]]
+        entries += [f"  '{n}': '{thumb}'" for n in names]
+    block = "const productImages = {\n" + ",\n".join(entries) + "\n};"
 
     new_content, n = re.subn(r"const productImages = \{.*?\};", block, content, flags=re.DOTALL)
     if n and new_content != content:
@@ -386,8 +446,15 @@ def main():
         with open(os.path.join(PRODUCTS_DIR, f"{p['slug']}.html"), "w", encoding="utf-8") as f:
             f.write(build_detail_page(p, template))
 
-    # name -> Zoho item id map, used when creating sales orders
-    item_map = {p["name"]: p["zoho_item_id"] for p in products if p["zoho_item_id"]}
+    # name -> Zoho item id map, used when creating sales orders.
+    # Variants cart under their own name, so each needs its own entry.
+    item_map = {}
+    for p in products:
+        if p["variants"]:
+            for v in p["variants"]:
+                item_map[v["name"]] = v["zoho_item_id"]
+        elif p["zoho_item_id"]:
+            item_map[p["name"]] = p["zoho_item_id"]
     os.makedirs(os.path.dirname(ITEM_MAP_PATH), exist_ok=True)
     with open(ITEM_MAP_PATH, "w", encoding="utf-8") as f:
         json.dump(item_map, f, indent=2, ensure_ascii=False)
