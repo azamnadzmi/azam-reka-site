@@ -172,7 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render cart items
   const itemsHTML = cart.map(item => `
     <div class="summary-item">
-      <span>${item.name} x${item.qty}</span>
+      <div>
+        <span>${item.name} x${item.qty}</span>
+        ${item.note ? `<br><span style="font-size:0.78rem; color:var(--color-structural); font-family:var(--font-mono);">${item.note}</span>` : ''}
+      </div>
       <span>RM ${(item.price * item.qty).toFixed(2)}</span>
     </div>
   `).join('');

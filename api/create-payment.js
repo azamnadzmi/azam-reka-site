@@ -76,7 +76,12 @@ module.exports = async function handler(req, res) {
       customerPhone: phone,
       customerAddress: address,
       notes: notes || '',
-      items: items.map(item => ({ name: item.name, price: item.price, qty: item.qty })),
+      items: items.map(item => ({
+        name: item.name,
+        price: item.price,
+        qty: item.qty,
+        note: item.note || ''
+      })),
       totalAmount: total,
       status: 'pending',
       createdAt: new Date(),

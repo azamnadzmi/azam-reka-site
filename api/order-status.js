@@ -81,6 +81,8 @@ module.exports = async function handler(req, res) {
         label: STAGE_LABELS[s],
         completed: i <= stageIndex
       })),
+      trackingNumber: order.trackingNumber || null,
+      courier: order.courier || null,
       createdAt: order.createdAt,
       stageUpdatedAt: order.stageUpdatedAt || order.paidAt
     });

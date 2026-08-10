@@ -9,13 +9,13 @@ const Cart = {
     localStorage.setItem('azamReka_cart', JSON.stringify(cart));
     this.updateCartCount();
   },
-  addItem(name, price) {
+  addItem(name, price, note = '') {
     const cart = this.getCart();
-    const existing = cart.find(item => item.name === name);
+    const existing = cart.find(item => item.name === name && item.note === note);
     if (existing) {
       existing.qty += 1;
     } else {
-      cart.push({ name, price, qty: 1 });
+      cart.push({ name, price, qty: 1, note });
     }
     this.saveCart(cart);
   },
@@ -50,7 +50,11 @@ const Cart = {
   generateWhatsAppMessage() {
     const cart = this.getCart();
     if (cart.length === 0) return '';
-    const items = cart.map(item => `• ${item.name} (RM ${item.price.toFixed(2)}) x${item.qty}`).join('\n');
+    const items = cart.map(item => {
+      let line = `• ${item.name} (RM ${item.price.toFixed(2)}) x${item.qty}`;
+      if (item.note) line += `\n  ↳ ${item.note}`;
+      return line;
+    }).join('\n');
     const total = this.getTotal();
     return `Hi Azam Reka, I'd like to order:\n\n${items}\n\nTotal: RM ${total.toFixed(2)}`;
   }
@@ -137,12 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartCheckout) cartCheckout.style.display = 'flex';
 
     cartItems.innerHTML = cart.map(item => `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding: 1rem 0; border-bottom: 1px solid var(--color-ash);">
-        <div>
-          <p style="margin:0; font-weight:600;">${item.name}</p>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; padding: 1rem 0; border-bottom: 1px solid var(--color-ash);">
+        <div style="flex:1; min-width:0;">
+          <p style="margin:0; font-weight:600;">${item.name} x${item.qty}</p>
+          ${item.note ? `<p style="margin:0.2em 0 0; font-size:0.78rem; color:var(--color-structural); font-family:var(--font-mono);">${item.note}</p>` : ''}
           <p style="margin:0; color: var(--color-structural); font-size:0.9rem;">RM ${item.price.toFixed(2)}</p>
         </div>
-        <div style="display:flex; align-items:center; gap: 0.5rem;">
+        <div style="display:flex; align-items:center; gap: 0.5rem; flex-shrink:0; margin-left:0.5rem;">
           <button data-qty-minus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">−</button>
           <span style="width:32px; text-align:center;">${item.qty}</span>
           <button data-qty-plus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">+</button>

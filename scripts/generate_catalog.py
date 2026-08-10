@@ -253,6 +253,7 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
 </a>
 
 <script src="../assets/main.js"></script>
+<script src="../assets/engraving-preview.js"></script>
 </body>
 </html>
 '''

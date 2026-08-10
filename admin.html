@@ -305,7 +305,20 @@ function renderOrders(orders) {
         <td>${zohoBadge}</td>
         <td><span class="${badgeClass}">${stageLabel(currentStage)}</span></td>
         <td>
-          <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
+          <div style="display:flex; flex-direction:column; gap:0.4rem;">
+            <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
+            <div class="tracking-row" data-for="${order.billCode}" style="${currentStage === 'shipped' ? '' : 'display:none;'}">
+              <select class="courier-select" style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; margin-bottom:0.25rem;">
+                <option value="JNT" ${(order.courier||'') === 'JNT' ? 'selected' : ''}>J&T Express</option>
+                <option value="POSLAJU" ${(order.courier||'') === 'POSLAJU' ? 'selected' : ''}>Pos Laju</option>
+                <option value="GDEX" ${(order.courier||'') === 'GDEX' ? 'selected' : ''}>GDEX</option>
+                <option value="DHL" ${(order.courier||'') === 'DHL' ? 'selected' : ''}>DHL</option>
+                <option value="NINJA" ${(order.courier||'') === 'NINJA' ? 'selected' : ''}>Ninja Van</option>
+              </select>
+              <input class="tracking-input" type="text" placeholder="Tracking no." value="${order.trackingNumber || ''}"
+                style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; font-family:var(--font-mono);">
+            </div>
+          </div>
         </td>
       </tr>
     `;
@@ -315,12 +328,25 @@ function renderOrders(orders) {
     select.addEventListener('change', async (e) => {
       const billCode = e.target.dataset.billCode;
       const newStage = e.target.value;
+
+      // Show/hide tracking row when stage is set to Shipped
+      const trackingRow = document.querySelector(`.tracking-row[data-for="${billCode}"]`);
+      if (trackingRow) trackingRow.style.display = newStage === 'shipped' ? '' : 'none';
+
       e.target.disabled = true;
       try {
+        const trackingInput = trackingRow ? trackingRow.querySelector('.tracking-input') : null;
+        const courierSelect = trackingRow ? trackingRow.querySelector('.courier-select') : null;
         const res = await fetch('/api/admin/update-stage', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: adminPassword, billCode, stage: newStage })
+          body: JSON.stringify({
+            password: adminPassword,
+            billCode,
+            stage: newStage,
+            trackingNumber: trackingInput ? trackingInput.value.trim() : '',
+            courier: courierSelect ? courierSelect.value : ''
+          })
         });
         if (!res.ok) throw new Error('Update failed');
         await loadOrders();

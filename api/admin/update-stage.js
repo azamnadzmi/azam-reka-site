@@ -43,6 +43,11 @@ async function sendStageUpdateEmail(order, stage) {
   const resend = new Resend(resendApiKey);
   const trackingUrl = `${siteUrl}/track-order.html?billCode=${encodeURIComponent(order.billCode)}`;
 
+  const trackingSection = (stage === 'shipped' && order.trackingNumber)
+    ? `<p><strong>Courier:</strong> ${order.courier || 'J&amp;T / Pos Laju'}<br>
+       <strong>Tracking Number:</strong> <code>${order.trackingNumber}</code></p>`
+    : '';
+
   try {
     await resend.emails.send({
       from: 'orders@azamreka.com',
@@ -53,6 +58,7 @@ async function sendStageUpdateEmail(order, stage) {
         <p>Hi ${order.customerName},</p>
         <p>${STAGE_MESSAGES[stage]}</p>
         <p><strong>Current stage:</strong> ${STAGE_LABELS[stage]}</p>
+        ${trackingSection}
         <p><a href="${trackingUrl}">Track your order</a> for full progress details.</p>
         <p>Questions? WhatsApp us at +60 11-1085 2324.</p>
         <p>Thanks for choosing Azam Reka!</p>
@@ -70,7 +76,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { password, billCode, stage } = req.body;
+    const { password, billCode, stage, trackingNumber, courier } = req.body;
 
     if (!adminPassword || password !== adminPassword) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -84,9 +90,15 @@ module.exports = async function handler(req, res) {
     const db = client.db('azamreka');
     const orders = db.collection('orders');
 
+    const updateFields = { productionStage: stage, stageUpdatedAt: new Date() };
+    if (trackingNumber) {
+      updateFields.trackingNumber = trackingNumber.trim();
+      updateFields.courier = (courier || '').trim();
+    }
+
     const result = await orders.findOneAndUpdate(
       { billCode },
-      { $set: { productionStage: stage, stageUpdatedAt: new Date() } },
+      { $set: updateFields },
       { returnDocument: 'after' }
     );
 

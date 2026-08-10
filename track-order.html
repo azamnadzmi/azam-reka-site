@@ -223,6 +223,22 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
       `;
     }).join('');
     document.getElementById('stepperRows').innerHTML = rows;
+
+    // Show tracking number if shipped
+    if (data.stage === 'shipped' && data.trackingNumber) {
+      const trackingEl = document.createElement('div');
+      trackingEl.style.cssText = 'margin-top:1.5rem; padding:1rem; background:#f5f0e8; border-radius:4px; text-align:center;';
+      trackingEl.innerHTML = `
+        <p style="margin:0; font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--color-structural);">
+          ${data.courier || 'Courier'}
+        </p>
+        <p style="margin:0.3em 0 0; font-family:var(--font-mono); font-size:1.1rem; font-weight:600; letter-spacing:0.08em;">
+          ${data.trackingNumber}
+        </p>
+      `;
+      document.getElementById('stepperRows').appendChild(trackingEl);
+    }
+
     result.style.display = 'block';
   } catch (err) {
     errorMsg.textContent = 'Something went wrong. Please try again or WhatsApp us.';
