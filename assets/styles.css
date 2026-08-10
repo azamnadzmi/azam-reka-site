@@ -151,10 +151,10 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .h-display-1 {
   font-family: var(--font-display);
-  font-size: var(--text-4xl);
-  font-weight: 600;
+  font-size: clamp(3.5rem, 2rem + 8vw, 6.4rem);
+  font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.02;
+  line-height: 0.9;
 }
 
 .h-display-2 {
@@ -223,6 +223,78 @@ h1, h2, h3, h4, p { margin: 0; }
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-structural);
+}
+
+/* =========================================================
+   Technical motifs — blueprint-style annotations that read as
+   "engineered," not decorative. Used sparingly: hero, process
+   steps. Coordinate labels are flavor text, not real data.
+   ========================================================= */
+
+.coord-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-structural);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.coord-label--desktop-only { display: none; }
+@media (min-width: 900px) {
+  .coord-label--desktop-only { display: block; }
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--color-ember);
+}
+
+/* Four small L-shaped corner brackets, like crop marks on a
+   technical drawing. Apply to any `position: relative` container. */
+.corner-frame { position: relative; }
+.corner-frame::before,
+.corner-frame::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-ember);
+  opacity: 0.6;
+}
+.corner-frame::before {
+  top: 10px;
+  left: 10px;
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+.corner-frame::after {
+  bottom: 10px;
+  right: 10px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+.corner-frame__tr,
+.corner-frame__bl {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-ember);
+  opacity: 0.6;
+}
+.corner-frame__tr { top: 10px; right: 10px; border-right: 1px solid; border-top: 1px solid; }
+.corner-frame__bl { bottom: 10px; left: 10px; border-left: 1px solid; border-bottom: 1px solid; }
+
+/* Faint graph-paper texture for dark technical sections */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(247, 243, 236, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(247, 243, 236, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 .eyebrow {
@@ -1175,6 +1247,11 @@ h1, h2, h3, h4, p { margin: 0; }
   flex: 1;
   min-width: 160px;
   text-align: center;
+}
+.how-it-works-step.corner-frame {
+  padding: var(--space-4) var(--space-2);
+  background: rgba(247, 243, 236, 0.03);
+  border: 1px solid rgba(247, 243, 236, 0.08);
 }
 .how-it-works-num {
   font-family: var(--font-mono);
