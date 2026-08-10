@@ -55,8 +55,20 @@ async function getEasyParcelRate(weight, destPostcode, destState) {
 
     const data = await response.json();
 
-    // Extract shipping cost from response
+    // Filter for MelPlus only and extract shipping cost
     if (data.data && data.data.rates && data.data.rates.length > 0) {
+      // Look for MelPlus service
+      const melplus = data.data.rates.find(rate =>
+        rate.courier_name?.toLowerCase().includes('melplus') ||
+        rate.service_name?.toLowerCase().includes('melplus')
+      );
+
+      if (melplus) {
+        const shippingCost = parseFloat(melplus.total_price) || 0;
+        return Math.max(shippingCost, MIN_DELIVERY_FEE);
+      }
+
+      // Fallback to first available rate if MelPlus not found
       const rate = data.data.rates[0];
       const shippingCost = parseFloat(rate.total_price) || 0;
       return Math.max(shippingCost, MIN_DELIVERY_FEE);
