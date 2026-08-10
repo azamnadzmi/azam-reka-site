@@ -18,7 +18,7 @@
       "zoho_item_id": "4895811000000137024",
       "display_name": "Plaque",
       "category": "plaques",
-      "tag": null,
+      "tag": "Corporate & Awards",
       "video": null,
       "images": [
         "assets/products/plaque-01.jpg",
@@ -31,7 +31,7 @@
       "zoho_item_id": "4895811000000088051",
       "display_name": "Desk Name Plaque",
       "category": "plaques",
-      "tag": "Flore Minimal",
+      "tag": "Floré Minimal",
       "video": null,
       "images": [
         "assets/products/desk-name-plaque-01.jpg",
@@ -44,7 +44,7 @@
       "zoho_item_id": "4895811000000164046",
       "display_name": "Plaque Wood+Acrylic",
       "category": "plaques",
-      "tag": null,
+      "tag": "Corporate & Awards",
       "video": "assets/products/plaque-wood-acrylic-video.mp4",
       "images": [
         "assets/products/plaque-wood-acrylic-01.jpg",
@@ -55,7 +55,7 @@
       "zoho_item_id": "4895811000000421019",
       "display_name": "Plaque Portrait A4",
       "category": "plaques",
-      "tag": null,
+      "tag": "Corporate & Awards",
       "video": "assets/products/plaque-portrait-a4-video.mp4",
       "images": [
         "assets/products/plaque-portrait-a4-01.jpg",
@@ -68,7 +68,7 @@
       "zoho_item_id": "4895811000000114117",
       "display_name": "Personalised Bookmark",
       "category": "keychains",
-      "tag": "Flore Minimal",
+      "tag": "Floré Minimal",
       "video": null,
       "images": [
         "assets/products/bookmark-01.jpg",
@@ -80,7 +80,7 @@
       "zoho_item_id": "4895811000000177003",
       "display_name": "HG25 Keychain",
       "category": "keychains",
-      "tag": null,
+      "tag": "Hari Guru",
       "video": null,
       "images": [
         "assets/products/keychain-01.jpg",
@@ -90,8 +90,8 @@
     {
       "zoho_item_id": "4895811000000405019",
       "display_name": "Keychain",
-      "category": "keychains",
-      "tag": null,
+      "category": "decor",
+      "tag": "Gifting",
       "video": null,
       "images": [
         "assets/products/keychain-03.jpg",
@@ -101,8 +101,8 @@
     {
       "zoho_item_id": "4895811000000186019",
       "display_name": "Phone Holder",
-      "category": "keychains",
-      "tag": null,
+      "category": "decor",
+      "tag": "Gifting",
       "video": null,
       "images": [
         "assets/products/phone-holder-01.jpg",
@@ -159,7 +159,7 @@
       "zoho_item_id": "4895811000000360029",
       "display_name": "Aqiqah Board",
       "category": "decor",
-      "tag": null,
+      "tag": "Gifting",
       "video": null,
       "images": [
         "assets/products/maskahwin-plaque-01.jpg",
@@ -170,11 +170,17 @@
       "_comment": "One card, two Zoho items behind a picker. Each variant carts under its own name so it still resolves to the right Zoho line item. Photo is a placeholder.",
       "display_name": "Penunjuk Al-Quran",
       "category": "decor",
-      "tag": null,
+      "tag": "Gifting",
       "video": null,
       "variants": [
-        { "zoho_item_id": "4895811000000185277", "label": "1 side" },
-        { "zoho_item_id": "4895811000000171001", "label": "2 side" }
+        {
+          "zoho_item_id": "4895811000000185277",
+          "label": "1 side"
+        },
+        {
+          "zoho_item_id": "4895811000000171001",
+          "label": "2 side"
+        }
       ],
       "images": [
         "assets/products/penunjuk-quran-01.jpg"
@@ -184,7 +190,7 @@
       "zoho_item_id": "4895811000000182040",
       "display_name": "Mini Frame 12x10",
       "category": "decor",
-      "tag": "Lace & Love",
+      "tag": "Hari Guru",
       "video": null,
       "images": [
         "assets/products/mini-frame-12x10-01.jpg",
@@ -195,7 +201,7 @@
       "zoho_item_id": "4895811000000182019",
       "display_name": "Mini Frame 8x10",
       "category": "decor",
-      "tag": "Lace & Love",
+      "tag": "Hari Guru",
       "video": null,
       "images": [
         "assets/products/mini-frame-8x10-01.jpg",
@@ -206,7 +212,7 @@
       "zoho_item_id": "4895811000000164001",
       "display_name": "Fridge Magnet 70mm",
       "category": "decor",
-      "tag": null,
+      "tag": "Gifting",
       "video": null,
       "images": [
         "assets/products/magnetic-frame-01.jpg",
@@ -217,7 +223,7 @@
       "zoho_item_id": "4895811000000379019",
       "display_name": "Thank You Succulent HG25",
       "category": "decor",
-      "tag": null,
+      "tag": "Hari Guru",
       "video": null,
       "images": [
         "assets/products/keychain-02.jpg"

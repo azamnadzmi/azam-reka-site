@@ -124,6 +124,9 @@ def resolve_products(media, zoho):
 
     for entry in media["products"]:
         name = entry["display_name"]
+        if not entry.get("tag"):
+            raise SystemExit(f"{name} has no collection. Every product must belong to at least one - "
+                             f'set "tag" in catalog-media.json.')
         images = [img for img in entry.get("images") or [] if img] or [PLACEHOLDER_IMG]
         variants = []
 
@@ -270,9 +273,8 @@ def build_add_button(product):
 
 
 def build_product_card(product):
-    tag = (f'<span class="product-card__tag">{esc(product["tag"])}</span>\n        '
-           if product["tag"] else "")
-    return f'''      <div class="product-card" data-category="{esc(product["category"])}">
+    tag = f'<span class="product-card__tag">{esc(product["tag"])}</span>\n        '
+    return f'''      <div class="product-card" data-category="{esc(product["category"])}" data-collection="{esc(product["tag"])}">
         <a href="products/{product["slug"]}.html" style="display:block;">
           {build_media_html(product)}
         </a>
@@ -327,12 +329,20 @@ def report_price_changes(products):
         current = f.read()
     live = dict(re.findall(r'data-add-to-cart="([^"]+)" data-price="([\d.]+)"', current))
 
-    changes = []
+    # A variant carts under its own name, so compare on those where they exist.
+    priced = {}
     for p in products:
-        old = live.get(p["name"])
-        if old is not None and abs(float(old) - p["price"]) > 0.001:
-            changes.append((p["name"], float(old), p["price"]))
-    gone = sorted(set(live) - {p["name"] for p in products})
+        if p["variants"]:
+            priced.update({v["name"]: v["price"] for v in p["variants"]})
+        else:
+            priced[p["name"]] = p["price"]
+
+    changes = []
+    for name, new in priced.items():
+        old = live.get(name)
+        if old is not None and abs(float(old) - new) > 0.001:
+            changes.append((name, float(old), new))
+    gone = sorted(set(live) - set(priced))
 
     if changes:
         print("\nPrice changes (site -> Zoho):")
