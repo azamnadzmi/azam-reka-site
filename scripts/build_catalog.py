@@ -250,8 +250,13 @@ def price_html(product):
     return f'RM {product["price"]:.2f}'
 
 
-def build_variant_picker(product, indent="        "):
-    """A <select> that rewrites the add-to-cart button's dataset on change."""
+def build_variant_picker(product, indent="        ", hidden=False):
+    """A <select> that rewrites the add-to-cart button's dataset on change.
+
+    On catalogue cards it starts hidden so the grid stays clean - the first
+    Add to Cart click reveals it instead of adding. On the product page, where
+    choosing is the point, it is visible from the start.
+    """
     if not product["variants"]:
         return ""
     opts = "\n".join(
@@ -259,7 +264,8 @@ def build_variant_picker(product, indent="        "):
         f'{esc(v["label"])} &mdash; RM {v["price"]:.2f}</option>'
         for v in product["variants"]
     )
-    return (f'\n{indent}<select data-variant-picker aria-label="Choose {esc(product["name"])} option" '
+    return (f'\n{indent}<select data-variant-picker{" hidden" if hidden else ""} '
+            f'aria-label="Choose {esc(product["name"])} option" '
             f'style="width:100%; margin-top:0.5rem; padding:0.5em; border:1px solid var(--color-ash); '
             f'background: var(--color-bone); font: inherit; font-size:0.9rem;">\n{opts}\n{indent}</select>')
 
@@ -279,7 +285,7 @@ def build_product_card(product):
           {build_media_html(product)}
         </a>
         {tag}<a href="products/{product["slug"]}.html" style="text-decoration:none; color:inherit;"><span class="product-card__title">{esc(product["name"])}</span></a>
-        <span class="mono-price">{price_html(product)}</span>{build_variant_picker(product)}
+        <span class="mono-price">{price_html(product)}</span>{build_variant_picker(product, hidden=True)}
         {build_add_button(product)}
       </div>'''
 

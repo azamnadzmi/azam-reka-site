@@ -110,17 +110,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-variant-picker]').forEach(select => {
     const btn = select.parentElement.querySelector('[data-add-to-cart]');
     if (!btn) return;
-    select.addEventListener('change', () => {
+    const sync = () => {
       const opt = select.selectedOptions[0];
+      if (!opt) return;
       btn.dataset.addToCart = opt.value;
       btn.dataset.price = opt.dataset.price;
-    });
+    };
+    // Browsers restore a select's value on refresh/back-navigation without firing
+    // change, so sync once up front or the button could disagree with what's shown.
+    sync();
+    select.addEventListener('change', sync);
   });
 
   // Add to cart buttons
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
+      // On catalogue cards the picker starts hidden — reveal it and let them
+      // choose before anything lands in the cart.
+      const picker = btn.parentElement.querySelector('[data-variant-picker]');
+      if (picker && picker.hidden) {
+        picker.hidden = false;
+        picker.focus();
+        return;
+      }
       const name = btn.dataset.addToCart;
       const price = parseFloat(btn.dataset.price);
       Cart.addItem(name, price);
