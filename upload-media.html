@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Upload Product Media — Azam Reka Admin</title>
+  <link rel="icon" href="assets/logo.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      padding: 2.5rem;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header img {
+      height: 50px;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: #222;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+    select, input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    select:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: #333;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    }
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #fafafa;
+    }
+    .upload-area:hover {
+      border-color: #333;
+      background: #f5f5f5;
+    }
+    .upload-area.dragover {
+      border-color: #333;
+      background: #f0f0f0;
+    }
+    .upload-area-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .upload-area-text {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    .upload-area-hint {
+      color: #999;
+      font-size: 0.85rem;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .preview {
+      margin-top: 1rem;
+      display: none;
+    }
+    .preview.show {
+      display: block;
+    }
+    .preview-content {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    .preview img, .preview video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .preview-label {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+    }
+    .button {
+      flex: 1;
+      padding: 0.875rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .button-primary {
+      background: #333;
+      color: white;
+    }
+    .button-primary:hover:not(:disabled) {
+      background: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .button-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .button-secondary:hover:not(:disabled) {
+      background: #e0e0e0;
+    }
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.95rem;
+      display: none;
+    }
+    .status.loading {
+      display: block;
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 1px solid #90caf9;
+    }
+    .status.success {
+      display: block;
+      background: #e8f5e9;
+      color: #388e3c;
+      border: 1px solid #81c784;
+    }
+    .status.error {
+      display: block;
+      background: #ffebee;
+      color: #d32f2f;
+      border: 1px solid #ef5350;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <img src="assets/logo.png" alt="Azam Reka">
+    <h1>Upload Product Media</h1>
+    <p class="subtitle">Update product images and videos</p>
+  </div>
+
+  <form id="uploadForm">
+    <div class="form-group">
+      <label for="password">Admin Password</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Enter admin password"
+        required
+        autocomplete="off"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="product">Select Product</label>
+      <select id="product" required>
+        <option value="">-- Choose a product --</option>
+        <option value="Plaque">Plaque</option>
+        <option value="Desk Name Plaque">Desk Name Plaque</option>
+        <option value="Plaque Wood+Acrylic">Plaque Wood+Acrylic</option>
+        <option value="Plaque Portrait A4">Plaque Portrait A4</option>
+        <option value="Personalised Bookmark">Personalised Bookmark</option>
+        <option value="Bookmark">Bookmark</option>
+        <option value="HG25 Keychain">HG25 Keychain</option>
+        <option value="Keychain">Keychain</option>
+        <option value="Phone Holder">Phone Holder</option>
+        <option value="Mas Kahwin/Hantaran Plaque">Mas Kahwin/Hantaran Plaque</option>
+        <option value="Rehal Lite">Rehal Lite</option>
+        <option value="Mas Kahwin Frame 2025">Mas Kahwin Frame 2025</option>
+        <option value="Arah Sujud">Arah Sujud</option>
+        <option value="Magnetic Mini Frame">Magnetic Mini Frame</option>
+        <option value="Customized Mini Boards">Customized Mini Boards</option>
+        <option value="Thank You Succulent HG25">Thank You Succulent HG25</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Upload Product Image</label>
+      <div class="upload-area" id="imageUploadArea">
+        <div class="upload-area-icon">🖼️</div>
+        <div class="upload-area-text">Drag image here or click to browse</div>
+        <div class="upload-area-hint">PNG, JPG, WebP (max 5MB)</div>
+      </div>
+      <input type="file" id="imageFile" accept="image/*">
+      <div class="preview" id="imagePreview">
+        <div class="preview-content">
+          <img id="imagePreviewImg" src="" alt="Preview">
+        </div>
+        <div class="preview-label">Image selected ✓</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Upload Product Video (Optional)</label>
+      <div class="upload-area" id="videoUploadArea">
+        <div class="upload-area-icon">🎬</div>
+        <div class="upload-area-text">Drag video here or click to browse</div>
+        <div class="upload-area-hint">MP4, WebM (max 50MB)</div>
+      </div>
+      <input type="file" id="videoFile" accept="video/*">
+      <div class="preview" id="videoPreview">
+        <div class="preview-content">
+          <video id="videoPreviewVid" style="width:100%; height:auto;"></video>
+        </div>
+        <div class="preview-label">Video selected ✓</div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="button button-secondary" id="clearBtn">Clear</button>
+      <button type="submit" class="button button-primary" id="uploadBtn">Upload Media</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('uploadForm');
+  const imageUploadArea = document.getElementById('imageUploadArea');
+  const imageFile = document.getElementById('imageFile');
+  const imagePreview = document.getElementById('imagePreview');
+  const imagePreviewImg = document.getElementById('imagePreviewImg');
+  const videoUploadArea = document.getElementById('videoUploadArea');
+  const videoFile = document.getElementById('videoFile');
+  const videoPreview = document.getElementById('videoPreview');
+  const videoPreviewVid = document.getElementById('videoPreviewVid');
+  const statusEl = document.getElementById('status');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  // Image upload
+  imageUploadArea.addEventListener('click', () => imageFile.click());
+  imageUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    imageUploadArea.classList.add('dragover');
+  });
+  imageUploadArea.addEventListener('dragleave', () => imageUploadArea.classList.remove('dragover'));
+  imageUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    imageUploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) imageFile.files = e.dataTransfer.files;
+    showImagePreview();
+  });
+  imageFile.addEventListener('change', showImagePreview);
+
+  function showImagePreview() {
+    if (imageFile.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreviewImg.src = e.target.result;
+        imagePreview.classList.add('show');
+      };
+      reader.readAsDataURL(imageFile.files[0]);
+    }
+  }
+
+  // Video upload
+  videoUploadArea.addEventListener('click', () => videoFile.click());
+  videoUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    videoUploadArea.classList.add('dragover');
+  });
+  videoUploadArea.addEventListener('dragleave', () => videoUploadArea.classList.remove('dragover'));
+  videoUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    videoUploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) videoFile.files = e.dataTransfer.files;
+    showVideoPreview();
+  });
+  videoFile.addEventListener('change', showVideoPreview);
+
+  function showVideoPreview() {
+    if (videoFile.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        videoPreviewVid.src = e.target.result;
+        videoPreview.classList.add('show');
+      };
+      reader.readAsDataURL(videoFile.files[0]);
+    }
+  }
+
+  // Clear
+  clearBtn.addEventListener('click', () => {
+    imageFile.value = '';
+    videoFile.value = '';
+    imagePreview.classList.remove('show');
+    videoPreview.classList.remove('show');
+    statusEl.className = 'status';
+  });
+
+  // Submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!imageFile.files[0]) {
+      statusEl.className = 'status error';
+      statusEl.innerHTML = '❌ Please select an image';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('password', document.getElementById('password').value);
+    formData.append('product', document.getElementById('product').value);
+    formData.append('image', imageFile.files[0]);
+    if (videoFile.files[0]) formData.append('video', videoFile.files[0]);
+
+    uploadBtn.disabled = true;
+    statusEl.className = 'status loading';
+    statusEl.innerHTML = '<span class="spinner"></span>Uploading...';
+
+    try {
+      const response = await fetch('/api/admin/upload-media', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      statusEl.className = 'status success';
+      statusEl.innerHTML = `✅ ${data.message}`;
+      form.reset();
+      imagePreview.classList.remove('show');
+      videoPreview.classList.remove('show');
+
+    } catch (error) {
+      statusEl.className = 'status error';
+      statusEl.innerHTML = `❌ Error: ${error.message}`;
+    } finally {
+      uploadBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>

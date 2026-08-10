@@ -143,6 +143,37 @@ function generateCatalogHTML(products) {
   return html;
 }
 
+async function updateCatalogFile(productsHTML) {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+
+    const catalogPath = path.default.join(process.cwd(), 'public', 'catalog.html');
+    const content = await fs.readFile(catalogPath, 'utf-8');
+
+    const startMarker = '<!-- PRODUCTS_START -->';
+    const endMarker = '<!-- PRODUCTS_END -->';
+
+    const startIdx = content.indexOf(startMarker);
+    const endIdx = content.indexOf(endMarker);
+
+    if (startIdx === -1 || endIdx === -1) {
+      throw new Error('Could not find product markers in catalog.html');
+    }
+
+    const beforeProducts = content.substring(0, startIdx + startMarker.length);
+    const afterProducts = content.substring(endIdx);
+
+    const updatedContent = beforeProducts + '\n' + productsHTML + '\n    ' + afterProducts;
+
+    await fs.writeFile(catalogPath, updatedContent);
+    return true;
+  } catch (error) {
+    console.warn('Could not update catalog file:', error.message);
+    return false;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -168,10 +199,14 @@ module.exports = async function handler(req, res) {
     const products = matchProducts(zohoItems, sheetData);
     const catalogHTML = generateCatalogHTML(products);
 
+    // Try to update catalog file
+    const fileUpdated = await updateCatalogFile(catalogHTML);
+
     return res.status(200).json({
       success: true,
-      message: `Catalog synced: ${products.length} products`,
+      message: `Catalog synced: ${products.length} products${fileUpdated ? ' (file updated)' : ''}`,
       productsCount: products.length,
+      fileUpdated,
       preview: catalogHTML.substring(0, 200) + '...'
     });
   } catch (error) {
