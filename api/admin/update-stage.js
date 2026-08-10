@@ -6,7 +6,7 @@
 const { MongoClient } = require('mongodb');
 const { Resend } = require('resend');
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI?.trim();
 const adminPassword = process.env.ADMIN_PASSWORD;
 const resendApiKey = process.env.RESEND_API_KEY;
 const siteUrl = process.env.SITE_URL || 'https://azamreka.com';
@@ -28,12 +28,24 @@ const STAGE_MESSAGES = {
   finishing_qc: 'Your piece is being finished and quality-checked.',
   shipped: 'Your piece has shipped and is on its way to you!'
 };
+const COURIER_LABELS = {
+  JNT: 'J&T Express',
+  POSLAJU: 'Pos Laju',
+  GDEX: 'GDEX',
+  DHL: 'DHL',
+  NINJA: 'Ninja Van'
+};
 
 let cachedClient = null;
 
 async function getMongoClient() {
   if (cachedClient) return cachedClient;
-  cachedClient = new MongoClient(mongoUri);
+  cachedClient = new MongoClient(mongoUri, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 10000,
+    retryWrites: true,
+    maxPoolSize: 1
+  });
   await cachedClient.connect();
   return cachedClient;
 }
@@ -42,6 +54,11 @@ async function sendStageUpdateEmail(order, stage) {
   if (!resendApiKey || !order.customerEmail) return;
   const resend = new Resend(resendApiKey);
   const trackingUrl = `${siteUrl}/track-order.html?billCode=${encodeURIComponent(order.billCode)}`;
+
+  const shippingLine = (stage === 'shipped' && order.trackingNumber)
+    ? `<p><strong>Courier:</strong> ${COURIER_LABELS[order.courier] || order.courier || 'N/A'}<br>` +
+      `<strong>Tracking number:</strong> ${order.trackingNumber}</p>`
+    : '';
 
   try {
     await resend.emails.send({
@@ -53,6 +70,7 @@ async function sendStageUpdateEmail(order, stage) {
         <p>Hi ${order.customerName},</p>
         <p>${STAGE_MESSAGES[stage]}</p>
         <p><strong>Current stage:</strong> ${STAGE_LABELS[stage]}</p>
+        ${shippingLine}
         <p><a href="${trackingUrl}">Track your order</a> for full progress details.</p>
         <p>Questions? WhatsApp us at +60 11-1085 2324.</p>
         <p>Thanks for choosing Azam Reka!</p>
@@ -70,7 +88,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { password, billCode, stage } = req.body;
+    const { password, billCode, stage, trackingNumber, courier } = req.body;
 
     if (!adminPassword || password !== adminPassword) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -80,13 +98,26 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid billCode or stage' });
     }
 
+    if (courier && !COURIER_LABELS[courier]) {
+      return res.status(400).json({ error: 'Invalid courier' });
+    }
+
     const client = await getMongoClient();
     const db = client.db('azamreka');
     const orders = db.collection('orders');
 
+    const update = { productionStage: stage, stageUpdatedAt: new Date() };
+    // Only persist courier/tracking on Shipped — the dropdown always carries a
+    // default courier value, and we don't want that written onto orders that
+    // aren't shipped yet just because the admin touched an unrelated stage.
+    if (stage === 'shipped') {
+      if (typeof trackingNumber === 'string') update.trackingNumber = trackingNumber.trim();
+      if (typeof courier === 'string' && courier) update.courier = courier;
+    }
+
     const result = await orders.findOneAndUpdate(
       { billCode },
-      { $set: { productionStage: stage, stageUpdatedAt: new Date() } },
+      { $set: update },
       { returnDocument: 'after' }
     );
 

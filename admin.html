@@ -305,41 +305,84 @@ function renderOrders(orders) {
         <td>${zohoBadge}</td>
         <td><span class="${badgeClass}">${stageLabel(currentStage)}</span></td>
         <td>
-          <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
+          <div style="display:flex; flex-direction:column; gap:0.4rem;">
+            <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
+            <div class="tracking-row" data-for="${order.billCode}" style="${currentStage === 'shipped' ? '' : 'display:none;'}">
+              <select class="courier-select" style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; margin-bottom:0.25rem;">
+                <option value="JNT" ${(order.courier||'') === 'JNT' ? 'selected' : ''}>J&T Express</option>
+                <option value="POSLAJU" ${(order.courier||'') === 'POSLAJU' ? 'selected' : ''}>Pos Laju</option>
+                <option value="GDEX" ${(order.courier||'') === 'GDEX' ? 'selected' : ''}>GDEX</option>
+                <option value="DHL" ${(order.courier||'') === 'DHL' ? 'selected' : ''}>DHL</option>
+                <option value="NINJA" ${(order.courier||'') === 'NINJA' ? 'selected' : ''}>Ninja Van</option>
+              </select>
+              <input class="tracking-input" type="text" placeholder="Tracking no." value="${order.trackingNumber || ''}"
+                style="font-size:0.75rem; padding:0.3em; border:1px solid var(--color-ash); border-radius:2px; width:100%; font-family:var(--font-mono); margin-bottom:0.25rem;">
+              <button class="tracking-save" data-bill-code="${order.billCode}" type="button"
+                style="font-size:0.7rem; padding:0.3em 0.6em; border:1px solid var(--color-ash); border-radius:2px; background:var(--color-bone); cursor:pointer;">Save Tracking</button>
+            </div>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
 
+  async function submitStageUpdate(billCode, newStage, { toggleEl, toastMessage } = {}) {
+    if (toggleEl) toggleEl.disabled = true;
+
+    const trackingRow = document.querySelector(`.tracking-row[data-for="${billCode}"]`);
+    if (trackingRow) trackingRow.style.display = newStage === 'shipped' ? '' : 'none';
+    const trackingInput = trackingRow ? trackingRow.querySelector('.tracking-input') : null;
+    const courierSelect = trackingRow ? trackingRow.querySelector('.courier-select') : null;
+
+    try {
+      const res = await fetch('/api/admin/update-stage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: adminPassword,
+          billCode,
+          stage: newStage,
+          trackingNumber: trackingInput ? trackingInput.value.trim() : '',
+          courier: courierSelect ? courierSelect.value : ''
+        })
+      });
+      if (!res.ok) throw new Error('Update failed');
+      await loadOrders();
+      const toast = document.createElement('div');
+      toast.textContent = toastMessage || 'Updated — customer emailed automatically';
+      toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--color-char); color:var(--color-bone); padding:0.75em 1.25em; border-radius:4px; font-size:0.85rem; z-index:100;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    } catch (err) {
+      alert('Failed to update. Please try again.');
+    } finally {
+      if (toggleEl) toggleEl.disabled = false;
+    }
+  }
+
   document.querySelectorAll('.stage-select').forEach(select => {
-    select.addEventListener('change', async (e) => {
+    select.addEventListener('change', (e) => {
+      submitStageUpdate(e.target.dataset.billCode, e.target.value, { toggleEl: e.target });
+    });
+  });
+
+  // Tracking number/courier only apply once Shipped is selected — the stage
+  // dropdown's change event fires once on selecting Shipped, but the admin
+  // usually types the tracking number *after* that, so it needs its own save.
+  document.querySelectorAll('.tracking-save').forEach(btn => {
+    btn.addEventListener('click', (e) => {
       const billCode = e.target.dataset.billCode;
-      const newStage = e.target.value;
-      e.target.disabled = true;
-      try {
-        const res = await fetch('/api/admin/update-stage', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: adminPassword, billCode, stage: newStage })
-        });
-        if (!res.ok) throw new Error('Update failed');
-        await loadOrders();
-        const toast = document.createElement('div');
-        toast.textContent = `Updated — customer emailed automatically`;
-        toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:var(--color-char); color:var(--color-bone); padding:0.75em 1.25em; border-radius:4px; font-size:0.85rem; z-index:100;';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2500);
-      } catch (err) {
-        alert('Failed to update stage. Please try again.');
-      } finally {
-        e.target.disabled = false;
-      }
+      const stageSelect = document.querySelector(`.stage-select[data-bill-code="${billCode}"]`);
+      submitStageUpdate(billCode, stageSelect ? stageSelect.value : 'shipped', {
+        toggleEl: e.target,
+        toastMessage: 'Tracking saved — customer emailed automatically'
+      });
     });
   });
 }
 
 async function loadOrders() {
-  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(adminPassword)}`);
+  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(adminPassword)}`);
   if (!res.ok) {
     document.getElementById('gate').style.display = 'block';
     document.getElementById('adminPanel').style.display = 'none';
@@ -353,7 +396,7 @@ async function loadOrders() {
 
 async function tryUnlock(password) {
   adminPassword = password;
-  const res = await fetch(`/api/admin/orders?password=${encodeURIComponent(password)}`);
+  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(password)}`);
   if (res.ok) {
     sessionStorage.setItem('azamReka_adminPw', password);
     document.getElementById('gate').style.display = 'none';
