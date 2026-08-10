@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout — Azam Reka</title>
+<meta name="description" content="Complete your Azam Reka order">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+.checkout-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.checkout-form { background: var(--color-bone); padding: var(--space-4); border: var(--hairline); }
+.checkout-summary { background: var(--color-ash); padding: var(--space-4); border-radius: 4px; }
+.form-group { margin-bottom: var(--space-3); }
+.form-group label { display: block; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5em; color: var(--color-structural); }
+.form-group input { width: 100%; padding: 0.75em; border: 1px solid var(--color-ash); border-radius: 2px; font-family: var(--font-body); }
+.form-group input:focus { outline: none; border-color: var(--color-ember); box-shadow: 0 0 0 2px rgba(184, 115, 51, 0.1); }
+.summary-item { display: flex; justify-content: space-between; padding: 0.75em 0; border-bottom: 1px solid var(--color-ash); }
+.summary-total { display: flex; justify-content: space-between; padding: 1em 0; font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; margin-top: 1em; padding-top: 1em; border-top: 2px solid var(--color-ash); }
+.btn-pay { width: 100%; margin-top: var(--space-3); }
+.loading { display: none; text-align: center; }
+.loading.active { display: block; }
+@media (max-width: 768px) {
+  .checkout-container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="promo-bar">
+  <button class="promo-arrow promo-arrow--prev" aria-label="Previous announcement">&#8249;</button>
+  <div class="promo-track">
+    <div class="promo-slide is-active">Custom Wedding &amp; Hari Guru orders now open &mdash; <a href="/contact.html">WhatsApp for a quote</a></div>
+    <div class="promo-slide">Rated 5.0 on Google &mdash; loved by teachers &amp; newlyweds</div>
+    <div class="promo-slide">Placed an order? <a href="/track-order.html">Track it here</a></div>
+  </div>
+  <button class="promo-arrow promo-arrow--next" aria-label="Next announcement">&#8250;</button>
+</div>
+
+<header class="site-header" data-scrolled="false">
+  <div class="container site-header__inner">
+    <a href="index.html" class="site-header__logo" aria-label="Azam Reka">
+      <img src="assets/logo.png" alt="Azam Reka" style="height:42px; width:auto;">
+    </a>
+    <nav class="site-header__nav">
+      <a href="catalog.html">Catalogue</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Custom Orders</a>
+    </nav>
+    <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
+      <a href="catalog.html" class="btn btn-primary" style="padding: 0.6em 1.2em;">← Continue Shopping</a>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">Order Confirmation</p>
+    <h1 class="h-display-2">Complete Your Order</h1>
+  </div>
+</section>
+
+<section class="section hairline-top">
+  <div class="container">
+    <div class="checkout-container">
+      <!-- FORM -->
+      <form id="checkoutForm">
+        <div class="checkout-form">
+          <h2 class="h-heading" style="margin-top:0;">Delivery Details</h2>
+
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Delivery Address *</label>
+            <textarea id="address" name="address" required style="width:100%; padding:0.75em; border:1px solid var(--color-ash); border-radius:2px; font-family:var(--font-body); resize:vertical; min-height:100px;"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Order Notes (optional)</label>
+            <textarea id="notes" name="notes" style="width:100%; padding:0.75em; border:1px solid var(--color-ash); border-radius:2px; font-family:var(--font-body); resize:vertical; min-height:80px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-pay" id="payBtn">Pay with ToyyibPay</button>
+          <div class="loading" id="loading">
+            <p style="color: var(--color-structural);">Processing your payment...</p>
+          </div>
+          <div id="errorMsg" style="display:none; color:#d32f2f; padding:1em; background:#ffebee; margin-top:1em; border-radius:2px;"></div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="checkout-summary">
+          <h2 class="h-heading" style="margin-top:0;">Order Summary</h2>
+          <div id="summaryItems"></div>
+          <div class="summary-total">
+            <span>Total:</span>
+            <span id="totalPrice">RM 0.00</span>
+          </div>
+          <p class="body-sm" style="color: var(--color-structural); margin-top: 1.5em;">Payment will be processed securely via ToyyibPay. No payment information is stored on our servers.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <div class="h-heading" style="color: var(--color-bone); margin-bottom: var(--space-2);">AZAM REKA</div>
+        <p class="body-sm" style="color: var(--color-structural); max-width: 34ch; margin-bottom: var(--space-2);">
+          We're more than just a laser cutting business — we're a team of dreamers, creators, and perfectionists, bringing your ideas to life with passion, precision, and a touch of artistry.
+        </p>
+        <a href="mailto:azam.r3ka@gmail.com" style="display:block; color: var(--color-structural); font-size: var(--text-sm); padding-block: 0.2em;">azam.r3ka@gmail.com</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Catalogue</p>
+        <a href="catalog.html?category=plaques">Plaques &amp; Awards</a>
+        <a href="catalog.html?category=keychains">Keychains &amp; Accessories</a>
+        <a href="catalog.html?category=wedding">Wedding &amp; Mas Kahwin</a>
+        <a href="catalog.html?category=decor">Home D&eacute;cor</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Company</p>
+        <a href="about.html">About</a>
+        <a href="contact.html">Custom Order Inquiry</a>
+        <a href="track-order.html">Track Your Order</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Reach Us</p>
+        <a href="https://wa.me/601110852324">WhatsApp</a>
+        <a href="https://instagram.com/azam.reka">Instagram @azam.reka</a>
+        <a href="mailto:azam.r3ka@gmail.com">Email</a>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 Azam Reka. All rights reserved.</span>
+      <span>Kuala Lumpur, Malaysia</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cart = JSON.parse(localStorage.getItem('azamReka_cart') || '[]');
+  
+  if (cart.length === 0) {
+    document.getElementById('summaryItems').innerHTML = '<p class="body-sm" style="color:var(--color-structural);">Your cart is empty. <a href="catalog.html">Return to catalogue</a></p>';
+    document.getElementById('payBtn').disabled = true;
+    return;
+  }
+
+  // Render cart items
+  const itemsHTML = cart.map(item => `
+    <div class="summary-item">
+      <span>${item.name} x${item.qty}</span>
+      <span>RM ${(item.price * item.qty).toFixed(2)}</span>
+    </div>
+  `).join('');
+  document.getElementById('summaryItems').innerHTML = itemsHTML;
+
+  // Calculate total
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  document.getElementById('totalPrice').textContent = `RM ${total.toFixed(2)}`;
+
+  // Handle form submission
+  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      address: document.getElementById('address').value,
+      notes: document.getElementById('notes').value,
+      items: cart,
+      total: total
+    };
+
+    document.getElementById('payBtn').disabled = true;
+    document.getElementById('loading').classList.add('active');
+    document.getElementById('errorMsg').style.display = 'none';
+
+    try {
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Payment setup failed');
+      }
+
+      // Redirect to ToyyibPay
+      window.location.href = data.paymentUrl;
+    } catch (error) {
+      document.getElementById('errorMsg').textContent = error.message;
+      document.getElementById('errorMsg').style.display = 'block';
+      document.getElementById('payBtn').disabled = false;
+      document.getElementById('loading').classList.remove('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
