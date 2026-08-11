@@ -9,14 +9,15 @@
 <link rel="stylesheet" href="assets/styles.css">
 <style>
 body {
-  background: #f8f6f4;
+  background: var(--color-bone);
   margin: 0;
   padding: 0;
+  font-family: var(--font-body);
 }
 
 .checkout-header {
   background: white;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--color-ash);
   padding: 1rem;
   display: flex;
   justify-content: space-between;
@@ -24,9 +25,10 @@ body {
 }
 
 .checkout-header .logo {
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 800;
   font-size: 0.9rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
 }
 
 .checkout-header .cart-icon {
@@ -48,10 +50,12 @@ body {
 }
 
 .checkout-form h1 {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   margin: 0 0 2rem 0;
-  color: #222;
+  color: var(--color-char);
 }
 
 .form-section {
@@ -63,11 +67,13 @@ body {
 }
 
 .form-section h2 {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-ember, #b87333);
   margin: 0 0 1.2rem 0;
-  text-transform: capitalize;
 }
 
 .form-group {
@@ -76,10 +82,12 @@ body {
 
 .form-group label {
   display: block;
-  font-size: 0.85rem;
-  color: #333;
-  margin-bottom: 0.4rem;
-  font-weight: 500;
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-structural);
+  margin-bottom: 0.5rem;
 }
 
 .form-group input,
@@ -87,10 +95,10 @@ body {
 .form-group textarea {
   width: 100%;
   padding: 0.65rem;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
   font-size: 0.9rem;
-  font-family: inherit;
+  font-family: var(--font-mono);
   background: white;
   box-sizing: border-box;
 }
@@ -121,8 +129,9 @@ body {
 .checkbox-label {
   display: flex;
   align-items: center;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
-  color: #333;
+  color: var(--color-char);
 }
 
 .delivery-options {
@@ -134,8 +143,8 @@ body {
 
 .delivery-option {
   padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
   text-align: center;
   cursor: pointer;
   background: white;
@@ -160,19 +169,22 @@ body {
 .pay-button {
   width: 100%;
   padding: 0.9rem;
-  background: #0052cc;
-  color: white;
+  background: var(--color-char);
+  color: var(--color-bone);
   border: none;
-  border-radius: 3px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  border-radius: 0;
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 2rem;
   transition: background 0.2s;
 }
 
 .pay-button:hover:not(:disabled) {
-  background: #0042a4;
+  background: var(--color-ember);
 }
 
 .pay-button:disabled {
@@ -184,7 +196,8 @@ body {
   display: none;
   text-align: center;
   margin-top: 1rem;
-  color: #888;
+  font-family: var(--font-mono);
+  color: var(--color-structural);
   font-size: 0.9rem;
 }
 
@@ -197,7 +210,7 @@ body {
   color: #d32f2f;
   background: #ffebee;
   padding: 0.8rem;
-  border-radius: 3px;
+  border-radius: 0;
   margin-top: 1rem;
   font-size: 0.85rem;
 }
@@ -208,9 +221,9 @@ body {
 
 /* Checkout Summary - Right Sidebar */
 .checkout-summary {
-  background: #f5f3f0;
+  background: var(--color-bone);
   padding: 2rem;
-  border-left: 1px solid #e5e5e5;
+  border-left: 1px solid var(--color-ash);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -222,21 +235,25 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #333;
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-char);
 }
 
 .summary-header .badge {
-  background: #222;
-  color: white;
+  background: var(--color-char);
+  color: var(--color-bone);
   width: 20px;
   height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .summary-items {
@@ -248,7 +265,7 @@ body {
   gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--color-ash);
 }
 
 .summary-item:last-child {
@@ -261,7 +278,7 @@ body {
   width: 60px;
   height: 60px;
   background: white;
-  border-radius: 3px;
+  border-radius: 0;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -277,23 +294,28 @@ body {
 }
 
 .summary-item-name {
+  font-family: var(--font-body);
   font-size: 0.85rem;
-  color: #222;
+  color: var(--color-char);
   margin-bottom: 0.3rem;
   font-weight: 500;
   line-height: 1.3;
 }
 
 .summary-item-meta {
-  font-size: 0.8rem;
-  color: #888;
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-structural);
   margin-bottom: 0.3rem;
 }
 
 .summary-item-price {
+  font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: #222;
-  font-weight: 600;
+  color: var(--color-char);
+  font-weight: 500;
 }
 
 .summary-promo {
@@ -305,45 +327,51 @@ body {
 .summary-promo input {
   flex: 1;
   padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
 }
 
 .summary-promo button {
   padding: 0.6rem 1.2rem;
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #333;
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-char);
   transition: all 0.2s;
 }
 
 .summary-promo button:hover {
-  background: #f5f5f5;
+  background: var(--color-ash);
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
+  font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-structural);
   margin-bottom: 0.8rem;
 }
 
 .summary-total {
   display: flex;
   justify-content: space-between;
-  font-size: 1.1rem;
-  color: #222;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-char);
   padding-top: 1rem;
   padding-bottom: 1rem;
-  border-top: 1px solid #e5e5e5;
-  border-bottom: 1px solid #e5e5e5;
+  border-top: 1px solid var(--color-ash);
+  border-bottom: 1px solid var(--color-ash);
   margin-bottom: 1.5rem;
 }
 
@@ -351,26 +379,29 @@ body {
   display: block;
   padding: 0.8rem;
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
   text-align: center;
-  color: #333;
+  font-family: var(--font-micro);
+  color: var(--color-char);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   margin-bottom: 1rem;
   transition: all 0.2s;
 }
 
 .zoho-link:hover {
-  background: #f5f5f5;
+  background: var(--color-ash);
   border-color: var(--color-ember, #b87333);
 }
 
 .summary-note {
-  font-size: 0.8rem;
-  color: #888;
-  line-height: 1.4;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-structural);
+  line-height: 1.5;
 }
 
 @media (max-width: 768px) {
@@ -384,7 +415,7 @@ body {
 
   .checkout-summary {
     border-left: none;
-    border-top: 1px solid #e5e5e5;
+    border-top: 1px solid var(--color-ash);
     height: auto;
     position: static;
   }
@@ -479,8 +510,8 @@ body {
     <!-- SHIPPING METHOD -->
     <div class="form-section">
       <h2>Shipping method</h2>
-      <div id="shippingMethodBox" style="background: #f5f3f0; padding: 1rem; border-radius: 3px; font-size: 0.85rem; color: #333;">
-        <div style="color: #888;">Enter your postcode and state above to see shipping cost.</div>
+      <div id="shippingMethodBox" style="background: var(--color-ash); padding: 1rem; border-radius: 0; font-size: 0.85rem; color: var(--color-char);">
+        <div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>
       </div>
     </div>
 
@@ -491,11 +522,11 @@ body {
         <label>When do you need this? *</label>
         <input type="date" id="arrivalDate" required>
       </div>
-      <div id="rushInfo" style="background: #f5f3f0; padding: 1rem; border-radius: 3px; margin-top: 1rem; display: none;">
-        <div style="font-size: 0.9rem; color: #333; margin-bottom: 0.5rem;">
+      <div id="rushInfo" style="background: var(--color-ash); padding: 1rem; border-radius: 0; margin-top: 1rem; display: none;">
+        <div style="font-size: 0.9rem; color: var(--color-char); margin-bottom: 0.5rem;">
           <strong>Rush Order Charge:</strong> <span id="rushPercent">0%</span> additional
         </div>
-        <div style="font-size: 0.85rem; color: #888;">
+        <div style="font-size: 0.85rem; color: var(--color-structural);">
           <div id="rushDay1">1-3 days: +50% (RM <span id="rush50">0.00</span>)</div>
           <div id="rushDay2">3-5 days: +30% (RM <span id="rush30">0.00</span>)</div>
           <div id="rushDay3">5-7 days: +10% (RM <span id="rush10">0.00</span>)</div>
@@ -506,7 +537,7 @@ body {
     <!-- DISCLAIMER -->
     <div class="form-section">
       <h2>Disclaimer</h2>
-      <div style="background: #f5f3f0; padding: 1rem; border-radius: 3px; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.5; color: #333;">
+      <div style="background: var(--color-ash); padding: 1rem; border-radius: 0; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--color-char);">
         <ul style="margin: 0; padding-left: 1.2rem;">
           <li><strong>Communication:</strong> By submitting this form, you agree to be contacted by azam.reka via WhatsApp using the phone number provided to discuss designs and order confirmation.</li>
           <li><strong>Production Quote:</strong> Order slots and deadlines are only secured once payment is received.</li>
@@ -592,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cart = JSON.parse(localStorage.getItem('azamReka_cart') || '[]');
 
   if (cart.length === 0) {
-    document.getElementById('summaryItems').innerHTML = '<p style="color: #888; font-size: 0.9rem;">Your cart is empty.</p>';
+    document.getElementById('summaryItems').innerHTML = '<p style="color: var(--color-structural); font-size: 0.9rem;">Your cart is empty.</p>';
     document.getElementById('payBtn').disabled = true;
     return;
   }
@@ -696,17 +727,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderShippingBox(state) {
     const box = document.getElementById('shippingMethodBox');
     if (state === 'loading') {
-      box.innerHTML = '<div style="color: #888;">Calculating shipping…</div>';
+      box.innerHTML = '<div style="color: var(--color-structural);">Calculating shipping…</div>';
     } else if (state === 'error') {
-      box.innerHTML = '<div style="color: #888;">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
+      box.innerHTML = '<div style="color: var(--color-structural);">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
     } else if (state === 'ready') {
       box.innerHTML = `
         <div style="margin-bottom: 0.5rem;"><strong>📦 ${shippingCourierName || 'Courier'}</strong></div>
-        <div style="color: #888;">Shipping from Johor Bahru</div>
-        <div style="margin-top: 0.5rem; color: #666;">RM ${shippingCost.toFixed(2)}</div>
+        <div style="color: var(--color-structural);">Shipping from Johor Bahru</div>
+        <div style="margin-top: 0.5rem; color: var(--color-char);">RM ${shippingCost.toFixed(2)}</div>
       `;
     } else {
-      box.innerHTML = '<div style="color: #888;">Enter your postcode and state above to see shipping cost.</div>';
+      box.innerHTML = '<div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>';
     }
   }
   const MIN_DELIVERY_FEE_DISPLAY = '10.00';
