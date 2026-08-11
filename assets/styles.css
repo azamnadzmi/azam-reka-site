@@ -226,10 +226,13 @@ h1, h2, h3, h4, p { margin: 0; }
   color: var(--color-structural);
 }
 
+/* Prices run in the display face, not mono — the reference treats price as a
+   headline-weight statement rather than a technical annotation. */
 .mono-price {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: var(--color-char);
 }
 
@@ -375,7 +378,7 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 .site-header__nav a {
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: var(--text-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -622,20 +625,23 @@ h1, h2, h3, h4, p { margin: 0; }
 .product-card:hover .product-card__media img { transform: scale(1.04); }
 
 .product-card__tag {
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 10px;
-  letter-spacing: 0.06em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-ember);
   border: 1px solid var(--color-ember-soft);
-  padding: 0.2em 0.6em;
+  padding: 0.4em 0.75em;
   width: fit-content;
 }
 
 .product-card__title {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-base);
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 /* Category tile --------------------------------------------------- */
@@ -716,7 +722,7 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 .stepper__label {
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 10px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -741,7 +747,7 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 .field label {
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: var(--text-xs);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -810,7 +816,7 @@ h1, h2, h3, h4, p { margin: 0; }
   left: 8px;
   background: rgba(20, 19, 15, 0.75);
   color: var(--color-bone);
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 0.65rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -915,7 +921,7 @@ h1, h2, h3, h4, p { margin: 0; }
   right: 10px;
   background: var(--color-ember);
   color: var(--color-bone);
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 0.65rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1036,7 +1042,7 @@ h1, h2, h3, h4, p { margin: 0; }
   justify-content: center;
   gap: 0.75em;
   padding: 0.55em 1em;
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1177,7 +1183,7 @@ h1, h2, h3, h4, p { margin: 0; }
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-family: var(--font-mono);
+  font-family: var(--font-micro);
   font-size: 0.7rem;
   color: var(--color-structural);
   text-transform: uppercase;
@@ -1211,11 +1217,12 @@ h1, h2, h3, h4, p { margin: 0; }
 .btn-whatsapp:hover { background: var(--color-ember); border-color: var(--color-ember); }
 
 .filter-chip {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.05em;
+  font-family: var(--font-micro);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.5em 1em;
+  padding: 0.6em 1.1em;
   border: 1px solid var(--color-ash);
   color: var(--color-structural);
   background: none;
