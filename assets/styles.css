@@ -96,6 +96,14 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* The looping machine-motion effects are removed outright rather than
+     left to land on whatever their final keyframe happens to be. Content
+     revealed by .scan-in still ends visible via its `both` fill mode. */
+  .laser-frame::after,
+  .product-card__media::after { display: none !important; }
+  .pilot-pulse { animation: none !important; box-shadow: none !important; }
+  .laser-frame,
+  .product-card__media { cursor: default; }
 }
 
 body {
@@ -308,6 +316,70 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 .corner-frame__tr { top: 10px; right: 10px; border-right: 1px solid; border-top: 1px solid; }
 .corner-frame__bl { bottom: 10px; left: 10px; border-left: 1px solid; border-bottom: 1px solid; }
+
+/* =========================================================
+   Motion — the machine's own vocabulary. Every animation here
+   mimics something the laser actually does: the head wiping
+   across the bed, the pilot light pulsing, the beam tracking
+   down a sheet. Nothing decorative for its own sake.
+   All of it is disabled under prefers-reduced-motion (below).
+   ========================================================= */
+
+/* Wipe-in reveal, like the cutting head passing over the work.
+   Used on first paint for hero content. */
+@keyframes scanReveal {
+  0%   { clip-path: inset(0 100% 0 0); opacity: 0.2; }
+  100% { clip-path: inset(0); opacity: 1; }
+}
+.scan-in {
+  animation: scanReveal 1.1s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.scan-in--delayed { animation-delay: 0.2s; }
+
+/* Pilot light — the ring that tells you the machine is armed.
+   Reserved for the single primary CTA on a page. */
+@keyframes pilotPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-ember-soft); }
+  50%      { box-shadow: 0 0 0 10px transparent; }
+}
+.pilot-pulse { animation: pilotPulse 2.4s ease-in-out infinite; }
+
+/* The beam itself, tracking down a sheet. A 1px ember hairline
+   swept over a media frame. */
+@keyframes laserScan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(2000%); opacity: 0; }
+}
+.laser-frame { position: relative; cursor: crosshair; }
+.laser-frame::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: var(--color-ember);
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 2;
+  animation: laserScan 2.6s linear infinite;
+}
+
+/* Scorched button — dark gradient with an ember rim and a hairline
+   inner highlight, like a cut edge catching the light. */
+.btn-scorched {
+  background: linear-gradient(#1A1A1A, #2A2A2A);
+  color: var(--color-bone);
+  border: 1px solid var(--color-ember-soft);
+  box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.04);
+  transition: background var(--duration-base) var(--ease-precise),
+              border-color var(--duration-base) var(--ease-precise);
+}
+.btn-scorched:hover {
+  background: linear-gradient(var(--color-ember), #9A4A2C);
+  border-color: var(--color-ember);
+}
 
 /* Faint graph-paper texture for dark technical sections */
 .grid-bg {
@@ -613,6 +685,25 @@ h1, h2, h3, h4, p { margin: 0; }
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--color-ash);
+  position: relative;
+  cursor: crosshair;
+}
+
+/* Beam sweep, only while pointing at the piece — running it on every card
+   at once would turn the grid into a light show. */
+.product-card__media::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: var(--color-ember);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.product-card:hover .product-card__media::after {
+  animation: laserScan 2.6s linear infinite;
 }
 
 .product-card__media img {
