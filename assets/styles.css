@@ -811,7 +811,16 @@ h1, h2, h3, h4, p { margin: 0; }
   margin-inline: 1.25rem;
 }
 .product-card__tag { margin-top: 1rem; }
-.product-card > .btn-whatsapp { margin-bottom: 1rem; }
+.product-card > .btn-whatsapp {
+  margin-bottom: 1rem;
+  /* Pins the button to the card's bottom edge regardless of how much
+     content sits above it — without this, cards missing the optional tag
+     chip end up one row shorter, leaving their button sitting higher than
+     neighboring cards in the same row (rows stretch to equal height via
+     .scroll-row's default flex align-items:stretch, but content inside
+     each card is top-packed unless something absorbs the leftover space). */
+  margin-top: auto;
+}
 
 /* Category tile --------------------------------------------------- */
 .category-tile {
