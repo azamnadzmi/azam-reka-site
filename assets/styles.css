@@ -451,8 +451,8 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .site-header__nav a {
   font-family: var(--font-micro);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
+  font-size: 0.6875rem; /* 11px — matches the reference's compact nav/label scale */
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   position: relative;
 }
@@ -1121,6 +1121,12 @@ h1, h2, h3, h4, p { margin: 0; }
   border-bottom: var(--hairline);
   flex-shrink: 0;
 }
+/* Scoped override — .h-heading's full type scale (24-30px) reads as too
+   loud for drawer chrome; the reference keeps this modest, close to the
+   logo's own size. */
+.cart-modal__header h2.h-heading {
+  font-size: 1.125rem;
+}
 
 .cart-modal__body {
   flex: 1;
@@ -1132,6 +1138,9 @@ h1, h2, h3, h4, p { margin: 0; }
   border-top: var(--hairline);
   padding: 1.5rem;
   flex-shrink: 0;
+}
+.cart-modal__footer .h-heading {
+  font-size: 1.125rem;
 }
 
 .cart-modal__close {
@@ -1182,14 +1191,14 @@ h1, h2, h3, h4, p { margin: 0; }
 .cart-modal__item-details { flex: 1; min-width: 0; }
 .cart-modal__item-name {
   font-family: var(--font-display);
-  font-weight: 750;
-  font-size: 0.9375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
   line-height: 1.3;
   margin: 0 0 0.25em;
 }
 .cart-modal__item-price {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--color-structural);
   margin: 0 0 0.6em;
 }
