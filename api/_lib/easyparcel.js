@@ -29,9 +29,42 @@
 // sender/receiver shape confirmed for quotations, extended with conventional
 // field names — treat as unverified until confirmed against a real response.
 
+const { MongoClient } = require('mongodb');
+
 const CLIENT_ID = process.env.EASYPARCEL_CLIENT_ID;
 const CLIENT_SECRET = process.env.EASYPARCEL_CLIENT_SECRET;
-const REFRESH_TOKEN = process.env.EASYPARCEL_REFRESH_TOKEN;
+const ENV_REFRESH_TOKEN = process.env.EASYPARCEL_REFRESH_TOKEN;
+const mongoUri = process.env.MONGODB_URI;
+
+// EasyParcel rotates the refresh_token on every use — the response to a
+// refresh_token grant includes a NEW refresh_token that must be used next
+// time (the old one is invalidated). Vercel env vars aren't writable from
+// running code, so the current token is persisted in MongoDB instead, with
+// the env var only as a one-time seed for the very first request.
+let cachedMongoClient = null;
+async function getMongoClient() {
+  if (cachedMongoClient) return cachedMongoClient;
+  cachedMongoClient = new MongoClient(mongoUri);
+  await cachedMongoClient.connect();
+  return cachedMongoClient;
+}
+
+async function getStoredRefreshToken() {
+  const client = await getMongoClient();
+  const settings = client.db('azamreka').collection('settings');
+  const doc = await settings.findOne({ _id: 'easyparcel_refresh_token' });
+  return (doc && doc.value) || ENV_REFRESH_TOKEN;
+}
+
+async function saveRefreshToken(newToken) {
+  const client = await getMongoClient();
+  const settings = client.db('azamreka').collection('settings');
+  await settings.updateOne(
+    { _id: 'easyparcel_refresh_token' },
+    { $set: { value: newToken, updatedAt: new Date() } },
+    { upsert: true }
+  );
+}
 
 const AUTH_BASE = 'https://api.easyparcel.com';
 const API_BASE = 'https://api.easyparcel.com/open_api/2026-06';
@@ -95,12 +128,14 @@ function subdivisionFor(stateCode) {
 let cachedToken = null; // { accessToken, expiresAt } — reused within a warm serverless instance
 
 async function getAccessToken() {
-  if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN) {
+  if (!CLIENT_ID || !CLIENT_SECRET || !ENV_REFRESH_TOKEN) {
     throw new Error('EASYPARCEL_CLIENT_ID / EASYPARCEL_CLIENT_SECRET / EASYPARCEL_REFRESH_TOKEN not fully set');
   }
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) {
     return cachedToken.accessToken;
   }
+
+  const currentRefreshToken = await getStoredRefreshToken();
 
   const basicAuth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
   const response = await fetch(`${AUTH_BASE}/oauth/token`, {
@@ -109,7 +144,7 @@ async function getAccessToken() {
       'Authorization': `Basic ${basicAuth}`,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: REFRESH_TOKEN })
+    body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: currentRefreshToken })
   });
 
   if (!response.ok) {
@@ -120,6 +155,11 @@ async function getAccessToken() {
   const data = await response.json();
   if (!data.access_token) {
     throw new Error(`EasyParcel token refresh returned no access_token: ${JSON.stringify(data).slice(0, 300)}`);
+  }
+
+  // EasyParcel rotates refresh tokens — persist the new one for next time.
+  if (data.refresh_token && data.refresh_token !== currentRefreshToken) {
+    await saveRefreshToken(data.refresh_token);
   }
 
   cachedToken = {
@@ -299,6 +339,7 @@ module.exports = {
   trackParcel,
   classifyCourier,
   exchangeAuthorizationCode,
+  saveRefreshToken,
   ALLOWED_COURIERS,
   SENDER_ADDRESS,
   MY_STATES,

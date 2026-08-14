@@ -13,7 +13,7 @@
 // application code, and a human should be the one moving a credential into
 // place anyway.
 
-const { exchangeAuthorizationCode } = require('../_lib/easyparcel');
+const { exchangeAuthorizationCode, saveRefreshToken } = require('../_lib/easyparcel');
 
 const adminPassword = process.env.ADMIN_PASSWORD;
 
@@ -50,13 +50,17 @@ module.exports = async function handler(req, res) {
     const redirectUri = `https://${req.headers.host}/api/admin/easyparcel-oauth-callback`;
     const tokens = await exchangeAuthorizationCode(code, redirectUri);
 
+    // Save straight to MongoDB — EasyParcel rotates refresh tokens on every
+    // use, so getAccessToken() reads/writes this store from now on and the
+    // Vercel env var is only needed as a first-run fallback.
+    await saveRefreshToken(tokens.refresh_token);
+
     res.setHeader('Content-Type', 'text/html');
     return res.status(200).send(page(`
       <h1>Connected</h1>
-      <p>Copy this into Vercel → Project Settings → Environment Variables → <code>EASYPARCEL_REFRESH_TOKEN</code> (Production environment), then redeploy:</p>
-      <pre>${escapeHtml(tokens.refresh_token)}</pre>
-      <p>Access token expires in ${escapeHtml(tokens.expires_in)}s — normal, <code>getAccessToken()</code> refreshes it automatically from the refresh token above.</p>
-      <p>Once the refresh token is saved and redeployed, delete <code>api/admin/easyparcel-oauth-callback.js</code> — it's a one-time setup endpoint and Vercel's Hobby plan caps at 12 functions.</p>
+      <p>The refresh token has been saved automatically — no need to copy it into Vercel.</p>
+      <p>Access token expires in ${escapeHtml(tokens.expires_in)}s — normal, <code>getAccessToken()</code> refreshes it automatically and keeps saving the new rotated token each time.</p>
+      <p>You can now delete <code>api/admin/easyparcel-oauth-callback.js</code> — it's a one-time setup endpoint and Vercel's Hobby plan caps at 12 functions.</p>
     `));
   } catch (error) {
     res.setHeader('Content-Type', 'text/html');
