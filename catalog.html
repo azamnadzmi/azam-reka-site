@@ -8,15 +8,9 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-/* Catalogue page — aligned to the reference shop layout
-   (https://azmrkatest.base44.app/shop). Scoped to .catalog-page so the
-   shared .product-card component on index.html is untouched. */
-.catalog-page {
-  background: #F7F5F2;
-}
-
-/* Exact stepped sizes from the reference (Archivo 800, text-5xl/md:text-6xl/lg:text-7xl) —
-   not a fluid clamp, so the breakpoints land on the same pixel values as the reference. */
+/* Catalogue page — a few page-specific tweaks. Product card borders,
+   spacing, and typography now live in the shared .product-card rules in
+   styles.css, so they also apply to index.html's product cards. */
 .catalog-page .h-display-2 {
   font-size: 3rem; /* 48px */
   letter-spacing: -0.02em;
@@ -33,44 +27,6 @@
 .catalog-page .filter-chip {
   font-size: 0.625rem; /* 10px */
   padding: 0.375rem 0.75rem;
-  border-color: rgba(26, 26, 26, 0.18);
-}
-.catalog-page .filter-chip:hover { border-color: #B85C38; }
-.catalog-page .filter-chip.is-active {
-  background: #1A1A1A;
-  border-color: #1A1A1A;
-  color: #F7F5F2;
-}
-
-.catalog-page .product-card {
-  background: #F7F5F2;
-  border: 1px solid rgba(26, 26, 26, 0.18);
-  overflow: hidden;
-  transition: border-color 300ms ease;
-}
-.catalog-page .product-card:hover {
-  border-color: rgba(184, 92, 56, 0.5);
-}
-.catalog-page .product-card__media {
-  border-bottom: 1px solid rgba(26, 26, 26, 0.18);
-}
-.catalog-page .product-card__tag,
-.catalog-page .product-card__title,
-.catalog-page .mono-price,
-.catalog-page .btn-whatsapp {
-  margin-inline: 1.25rem;
-}
-.catalog-page .product-card__tag { margin-top: 1rem; }
-.catalog-page .btn-whatsapp { margin-bottom: 1rem; }
-
-/* Exact letter-spacing/line-height ratios measured from the reference —
-   both were already the right font-family and size, just slightly looser. */
-.catalog-page .product-card__title {
-  letter-spacing: -0.02em; /* was -0.01em */
-  line-height: 1.25;       /* was 1.2 */
-}
-.catalog-page .mono-price {
-  letter-spacing: -0.02em; /* was -0.01em */
 }
 
 @media (min-width: 1280px) {

@@ -240,7 +240,7 @@ h1, h2, h3, h4, p { margin: 0; }
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 750;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--color-char);
 }
 
@@ -675,16 +675,27 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 /* Product card --------------------------------------------------- */
+/* Bordered card container — matches the reference's structural pattern
+   (hairline border, hover-to-ember, image separated by a border-bottom)
+   while keeping the site's existing warm bone/ash palette. */
 .product-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  background: var(--color-bone);
+  border: 1px solid var(--color-ash);
+  overflow: hidden;
+  transition: border-color var(--duration-base) var(--ease-precise);
+}
+.product-card:hover {
+  border-color: var(--color-ember);
 }
 
 .product-card__media {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--color-ash);
+  border-bottom: 1px solid var(--color-ash);
   position: relative;
   cursor: crosshair;
 }
@@ -731,9 +742,20 @@ h1, h2, h3, h4, p { margin: 0; }
   font-family: var(--font-display);
   font-weight: 750;
   font-size: 1.125rem;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
+
+/* Inset the text/button content within the bordered card — the image
+   sits flush edge-to-edge, everything below it gets breathing room. */
+.product-card__tag,
+.product-card__title,
+.product-card > .mono-price,
+.product-card > .btn-whatsapp {
+  margin-inline: 1.25rem;
+}
+.product-card__tag { margin-top: 1rem; }
+.product-card > .btn-whatsapp { margin-bottom: 1rem; }
 
 /* Category tile --------------------------------------------------- */
 .category-tile {
@@ -1222,6 +1244,7 @@ h1, h2, h3, h4, p { margin: 0; }
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--color-ash);
+  border-bottom: 1px solid var(--color-ash);
 }
 
 .hover-swap-media img {
