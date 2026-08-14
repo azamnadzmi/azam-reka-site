@@ -1723,18 +1723,95 @@ h1, h2, h3, h4, p { margin: 0; }
   .how-it-works-row { grid-template-columns: 1fr; }
 }
 .how-it-works-step {
-  text-align: center;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 .how-it-works-step.corner-frame {
   padding: 2rem;
   background: #1A1A1A;
 }
+.how-it-works-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
 .how-it-works-num {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
   color: var(--color-ember);
-  display: block;
-  margin-bottom: 0.5em;
+}
+.how-it-works-label {
+  font-family: var(--font-micro);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 236, 0.4);
+  padding-top: 0.3em;
+}
+.how-it-works-title {
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-bone);
+  margin: 1rem 0 0.6em;
+}
+.how-it-works-desc {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.625;
+  color: rgba(247, 243, 236, 0.7);
+  margin: 0 0 1.25rem;
+  flex: 1;
+}
+.how-it-works-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(247, 243, 236, 0.12);
+}
+.how-it-works-tags span {
+  font-family: var(--font-micro);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 236, 0.6);
+  border: 1px solid rgba(247, 243, 236, 0.18);
+  padding: 0.35em 0.6em;
+}
+
+.how-it-works-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+}
+.how-it-works-status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-micro);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 236, 0.6);
+  margin: 0;
+}
+.how-it-works-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-ember);
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
