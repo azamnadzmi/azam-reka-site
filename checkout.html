@@ -657,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTotal() {
     const total = subtotal + shippingCost + rushCharge;
     document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+    document.getElementById('shippingCost').textContent = `RM ${shippingCost.toFixed(2)}`;
     document.getElementById('totalPrice').textContent = `RM ${total.toFixed(2)}`;
   }
 
