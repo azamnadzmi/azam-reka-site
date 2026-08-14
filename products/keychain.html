@@ -78,8 +78,23 @@
         <h1 class="h-display-3" style="margin-top: 0.4em;">Keychain</h1>
         <p class="mono-price" style="margin-top: 0.6em;">RM 4.99</p>
         <p class="body-base" style="margin-top: var(--space-3); max-width: 46ch; color: var(--color-char);">Custom laser-cut keychain, made to order by Azam Reka.</p>
+        <div style="margin-top: var(--space-4);">
+          <p class="font-micro" style="color: var(--color-structural); margin-bottom: 0.75em;">Specifications</p>
+          <ul class="spec-list" data-specs-placeholder>
+            <li>Material — <em>add material</em></li>
+            <li>Size — <em>add dimensions</em></li>
+            <li>Thickness — <em>add thickness</em></li>
+          </ul>
+        </div>
+
         <div style="display:flex; flex-direction: column; gap: 0.75rem; margin-top: var(--space-4); max-width: 340px;">
+          <div class="qty-stepper" data-qty-stepper>
+            <button type="button" class="qty-stepper__btn" data-qty-stepper-minus aria-label="Decrease quantity">−</button>
+            <span class="qty-stepper__value" data-qty-stepper-value>1</span>
+            <button type="button" class="qty-stepper__btn" data-qty-stepper-plus aria-label="Increase quantity">+</button>
+          </div>
           <button data-add-to-cart="Keychain" data-price="4.99" class="btn btn-whatsapp">Add to Cart</button>
+          <button data-buy-now="Keychain" data-price="4.99" class="btn btn-primary">Buy Now &rarr;</button>
           <a href="https://wa.me/601110852324?text=Hi%20Azam%20Reka%2C%20I%27d%20like%20to%20ask%20about%3A%20Keychain" class="btn btn-outline">Ask a Question on WhatsApp</a>
         </div>
       </div>

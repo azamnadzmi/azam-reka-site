@@ -250,6 +250,61 @@ h1, h2, h3, h4, p { margin: 0; }
   color: var(--color-structural);
 }
 
+/* Product detail page — quantity stepper + specifications list ---------- */
+.qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+}
+.qty-stepper__btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-ash);
+  background: none;
+  cursor: pointer;
+  color: var(--color-char);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+.qty-stepper__btn:hover { border-color: var(--color-ember); color: var(--color-ember); }
+.qty-stepper__value {
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+
+.spec-list {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-char);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.spec-list li {
+  position: relative;
+  padding-left: 1.1em;
+}
+.spec-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-ember);
+}
+/* Placeholder specs (not yet filled in with real product data) read as
+   clearly unfinished rather than looking like real copy. */
+.spec-list[data-specs-placeholder] em {
+  font-style: normal;
+  color: var(--color-structural);
+  opacity: 0.7;
+}
+
 /* =========================================================
    Technical motifs — blueprint-style annotations that read as
    "engineered," not decorative. Used sparingly: hero, process

@@ -9,13 +9,13 @@ const Cart = {
     localStorage.setItem('azamReka_cart', JSON.stringify(cart));
     this.updateCartCount();
   },
-  addItem(name, price) {
+  addItem(name, price, qty = 1) {
     const cart = this.getCart();
     const existing = cart.find(item => item.name === name);
     if (existing) {
-      existing.qty += 1;
+      existing.qty += qty;
     } else {
-      cart.push({ name, price, qty: 1 });
+      cart.push({ name, price, qty });
     }
     this.saveCart(cart);
   },
@@ -116,21 +116,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Variant pickers — point the sibling add-to-cart button at the chosen variant
+  // Variant pickers — point the sibling add-to-cart/buy-now buttons at the chosen variant
   document.querySelectorAll('[data-variant-picker]').forEach(select => {
     const btn = select.parentElement.querySelector('[data-add-to-cart]');
+    const buyBtn = select.parentElement.querySelector('[data-buy-now]');
     if (!btn) return;
     const sync = () => {
       const opt = select.selectedOptions[0];
       if (!opt) return;
       btn.dataset.addToCart = opt.value;
       btn.dataset.price = opt.dataset.price;
+      if (buyBtn) {
+        buyBtn.dataset.buyNow = opt.value;
+        buyBtn.dataset.price = opt.dataset.price;
+      }
     };
     // Browsers restore a select's value on refresh/back-navigation without firing
     // change, so sync once up front or the button could disagree with what's shown.
     sync();
     select.addEventListener('change', sync);
   });
+
+  // Quantity steppers on product detail pages
+  document.querySelectorAll('[data-qty-stepper]').forEach(stepper => {
+    const valueEl = stepper.querySelector('[data-qty-stepper-value]');
+    const minusBtn = stepper.querySelector('[data-qty-stepper-minus]');
+    const plusBtn = stepper.querySelector('[data-qty-stepper-plus]');
+    if (!valueEl) return;
+    minusBtn.addEventListener('click', () => {
+      const current = parseInt(valueEl.textContent, 10) || 1;
+      valueEl.textContent = Math.max(1, current - 1);
+    });
+    plusBtn.addEventListener('click', () => {
+      const current = parseInt(valueEl.textContent, 10) || 1;
+      valueEl.textContent = current + 1;
+    });
+  });
+
+  // Reads the quantity from a nearby stepper, if one exists on the page —
+  // catalogue/home cards have no stepper and always add 1 at a time.
+  function stepperQty(nearEl) {
+    const stepper = nearEl.parentElement.querySelector('[data-qty-stepper-value]');
+    return stepper ? (parseInt(stepper.textContent, 10) || 1) : 1;
+  }
 
   // Add to cart buttons
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
@@ -146,8 +174,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const name = btn.dataset.addToCart;
       const price = parseFloat(btn.dataset.price);
-      Cart.addItem(name, price);
+      Cart.addItem(name, price, stepperQty(btn));
       alert(`${name} added to cart!`);
+    });
+  });
+
+  // Buy Now — adds the item then jumps straight to checkout, skipping the cart drawer.
+  document.querySelectorAll('[data-buy-now]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const name = btn.dataset.buyNow;
+      const price = parseFloat(btn.dataset.price);
+      Cart.addItem(name, price, stepperQty(btn));
+      window.location.href = '/checkout.html';
     });
   });
 
