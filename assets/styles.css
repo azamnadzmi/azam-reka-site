@@ -820,6 +820,13 @@ h1, h2, h3, h4, p { margin: 0; }
      .scroll-row's default flex align-items:stretch, but content inside
      each card is top-packed unless something absorbs the leftover space). */
   margin-top: auto;
+  /* .btn-whatsapp's base width:100% doesn't subtract margin-inline, so the
+     box came out 2.5rem wider than this card and got clipped by
+     overflow:hidden — shifting the visible button off-center. Explicit
+     calc() here (rather than relying on flex align-self:stretch, which
+     <button> elements don't always honor consistently across browsers)
+     removes the ambiguity. */
+  width: calc(100% - 2.5rem);
 }
 
 /* Category tile --------------------------------------------------- */
@@ -1501,11 +1508,7 @@ h1, h2, h3, h4, p { margin: 0; }
   background: var(--color-char);
   color: var(--color-bone);
   border-color: var(--color-char);
-  /* No explicit width — relies on the flex column parent's default stretch,
-     which (unlike width:100%) correctly subtracts the button's own margin.
-     width:100% + margin-inline together made the box wider than its
-     container, and overflow:hidden on .product-card clipped/shifted it. */
-  align-self: stretch;
+  width: 100%;
   justify-content: center;
 }
 .btn-whatsapp:hover { background: var(--color-ember); border-color: var(--color-ember); }
