@@ -196,7 +196,7 @@ async function checkRates({ pickCode, pickState, sendCode, sendState, weight }) 
   }
 
   const matched = [];
-  for (const rate of row.rates || []) {
+  for (const rate of row.quotations || []) {
     const courier = rate.courier || {};
     const classified = classifyCourier(courier);
     if (!classified) continue;
