@@ -886,8 +886,8 @@ h1, h2, h3, h4, p { margin: 0; }
   position: relative;
   aspect-ratio: 1 / 1;
   width: 100%;
-  background: radial-gradient(ellipse at 50% 45%, #2b2b2b 0%, #141414 70%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-bone);
+  border: 1px solid var(--color-ash);
   overflow: hidden;
   display: none;
 }
@@ -901,10 +901,19 @@ h1, h2, h3, h4, p { margin: 0; }
   margin: auto;
   width: 52%;
   height: auto;
-  /* Recolors the black logo mark to a soft off-white without a second
-     asset — brightness(0) flattens it to black, invert(1) flips to white. */
-  filter: brightness(0) invert(1);
-  opacity: 0.92;
+}
+
+/* Base layer — a faint imprint of the mark, as if only lightly scored,
+   not yet cut. Always fully visible underneath the engraved layer. */
+.laser-hero-visual__logo--outline {
+  opacity: 0.14;
+}
+
+/* Overlay layer — full-strength black, revealed row by row via an
+   animated clip-path timed to match the ember point's sweep below, so
+   the mark appears freshly engraved as the "laser" passes over it. */
+.laser-hero-visual__logo--engraved {
+  animation: laserHeroEngrave 7s linear infinite;
 }
 
 .laser-hero-visual__coord {
@@ -912,7 +921,7 @@ h1, h2, h3, h4, p { margin: 0; }
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-structural);
 }
 .laser-hero-visual__coord--tl { top: 1rem; left: 1rem; }
 .laser-hero-visual__coord--br { bottom: 1rem; right: 1rem; }
@@ -936,12 +945,13 @@ h1, h2, h3, h4, p { margin: 0; }
   margin-left: -13.5px;
   margin-top: -30px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 70%);
+  background: radial-gradient(circle, rgba(59, 50, 42, 0.25), transparent 70%);
   filter: blur(5px);
   opacity: 0;
   animation: laserHeroTravel 7s ease-in-out infinite, laserHeroSmoke 1.75s ease-out infinite;
 }
 
+/* Point sweeps three horizontal rows top-to-bottom, then resets. */
 @keyframes laserHeroTravel {
   0%   { top: 24%; left: 28%; }
   18%  { top: 24%; left: 72%; }
@@ -958,6 +968,21 @@ h1, h2, h3, h4, p { margin: 0; }
   0%   { opacity: 0; transform: translateY(0) scale(0.6); }
   35%  { opacity: 0.5; }
   100% { opacity: 0; transform: translateY(-26px) scale(1.4); }
+}
+
+/* Reveals the solid-black overlay top-down in the same three steps as the
+   point's rows above, so each row "engraves" as the point finishes it. */
+@keyframes laserHeroEngrave {
+  0%   { clip-path: inset(0 0 100% 0); }
+  18%  { clip-path: inset(0 0 100% 0); }
+  25%  { clip-path: inset(0 0 62% 0); }
+  43%  { clip-path: inset(0 0 62% 0); }
+  50%  { clip-path: inset(0 0 48% 0); }
+  68%  { clip-path: inset(0 0 48% 0); }
+  75%  { clip-path: inset(0 0 34% 0); }
+  93%  { clip-path: inset(0 0 34% 0); }
+  97%  { clip-path: inset(0 0 0% 0); }
+  100% { clip-path: inset(0 0 100% 0); }
 }
 
 /* Category tile --------------------------------------------------- */
