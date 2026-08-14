@@ -7,8 +7,58 @@
 <meta name="description" content="Browse the full Azam Reka catalogue — plaques, keychains, wedding pieces, and home decor, all custom laser-cut and engraved.">
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+/* Catalogue page — aligned to the reference shop layout
+   (https://azmrkatest.base44.app/shop). Scoped to .catalog-page so the
+   shared .product-card component on index.html is untouched. */
+.catalog-page {
+  background: #F7F5F2;
+}
+
+.catalog-page .h-display-2 {
+  font-size: clamp(2.75rem, 2.2rem + 2.5vw, 4.5rem);
+  letter-spacing: -0.02em;
+}
+
+.catalog-page .filter-chip {
+  font-size: 0.625rem; /* 10px */
+  padding: 0.375rem 0.75rem;
+  border-color: rgba(26, 26, 26, 0.18);
+}
+.catalog-page .filter-chip:hover { border-color: #B85C38; }
+.catalog-page .filter-chip.is-active {
+  background: #1A1A1A;
+  border-color: #1A1A1A;
+  color: #F7F5F2;
+}
+
+.catalog-page .product-card {
+  background: #F7F5F2;
+  border: 1px solid rgba(26, 26, 26, 0.18);
+  overflow: hidden;
+  transition: border-color 300ms ease;
+}
+.catalog-page .product-card:hover {
+  border-color: rgba(184, 92, 56, 0.5);
+}
+.catalog-page .product-card__media {
+  border-bottom: 1px solid rgba(26, 26, 26, 0.18);
+}
+.catalog-page .product-card__tag,
+.catalog-page .product-card__title,
+.catalog-page .mono-price,
+.catalog-page .btn-whatsapp {
+  margin-inline: 1.25rem;
+}
+.catalog-page .product-card__tag { margin-top: 1rem; }
+.catalog-page .btn-whatsapp { margin-bottom: 1rem; }
+
+@media (min-width: 1280px) {
+  .catalog-page .grid-3 { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
 </head>
-<body>
+<body class="catalog-page">
 
 <div class="promo-bar">
   <button class="promo-arrow promo-arrow--prev" aria-label="Previous announcement">&#8249;</button>
