@@ -642,6 +642,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6em;
   font-family: var(--font-micro);
   font-size: 0.6875rem;
