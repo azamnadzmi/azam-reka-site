@@ -1,11 +1,19 @@
 // api/create-payment.js
-// Handles: Save order to MongoDB + create ToyyibPay bill
+// Handles: Save order to MongoDB + create Billplz invoice
 
 const { MongoClient } = require('mongodb');
+const crypto = require('crypto');
 
 const mongoUri = process.env.MONGODB_URI;
-const toyyibPayApiKey = process.env.TOYYIBPAY_API_KEY;
-const toyyibPayCategoryCode = process.env.TOYYIBPAY_CATEGORY_CODE;
+const billplzApiKey = process.env.BILLPLZ_API_KEY;
+const billplzCollectionId = process.env.BILLPLZ_COLLECTION_ID;
+
+console.log('ENV CHECK:', {
+  hasBillplzApiKey: !!billplzApiKey,
+  apiKeyLength: billplzApiKey?.length,
+  hasBillplzCollectionId: !!billplzCollectionId,
+  collectionId: billplzCollectionId
+});
 
 let cachedClient = null;
 
@@ -16,36 +24,45 @@ async function getMongoClient() {
   return cachedClient;
 }
 
-async function createToyyibPayBill(orderData) {
-  const billParams = new URLSearchParams();
-  billParams.append('apikey', toyyibPayApiKey);
-  billParams.append('categoryCode', toyyibPayCategoryCode);
-  billParams.append('billName', `Order from ${orderData.name}`);
-  billParams.append('billDescription', `${orderData.items.length} item(s)`);
-  billParams.append('billPriceSetting', 1); // Fixed amount
-  billParams.append('billAmount', Math.round(orderData.total * 100)); // in sen
+async function createBillplzInvoice(orderData) {
   const siteUrl = process.env.SITE_URL || 'https://azamreka.com';
-  billParams.append('billReturnUrl', `${siteUrl}/order-confirmation`);
-  billParams.append('billCallbackUrl', `${siteUrl}/api/webhook/toyyibpay`);
-  billParams.append('billExpiryDate', new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0]);
-  billParams.append('billContentEmail', orderData.email);
-  billParams.append('billContentPhone', orderData.phone);
-  billParams.append('billPaidNotification', 1);
-  billParams.append('billSendSMS', 0);
-  billParams.append('billSendEmail', 1);
 
-  const response = await fetch('https://toyyibpay.com/api/bill/create', {
+  // Billplz API expects form-encoded data, not JSON
+  const params = new URLSearchParams();
+  params.append('collection_id', billplzCollectionId);
+  params.append('email', orderData.email);
+  params.append('mobile', orderData.phone);
+  params.append('name', orderData.name);
+  params.append('amount', Math.round(orderData.total * 100)); // in sen
+  params.append('description', `Order: ${orderData.items.map(i => i.name).join(', ')}`.substring(0, 200));
+  params.append('callback_url', `${siteUrl}/api/webhook/billplz`);
+  params.append('redirect_url', `${siteUrl}/order-confirmation`);
+
+  const response = await fetch('https://www.billplz.com/api/v3/bills', {
     method: 'POST',
-    body: billParams,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    headers: {
+      'Authorization': `Basic ${Buffer.from(billplzApiKey + ':').toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: params.toString()
   });
 
-  const data = await response.json();
-  if (data.status !== 200) {
-    throw new Error(`ToyyibPay error: ${data.message}`);
+  const responseText = await response.text();
+  console.log('Billplz response status:', response.status);
+  console.log('Billplz response body:', responseText.substring(0, 500));
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch (e) {
+    throw new Error(`Billplz returned invalid JSON (status ${response.status}): ${responseText.substring(0, 200)}`);
   }
 
-  return data.data.billCode;
+  if (!data.url) {
+    throw new Error(`Billplz error: ${data.message || 'Failed to create bill'}`);
+  }
+
+  return { id: data.id, url: data.url };
 }
 
 module.exports = async function handler(req, res) {
@@ -74,8 +91,8 @@ module.exports = async function handler(req, res) {
       shippingAddress.stateName || shippingAddress.state
     ].filter(Boolean).join(', ');
 
-    // Create ToyyibPay bill first
-    const billCode = await createToyyibPayBill({ name, email, phone, address: addressLine, notes, items, total });
+    // Create Billplz invoice first
+    const billplz = await createBillplzInvoice({ name, email, phone, address: addressLine, notes, items, total });
 
     // Save order to MongoDB
     const client = await getMongoClient();
@@ -83,7 +100,7 @@ module.exports = async function handler(req, res) {
     const orders = db.collection('orders');
 
     const order = {
-      billCode,
+      billplzId: billplz.id,
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
@@ -103,8 +120,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       success: true,
       orderId: result.insertedId,
-      billCode,
-      paymentUrl: `https://toyyibpay.com/bill/${billCode}`
+      billplzId: billplz.id,
+      paymentUrl: billplz.url
     });
   } catch (error) {
     console.error('Payment creation error:', error);
