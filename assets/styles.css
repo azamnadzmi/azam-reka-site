@@ -731,13 +731,13 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 /* Product card --------------------------------------------------- */
-/* Bordered card container — matches the reference's structural pattern
-   (hairline border, hover-to-ember, image separated by a border-bottom)
-   while keeping the site's existing warm bone/ash palette. */
+/* Bordered card, whole thing is one link (no more Add to Cart button
+   inside to conflict with click-through) — matches the reference: image
+   with an overlaid category tag, title + short description, then a
+   hairline-divided footer row with price and a "View →" link. */
 .product-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
   background: var(--color-bone);
   border: 1px solid var(--color-ash);
   overflow: hidden;
@@ -782,19 +782,29 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .product-card:hover .product-card__media img { transform: scale(1.04); }
 
+/* Overlaid on the image, top-left — was a chip below the image before */
 .product-card__tag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 2;
   font-family: var(--font-micro);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-ember);
-  border: 1px solid var(--color-ember-soft);
+  color: var(--color-bone);
+  background: var(--color-char);
   padding: 0.4em 0.75em;
   width: fit-content;
 }
 
+.product-card__body {
+  padding: 1.25rem 1.25rem 0;
+}
+
 .product-card__title {
+  display: block;
   font-family: var(--font-display);
   font-weight: 750;
   font-size: 1.125rem;
@@ -802,15 +812,37 @@ h1, h2, h3, h4, p { margin: 0; }
   line-height: 1.25;
 }
 
-/* Inset the text/button content within the bordered card — the image
-   sits flush edge-to-edge, everything below it gets breathing room. */
-.product-card__tag,
-.product-card__title,
-.product-card > .mono-price,
-.product-card > .btn-whatsapp {
-  margin-inline: 1.25rem;
+.product-card__desc {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-structural);
+  margin: 0.5em 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.product-card__tag { margin-top: 1rem; }
+
+.product-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--color-ash);
+}
+
+.product-card__view {
+  font-family: var(--font-micro);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-structural);
+  transition: color var(--duration-fast) var(--ease-precise);
+}
+.product-card:hover .product-card__view { color: var(--color-ember); }
+
 .product-card > .btn-whatsapp {
   margin-bottom: 1rem;
   /* Pins the button to the card's bottom edge regardless of how much
@@ -998,7 +1030,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .carousel-slide .video-badge {
   position: absolute;
   top: 8px;
-  left: 8px;
+  right: 8px;
   background: rgba(20, 19, 15, 0.75);
   color: var(--color-bone);
   font-family: var(--font-micro);
@@ -1124,19 +1156,8 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 
 .product-card[data-category="wedding"] .product-card__tag {
-  color: var(--color-brass);
-  border-color: var(--color-brass-soft);
-}
-
-.product-card[data-category="wedding"] .btn-whatsapp {
-  background: transparent;
-  color: var(--color-brass);
-  border: 1px solid var(--color-brass);
-}
-
-.product-card[data-category="wedding"] .btn-whatsapp:hover {
   background: var(--color-brass);
-  color: var(--color-bone);
+  color: var(--color-void);
 }
 
 .product-card[data-category="wedding"] .kerf-card::before {
