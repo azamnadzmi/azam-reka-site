@@ -240,6 +240,11 @@ async function checkRates({ pickCode, pickState, sendCode, sendState, weight }) 
     const courier = rate.courier || {};
     const classified = classifyCourier(courier);
     if (!classified) continue;
+    // Only pickup-from-door services — drop-off variants require the sender
+    // to bring the parcel to a courier point themselves, which isn't how
+    // Azam Reka ships (SENDER_ADDRESS is a home address, not staffed to
+    // drop off parcels during business hours).
+    if (!courier.is_pickup) continue;
     matched.push({
       courier: classified,
       courierName: courier.courier_name,
