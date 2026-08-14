@@ -79,30 +79,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Cart modal
+  // Cart drawer
   const cartBtn = document.querySelector('[data-cart-btn]');
   const cartModal = document.querySelector('[data-cart-modal]');
   const cartClose = document.querySelector('[data-cart-close]');
-  
+  const cartContinue = document.querySelector('[data-cart-continue]');
+
+  function openCart() {
+    if (!cartModal) return;
+    cartModal.style.display = 'block';
+    // Force a reflow so the transform transition actually plays instead of
+    // jumping straight to open (display:none -> block then dataset in the
+    // same tick would otherwise skip the transition).
+    void cartModal.offsetHeight;
+    cartModal.dataset.open = 'true';
+    renderCart();
+  }
+  function closeCart() {
+    if (!cartModal) return;
+    cartModal.dataset.open = 'false';
+    setTimeout(() => { cartModal.style.display = 'none'; }, 320);
+  }
+
   if (cartBtn && cartModal) {
-    cartBtn.addEventListener('click', () => {
-      cartModal.dataset.open = 'true';
-      cartModal.style.display = 'flex';
-      renderCart();
-    });
+    cartBtn.addEventListener('click', openCart);
   }
   if (cartClose && cartModal) {
-    cartClose.addEventListener('click', () => {
-      cartModal.dataset.open = 'false';
-      cartModal.style.display = 'none';
-    });
+    cartClose.addEventListener('click', closeCart);
+  }
+  if (cartContinue && cartModal) {
+    cartContinue.addEventListener('click', closeCart);
   }
   if (cartModal) {
     cartModal.addEventListener('click', (e) => {
-      if (e.target === cartModal) {
-        cartModal.dataset.open = 'false';
-        cartModal.style.display = 'none';
-      }
+      if (e.target === cartModal) closeCart();
     });
   }
 
@@ -141,11 +151,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Absolute paths (leading slash) so they resolve correctly whether main.js
+  // is loaded from a root page or a page inside products/.
+  const CART_PRODUCT_IMAGES = {
+    'Plaque': '/assets/products/plaque-01.jpg',
+    'Desk Name Plaque': '/assets/products/desk-name-plaque-01.jpg',
+    'Plaque Wood+Acrylic': '/assets/products/plaque-wood-acrylic-01.jpg',
+    'Plaque Portrait A4': '/assets/products/plaque-portrait-a4-01.jpg',
+    'Personalised Bookmark': '/assets/products/bookmark-01.jpg',
+    'HG25 Keychain': '/assets/products/keychain-01.jpg',
+    'Keychain': '/assets/products/keychain-03.jpg',
+    'Phone Holder': '/assets/products/phone-holder-01.jpg',
+    'Mas Kahwin/Hantaran Plaque': '/assets/products/maskahwin-plaque-01.jpg',
+    'Rehal Lite': '/assets/products/rehal-lite-01.jpg',
+    'Arah Sujud': '/assets/products/arah-sujud-01.jpg',
+    'Quran Cover': '/assets/products/quran-cover-01.jpg',
+    'Aqiqah Board': '/assets/products/maskahwin-plaque-01.jpg',
+    'Penunjuk Al-Quran (1 side)': '/assets/products/penunjuk-quran-01.jpg',
+    'Penunjuk Al-Quran (2 side)': '/assets/products/penunjuk-quran-01.jpg',
+    'Mini Frame 12x10': '/assets/products/mini-frame-12x10-01.jpg',
+    'Mini Frame 8x10': '/assets/products/mini-frame-8x10-01.jpg',
+    'Fridge Magnet 70mm': '/assets/products/magnetic-frame-01.jpg',
+    'Thank You Succulent HG25': '/assets/products/keychain-02.jpg'
+  };
+
   function renderCart() {
     const cartItems = document.querySelector('[data-cart-items]');
     const cartEmpty = document.querySelector('[data-cart-empty]');
     const cartCheckout = document.querySelector('[data-cart-checkout]');
+    const cartHeading = document.querySelector('.cart-modal__header h2');
     const cart = Cart.getCart();
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+
+    if (cartHeading) cartHeading.textContent = count > 0 ? `Cart (${count})` : 'Your Cart';
 
     if (!cartItems) return;
 
@@ -160,20 +198,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartEmpty) cartEmpty.style.display = 'none';
     if (cartCheckout) cartCheckout.style.display = 'flex';
 
-    cartItems.innerHTML = cart.map(item => `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding: 1rem 0; border-bottom: 1px solid var(--color-ash);">
-        <div>
-          <p style="margin:0; font-weight:600;">${item.name}</p>
-          <p style="margin:0; color: var(--color-structural); font-size:0.9rem;">RM ${item.price.toFixed(2)}</p>
+    cartItems.innerHTML = cart.map(item => {
+      const imageUrl = CART_PRODUCT_IMAGES[item.name] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop';
+      return `
+      <div class="cart-modal__item">
+        <div class="cart-modal__item-image">
+          <img src="${imageUrl}" alt="${item.name}">
         </div>
-        <div style="display:flex; align-items:center; gap: 0.5rem;">
-          <button data-qty-minus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">−</button>
-          <span style="width:32px; text-align:center;">${item.qty}</span>
-          <button data-qty-plus="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer;">+</button>
-          <button data-remove="${item.name}" style="width:32px; height:32px; border:1px solid var(--color-ash); background:none; cursor:pointer; color:var(--color-ember);">×</button>
+        <div class="cart-modal__item-details">
+          <p class="cart-modal__item-name">${item.name}</p>
+          <p class="cart-modal__item-price">RM ${item.price.toFixed(2)}</p>
+          <div class="cart-modal__item-controls">
+            <button class="cart-modal__qty-btn" data-qty-minus="${item.name}" aria-label="Decrease quantity">−</button>
+            <span class="cart-modal__qty-value">${item.qty}</span>
+            <button class="cart-modal__qty-btn" data-qty-plus="${item.name}" aria-label="Increase quantity">+</button>
+            <span class="cart-modal__item-remove" data-remove="${item.name}">Remove</span>
+          </div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     // Quantity controls
     document.querySelectorAll('[data-qty-plus]').forEach(btn => {
@@ -194,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
       });
     });
-    document.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        Cart.removeItem(btn.dataset.remove);
+    document.querySelectorAll('[data-remove]').forEach(el => {
+      el.addEventListener('click', () => {
+        Cart.removeItem(el.dataset.remove);
         renderCart();
       });
     });

@@ -94,18 +94,25 @@
 <!-- CART MODAL -->
 <div data-cart-modal class="cart-modal" style="display:none;">
   <div class="cart-modal__content">
-    <button data-cart-close class="cart-modal__close">×</button>
-    <h2 class="h-heading" style="margin-top:0;">Your Cart</h2>
+    <div class="cart-modal__header">
+      <h2 class="h-heading" style="margin:0;">Your Cart</h2>
+      <button data-cart-close class="cart-modal__close">×</button>
+    </div>
+
+    <div class="cart-modal__body">
     <div data-cart-items style="display:none;"></div>
     <div data-cart-empty style="text-align:center; padding: 2rem 0;">
       <p class="body-base" style="color: var(--color-structural);">Your cart is empty.</p>
     </div>
-    <div data-cart-checkout style="display:none; flex-direction:column; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-ash);">
+    </div>
+
+    <div data-cart-checkout class="cart-modal__footer" style="display:none; flex-direction:column; gap: 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <p class="h-heading" style="margin:0;">Total</p>
+        <p class="h-heading" style="margin:0;">Subtotal</p>
         <p class="h-heading" style="margin:0;" data-cart-total>RM 0.00</p>
       </div>
-      <button data-cart-whatsapp class="btn btn-primary" style="width:100%;">Proceed to Checkout</button>
+      <button data-cart-whatsapp class="btn btn-primary" style="width:100%;">Proceed to Checkout &rarr;</button>
+      <button type="button" data-cart-continue class="cart-modal__continue">Continue Shopping</button>
     </div>
   </div>
 </div>
