@@ -8,13 +8,6 @@ const mongoUri = process.env.MONGODB_URI;
 const billplzApiKey = process.env.BILLPLZ_API_KEY;
 const billplzCollectionId = process.env.BILLPLZ_COLLECTION_ID;
 
-console.log('ENV CHECK:', {
-  hasBillplzApiKey: !!billplzApiKey,
-  apiKeyLength: billplzApiKey?.length,
-  hasBillplzCollectionId: !!billplzCollectionId,
-  collectionId: billplzCollectionId
-});
-
 let cachedClient = null;
 
 async function getMongoClient() {
@@ -100,7 +93,8 @@ module.exports = async function handler(req, res) {
     const orders = db.collection('orders');
 
     const order = {
-      billplzId: billplz.id,
+      billCode: billplz.id,
+      billplzId: billplz.id, // kept in sync with billCode — the webhook looks up by this
       customerName: name,
       customerEmail: email,
       customerPhone: phone,

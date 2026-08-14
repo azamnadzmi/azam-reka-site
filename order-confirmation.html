@@ -25,29 +25,40 @@
       <img src="assets/logo.png" alt="Azam Reka" style="height:42px; width:auto;">
     </a>
     <nav class="site-header__nav">
-      <a href="catalog.html">Catalogue</a>
       <a href="about.html">About</a>
-      <a href="contact.html">Custom Orders</a>
+      <a href="catalog.html">Catalogue</a>
+      <a href="track-order.html">Track</a>
     </nav>
     <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
-      <a href="catalog.html" class="btn btn-primary" style="padding: 0.6em 1.2em;">Shop Again</a>
+      <a href="contact.html" class="btn btn-primary" style="padding: 0.6em 1.2em;">Custom Orders</a>
     </div>
   </div>
 </header>
 
 <section class="section">
   <div class="container" style="max-width: 800px; text-align: center;">
-    <div style="margin-bottom: var(--space-4);">
-      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--color-ember)" stroke-width="2" style="margin: 0 auto; display: block;">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+    <div style="margin-bottom: var(--space-3); width: 64px; height: 64px; border-radius: 50%; background: var(--color-ember); display: flex; align-items: center; justify-content: center; margin-inline: auto;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-bone)" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
       </svg>
     </div>
+    <p class="mono-label" style="color: var(--color-ember); margin-bottom: 0.5em;">Order Confirmed</p>
 
-    <h1 class="h-display-2" style="margin-bottom: 0.5em;">Order Confirmed!</h1>
-    <p class="body-lg" style="color: var(--color-structural); max-width: 60ch; margin-bottom: var(--space-2);">
+    <h1 class="h-display-2" style="margin-bottom: 0.5em;">Thank you for your order!</h1>
+    <p class="body-lg" style="color: var(--color-structural); max-width: 60ch; margin-bottom: var(--space-3);">
       Thank you for your order. Your payment has been received and we're excited to bring your vision to life.
     </p>
-    <p class="mono-label" id="orderIdDisplay" style="margin-bottom: var(--space-4);"></p>
+
+    <div id="orderSummaryBox" style="display:none; border: var(--hairline); max-width: 420px; margin: 0 auto var(--space-4); text-align: left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; padding: 1rem 1.25rem; border-bottom: var(--hairline);">
+        <span class="mono-label">Order Number</span>
+        <span class="mono-price" style="font-size: 1rem;" id="orderIdValue"></span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding: 1rem 1.25rem;" id="orderTotalRow">
+        <span class="mono-label">Total Paid</span>
+        <span class="mono-price" style="font-size: 1rem;" id="orderTotalValue"></span>
+      </div>
+    </div>
 
     <div style="border: var(--hairline); padding: var(--space-4); margin-bottom: var(--space-4); background: var(--color-bone);">
       <p class="mono-label" style="margin-bottom: 0.5em;">What happens next:</p>
@@ -121,17 +132,33 @@
 
 <script src="assets/main.js"></script>
 <script>
+// Read the total BEFORE clearing the cart-adjacent session value below.
+const lastTotal = sessionStorage.getItem('azamReka_lastOrderTotal');
+sessionStorage.removeItem('azamReka_lastOrderTotal');
+
 // Clear cart on order confirmation
 localStorage.removeItem('azamReka_cart');
 
-// ToyyibPay redirects back with billcode in the URL — surface it so the
-// customer has their Order ID in hand to use on the tracking page.
+// Billplz redirects back with the bill ID as "billplz[id]" (literal bracket
+// key, not nested JSON) — surface it so the customer has their Order ID in
+// hand to use on the tracking page.
 const params = new URLSearchParams(window.location.search);
-const billCode = params.get('billcode') || params.get('order_id');
+const billCode = params.get('billplz[id]');
+
+if (billCode || lastTotal) {
+  document.getElementById('orderSummaryBox').style.display = 'block';
+}
 if (billCode) {
-  document.getElementById('orderIdDisplay').textContent = `Order ID: ${billCode}`;
+  document.getElementById('orderIdValue').textContent = billCode;
   const trackLink = document.querySelector('a[href="track-order.html"]');
   if (trackLink) trackLink.href = `track-order.html?billCode=${encodeURIComponent(billCode)}`;
+} else {
+  document.getElementById('orderIdValue').textContent = '—';
+}
+if (lastTotal) {
+  document.getElementById('orderTotalValue').textContent = `RM ${lastTotal}`;
+} else {
+  document.getElementById('orderTotalRow').style.display = 'none';
 }
 </script>
 </body>

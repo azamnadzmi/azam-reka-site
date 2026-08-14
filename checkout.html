@@ -852,6 +852,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Payment failed');
 
+      // Survives the round trip to Billplz's payment page and back — read
+      // once on order-confirmation.html to show "Total Paid" without an API
+      // call (which would otherwise need a phone number for verification).
+      sessionStorage.setItem('azamReka_lastOrderTotal', total.toFixed(2));
+
       window.location.href = data.paymentUrl;
     } catch (error) {
       document.getElementById('errorMsg').textContent = error.message;
