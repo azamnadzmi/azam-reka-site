@@ -352,14 +352,16 @@ h1, h2, h3, h4, p { margin: 0; }
 .corner-frame::before {
   top: 10px;
   left: 10px;
-  border-left: 1px solid;
-  border-top: 1px solid;
+  /* Shorthand without a color resets border-color to currentColor, silently
+     discarding the var(--color-ember) set above — must repeat it here. */
+  border-left: 1px solid var(--color-ember);
+  border-top: 1px solid var(--color-ember);
 }
 .corner-frame::after {
   bottom: 10px;
   right: 10px;
-  border-right: 1px solid;
-  border-bottom: 1px solid;
+  border-right: 1px solid var(--color-ember);
+  border-bottom: 1px solid var(--color-ember);
 }
 .corner-frame__tr,
 .corner-frame__bl {
@@ -369,8 +371,8 @@ h1, h2, h3, h4, p { margin: 0; }
   border-color: var(--color-ember);
   opacity: 0.6;
 }
-.corner-frame__tr { top: 10px; right: 10px; border-right: 1px solid; border-top: 1px solid; }
-.corner-frame__bl { bottom: 10px; left: 10px; border-left: 1px solid; border-bottom: 1px solid; }
+.corner-frame__tr { top: 10px; right: 10px; border-right: 1px solid var(--color-ember); border-top: 1px solid var(--color-ember); }
+.corner-frame__bl { bottom: 10px; left: 10px; border-left: 1px solid var(--color-ember); border-bottom: 1px solid var(--color-ember); }
 
 /* =========================================================
    Motion — the machine's own vocabulary. Every animation here
@@ -886,7 +888,13 @@ h1, h2, h3, h4, p { margin: 0; }
   position: relative;
   aspect-ratio: 1 / 1;
   width: 100%;
-  background: var(--color-bone);
+  background-color: var(--color-bone);
+  /* Same graph-paper technique as .grid-bg, but dark-on-light — .grid-bg's
+     own lines are too faint (5% white) to read against this light panel. */
+  background-image:
+    linear-gradient(rgba(59, 50, 42, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 50, 42, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
   border: 1px solid var(--color-ash);
   overflow: hidden;
   display: none;
