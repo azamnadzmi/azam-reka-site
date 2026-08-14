@@ -1492,7 +1492,11 @@ h1, h2, h3, h4, p { margin: 0; }
   background: var(--color-char);
   color: var(--color-bone);
   border-color: var(--color-char);
-  width: 100%;
+  /* No explicit width — relies on the flex column parent's default stretch,
+     which (unlike width:100%) correctly subtracts the button's own margin.
+     width:100% + margin-inline together made the box wider than its
+     container, and overflow:hidden on .product-card clipped/shifted it. */
+  align-self: stretch;
   justify-content: center;
 }
 .btn-whatsapp:hover { background: var(--color-ember); border-color: var(--color-ember); }
