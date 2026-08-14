@@ -8,6 +8,7 @@
     "build-catalog:refresh": "python scripts/build_catalog.py --refresh"
   },
   "dependencies": {
+    "google-auth-library": "^9.0.0",
     "mongodb": "^6.3.0",
     "resend": "^3.0.0"
   },

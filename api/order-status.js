@@ -103,7 +103,8 @@ module.exports = async function handler(req, res) {
       })),
       tracking,
       createdAt: order.createdAt,
-      stageUpdatedAt: order.stageUpdatedAt || order.paidAt
+      stageUpdatedAt: order.stageUpdatedAt || order.paidAt,
+      messages: order.messages || []
     });
   } catch (error) {
     console.error('Order status lookup error:', error);

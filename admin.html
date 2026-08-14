@@ -152,6 +152,16 @@
 .source-badge.whatsapp { background: #e8f5e9; color: #2e7d32; }
 .source-badge.online { background: var(--color-ember-soft); color: var(--color-ember); }
 #adminPanel { display: none; }
+
+.msg-modal__content { max-width: 560px; display: flex; flex-direction: column; max-height: 80vh; }
+.msg-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; margin: var(--space-2) 0; padding: 0.5rem; border: 1px solid var(--color-ash); }
+.msg-bubble { max-width: 80%; padding: 0.6em 0.85em; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.5; border-radius: 2px; }
+.msg-bubble--admin { align-self: flex-end; background: var(--color-char); color: var(--color-bone); }
+.msg-bubble--customer { align-self: flex-start; background: #eee; color: var(--color-char); }
+.msg-bubble img { max-width: 100%; margin-top: 0.4em; }
+.msg-bubble__time { display: block; font-size: 0.65rem; opacity: 0.65; margin-top: 0.3em; }
+.msg-reply-row { display: flex; gap: 0.5rem; }
+.msg-reply-row input[type="text"] { flex: 1; padding: 0.5em 0.7em; border: 1px solid var(--color-ash); font-family: var(--font-mono); font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -233,6 +243,24 @@
       <button class="btn btn-primary" id="waCopyBtn">Copy Message</button>
       <a class="btn btn-outline" id="waOpenBtn" href="#" target="_blank">Open in WhatsApp</a>
       <button class="btn btn-outline" onclick="document.getElementById('waModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Design Update Portal — admin reply modal -->
+<div class="wa-modal" id="messagesModal">
+  <div class="wa-modal__content msg-modal__content">
+    <h2 class="h-heading" style="margin-top:0;">Design Update Portal — <span id="msgModalBillCode"></span></h2>
+    <div class="msg-list" id="msgList"></div>
+    <div class="msg-reply-row">
+      <input type="file" id="msgImageInput" accept="image/*" style="display:none;">
+      <button type="button" class="btn btn-outline" style="padding:0.5em 0.7em;" id="msgAttachBtn" title="Attach image">📎</button>
+      <input type="text" id="msgTextInput" placeholder="Reply to customer&hellip;">
+      <button class="btn btn-primary" id="msgSendBtn">Send</button>
+    </div>
+    <div id="msgImagePreviewName" style="display:none; font-size:0.75rem; color:var(--color-structural); margin-top:0.4em;"></div>
+    <div style="margin-top:var(--space-3); text-align:right;">
+      <button class="btn btn-outline" onclick="document.getElementById('messagesModal').classList.remove('open')">Close</button>
     </div>
   </div>
 </div>
@@ -334,6 +362,7 @@ function renderOrders(orders) {
     const shareBtn = isWhatsApp
       ? `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showWaMessage('${order.billCode}','${order.customerName.replace(/'/g,"\\'")}','${order.customerPhone}')">Share ID</button>`
       : '';
+    const messagesBtn = `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showMessages('${order.billCode}')">Messages${order.messages && order.messages.length ? ` (${order.messages.length})` : ''}</button>`;
     const currentStage = order.productionStage || 'confirmed';
     const badgeClass = currentStage === 'shipped' ? 'stage-badge shipped' : 'stage-badge';
 
@@ -354,7 +383,7 @@ function renderOrders(orders) {
 
     return `
       <tr>
-        <td><strong>${order.billCode}</strong>${shareBtn ? '<br>' + shareBtn : ''}</td>
+        <td><strong>${order.billCode}</strong>${shareBtn ? '<br>' + shareBtn : ''}<br>${messagesBtn}</td>
         <td>${sourceBadge}</td>
         <td>${order.customerName}<br><span style="color:var(--color-structural); font-size:0.8em;">${order.customerPhone}</span></td>
         <td style="max-width:220px;">${itemsSummary}</td>
@@ -510,6 +539,115 @@ function showWaMessage(billCode, customerName, phone) {
 document.getElementById('waModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('waModal')) {
     document.getElementById('waModal').classList.remove('open');
+  }
+});
+
+// Design Update Portal — admin side
+let msgActiveBillCode = null;
+let msgPendingImage = null; // { base64, mimeType }
+
+function renderAdminMessages(messages) {
+  const list = document.getElementById('msgList');
+  if (!messages || messages.length === 0) {
+    list.innerHTML = '<p style="text-align:center; color:var(--color-structural); font-size:0.85rem;">No messages yet.</p>';
+    return;
+  }
+  list.innerHTML = messages.map(m => {
+    const time = new Date(m.timestamp).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const senderLabel = m.sender === 'admin' ? 'You' : 'Customer';
+    const bubbleClass = m.sender === 'admin' ? 'msg-bubble--admin' : 'msg-bubble--customer';
+    const imageHtml = m.imageUrl ? `<img src="${m.imageUrl}" alt="Attachment">` : '';
+    const textHtml = m.text ? `<div>${m.text.replace(/</g, '&lt;')}</div>` : '';
+    return `<div class="msg-bubble ${bubbleClass}">${textHtml}${imageHtml}<span class="msg-bubble__time">${senderLabel} &middot; ${time}</span></div>`;
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+async function showMessages(billCode) {
+  msgActiveBillCode = billCode;
+  msgPendingImage = null;
+  document.getElementById('msgImagePreviewName').style.display = 'none';
+  document.getElementById('msgImageInput').value = '';
+  document.getElementById('msgTextInput').value = '';
+  document.getElementById('msgModalBillCode').textContent = billCode;
+  document.getElementById('msgList').innerHTML = '<p style="text-align:center; color:var(--color-structural); font-size:0.85rem;">Loading&hellip;</p>';
+  document.getElementById('messagesModal').classList.add('open');
+
+  try {
+    const res = await fetch(`/api/messages?billCode=${encodeURIComponent(billCode)}&adminPassword=${encodeURIComponent(adminPassword)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load messages');
+    renderAdminMessages(data.messages);
+  } catch (err) {
+    document.getElementById('msgList').innerHTML = `<p style="text-align:center; color:#B5694A; font-size:0.85rem;">${err.message}</p>`;
+  }
+}
+
+document.getElementById('messagesModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('messagesModal')) {
+    document.getElementById('messagesModal').classList.remove('open');
+  }
+});
+
+document.getElementById('msgAttachBtn').addEventListener('click', () => {
+  document.getElementById('msgImageInput').click();
+});
+
+document.getElementById('msgImageInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const nameEl = document.getElementById('msgImagePreviewName');
+  if (!file) { msgPendingImage = null; nameEl.style.display = 'none'; return; }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Image must be under 5MB.');
+    e.target.value = '';
+    msgPendingImage = null;
+    nameEl.style.display = 'none';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    msgPendingImage = { base64: reader.result.split(',')[1], mimeType: file.type || 'image/jpeg' };
+    nameEl.textContent = `Attached: ${file.name}`;
+    nameEl.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('msgSendBtn').addEventListener('click', async () => {
+  if (!msgActiveBillCode) return;
+  const textInput = document.getElementById('msgTextInput');
+  const text = textInput.value.trim();
+  if (!text && !msgPendingImage) return;
+
+  const btn = document.getElementById('msgSendBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        billCode: msgActiveBillCode,
+        adminPassword,
+        text,
+        imageBase64: msgPendingImage ? msgPendingImage.base64 : undefined,
+        imageMimeType: msgPendingImage ? msgPendingImage.mimeType : undefined
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send');
+
+    textInput.value = '';
+    msgPendingImage = null;
+    document.getElementById('msgImageInput').value = '';
+    document.getElementById('msgImagePreviewName').style.display = 'none';
+
+    const refreshed = await fetch(`/api/messages?billCode=${encodeURIComponent(msgActiveBillCode)}&adminPassword=${encodeURIComponent(adminPassword)}`);
+    const refreshedData = await refreshed.json();
+    if (refreshed.ok) renderAdminMessages(refreshedData.messages);
+  } catch (err) {
+    alert(err.message || 'Something went wrong sending the reply.');
+  } finally {
+    btn.disabled = false;
   }
 });
 
