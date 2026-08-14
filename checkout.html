@@ -583,6 +583,11 @@ body {
       <span id="shippingCost">RM 0.00</span>
     </div>
 
+    <div class="summary-row" id="rushChargeRow" style="display:none;">
+      <span>Rush Charge (<span id="rushChargePercent">0%</span>)</span>
+      <span id="rushChargeAmount">RM 0.00</span>
+    </div>
+
     <div class="summary-total">
       <span>Total</span>
       <span id="totalPrice">RM 0.00</span>
@@ -639,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="summary-item-details">
           <div class="summary-item-name">${item.name}</div>
-          <div class="summary-item-meta">Qty: ${item.qty}</div>
+          <div class="summary-item-meta">RM ${item.price.toFixed(2)} &times; ${item.qty}</div>
           <div class="summary-item-price">RM ${itemTotal}</div>
         </div>
       </div>
@@ -653,11 +658,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
   let shippingCost = 0;
   let rushCharge = 0;
+  let rushChargePercent = 0;
 
   function updateTotal() {
     const total = subtotal + shippingCost + rushCharge;
     document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
     document.getElementById('shippingCost').textContent = `RM ${shippingCost.toFixed(2)}`;
+
+    const rushRow = document.getElementById('rushChargeRow');
+    if (rushChargePercent > 0) {
+      rushRow.style.display = 'flex';
+      document.getElementById('rushChargePercent').textContent = `+${rushChargePercent}%`;
+      document.getElementById('rushChargeAmount').textContent = `RM ${rushCharge.toFixed(2)}`;
+    } else {
+      rushRow.style.display = 'none';
+    }
+
     document.getElementById('totalPrice').textContent = `RM ${total.toFixed(2)}`;
   }
 
@@ -687,6 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
       rushPercent = 10;
     }
 
+    rushChargePercent = rushPercent;
     rushCharge = (subtotal * rushPercent) / 100;
 
     // Update rush info display
