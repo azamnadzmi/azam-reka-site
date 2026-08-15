@@ -11,8 +11,8 @@
   --color-char: #3B322A;        /* warm charcoal-brown text */
   --color-structural: #948573;  /* warm taupe secondary text */
   --color-ash: #E3D6C3;         /* soft tan hairlines, borders */
-  --color-ember: #B5694A;       /* everyday accent — dusty terracotta/clay */
-  --color-ember-soft: #B5694A22; /* ember at low opacity, for washes */
+  --color-ember: #B8694F;       /* everyday accent — warm terracotta/clay */
+  --color-ember-soft: #B8694F22; /* ember at low opacity, for washes */
   --color-brass: #B87333;       /* premium accent — reserved for the Wedding line only */
   --color-brass-soft: #B8733322;
 
@@ -472,7 +472,7 @@ textarea:focus-visible,
 .btn-scorched {
   background: linear-gradient(#1A1A1A, #2A2A2A);
   color: var(--color-bone);
-  border: 1px solid var(--color-ember-soft);
+  border: 2px solid var(--color-char);
   box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.04);
   transition: all var(--duration-base) var(--ease-precise);
   cursor: pointer;
@@ -480,7 +480,7 @@ textarea:focus-visible,
 .btn-scorched:hover {
   background: linear-gradient(var(--color-ember), #9A4A2C);
   border-color: var(--color-ember);
-  box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.08), 0 4px 12px rgba(181, 105, 74, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.08), 0 8px 16px rgba(181, 105, 74, 0.3);
   transform: translateY(-2px);
 }
 
@@ -499,10 +499,10 @@ textarea:focus-visible,
 .eyebrow {
   font-family: var(--font-micro);
   font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-structural);
+  color: var(--color-ember);
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
@@ -511,8 +511,8 @@ textarea:focus-visible,
 
 .eyebrow::before {
   content: '';
-  width: 1.25em;
-  height: 1px;
+  width: 1.5em;
+  height: 2px;
   background: currentColor;
 }
 /* =========================================================
@@ -701,11 +701,11 @@ textarea:focus-visible,
   gap: 0.6em;
   font-family: var(--font-micro);
   font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 0.95em 1.75em;
-  border: 1px solid currentColor;
+  padding: 1em 1.85em;
+  border: 2px solid currentColor;
   border-radius: 0;
   transition: all var(--duration-fast) var(--ease-precise);
   cursor: pointer;
@@ -719,7 +719,8 @@ textarea:focus-visible,
 .btn-primary:hover {
   background: var(--color-ember);
   border-color: var(--color-ember);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
 }
 
 .btn-outline {
@@ -731,7 +732,8 @@ textarea:focus-visible,
   background: var(--color-char);
   color: var(--color-bone);
   border-color: var(--color-char);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
 }
 
 .btn-inverse {
@@ -743,7 +745,8 @@ textarea:focus-visible,
   background: var(--color-ember);
   border-color: var(--color-ember);
   color: var(--color-bone);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.12);
 }
 
 /* Touch target sizing — WCAG 2.1 Level AAA: 44×44px minimum on mobile */
@@ -1233,8 +1236,8 @@ textarea:focus-visible,
 .field select {
   font-family: var(--font-body);
   font-size: var(--text-base);
-  padding: 0.85em 1em;
-  border: var(--hairline);
+  padding: 0.9em 1.1em;
+  border: 2px solid var(--color-border);
   background: var(--color-bone);
   color: var(--color-char);
   transition: border-color var(--duration-fast) var(--ease-precise);
@@ -1819,14 +1822,14 @@ textarea:focus-visible,
 .filter-chip {
   font-family: var(--font-micro);
   font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 0.6em 1.1em;
+  padding: 0.65em 1.2em;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-ash);
+  border: 2px solid var(--color-ash);
   color: var(--color-structural);
   background: none;
   cursor: pointer;
