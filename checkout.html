@@ -58,6 +58,46 @@ body {
   color: #1A1A1A;
 }
 
+/* Error Summary — accessible error messaging */
+.form-error-summary {
+  background: #FEE;
+  border: 2px solid #D32F2F;
+  border-radius: 0;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-error-summary__title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 750;
+  color: #D32F2F;
+  margin: 0 0 0.75rem 0;
+}
+
+.form-error-summary__list {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.form-error-summary__list li {
+  margin-bottom: 0.5rem;
+  color: #D32F2F;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.form-error-summary__list a {
+  color: #D32F2F;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.form-error-summary__list a:hover {
+  text-decoration: none;
+}
+
 .form-section {
   margin-bottom: 3rem;
   position: relative;
@@ -477,6 +517,12 @@ body {
   <form id="checkoutForm" class="checkout-form">
     <h1>Checkout</h1>
 
+    <!-- Error Summary — screen reader and keyboard user friendly -->
+    <div id="formErrorSummary" role="alert" aria-labelledby="errorSummaryTitle" class="form-error-summary" style="display: none;">
+      <h2 id="errorSummaryTitle" class="form-error-summary__title">Please fix the following errors:</h2>
+      <ul id="errorSummaryList" class="form-error-summary__list"></ul>
+    </div>
+
     <!-- DELIVERY SECTION -->
     <div class="form-section">
       <h2>Delivery</h2>
@@ -828,20 +874,72 @@ document.addEventListener('DOMContentLoaded', () => {
   stateSelect.addEventListener('change', tryCalculateShipping);
 
   // Form submission
-  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Form validation and error summary
+  function validateCheckoutForm() {
+    const errors = [];
+    const requiredFields = [
+      { id: 'firstName', label: 'First name' },
+      { id: 'lastName', label: 'Last name' },
+      { id: 'address1', label: 'Address' },
+      { id: 'city', label: 'City' },
+      { id: 'postcode', label: 'Postcode' },
+      { id: 'phone', label: 'Phone' },
+      { id: 'email', label: 'Email' },
+      { id: 'arrivalDate', label: 'Expected arrival date' }
+    ];
+
+    requiredFields.forEach(field => {
+      const el = document.getElementById(field.id);
+      if (!el.value || !el.value.trim()) {
+        errors.push({ id: field.id, label: field.label });
+      }
+    });
 
     // Validate disclaimer
     if (!document.getElementById('disclaimerCheck').checked) {
-      document.getElementById('errorMsg').textContent = 'Please agree to the terms before proceeding';
-      document.getElementById('errorMsg').classList.add('active');
+      errors.push({ id: 'disclaimerCheck', label: 'You must agree to the terms' });
+    }
+
+    return errors;
+  }
+
+  function displayErrorSummary(errors) {
+    const summary = document.getElementById('formErrorSummary');
+    const list = document.getElementById('errorSummaryList');
+
+    if (errors.length === 0) {
+      summary.style.display = 'none';
       return;
     }
 
-    // Validate arrival date
-    if (!document.getElementById('arrivalDate').value) {
-      document.getElementById('errorMsg').textContent = 'Please select expected arrival date';
-      document.getElementById('errorMsg').classList.add('active');
+    list.innerHTML = '';
+    errors.forEach(error => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + error.id;
+      a.textContent = error.label;
+      a.onclick = (e) => {
+        e.preventDefault();
+        const field = document.getElementById(error.id);
+        field.focus();
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    summary.style.display = 'block';
+    summary.focus();
+  }
+
+  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Validate form and show error summary
+    const errors = validateCheckoutForm();
+    displayErrorSummary(errors);
+
+    if (errors.length > 0) {
       return;
     }
 
