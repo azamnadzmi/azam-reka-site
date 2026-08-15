@@ -484,15 +484,18 @@ h1, h2, h3, h4, p { margin: 0; }
   top: 0;
   z-index: 50;
   width: 100%;
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  background: rgba(243, 236, 224, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(227, 214, 195, 0.3);
   transition: background var(--duration-base) var(--ease-precise),
-              border-color var(--duration-base) var(--ease-precise);
+              border-color var(--duration-base) var(--ease-precise),
+              backdrop-filter var(--duration-base) var(--ease-precise);
 }
 
 .site-header[data-scrolled="true"] {
-  background: var(--color-surface);
-  border-bottom: var(--hairline);
+  background: rgba(243, 236, 224, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(227, 214, 195, 0.5);
 }
 
 .site-header__inner {
