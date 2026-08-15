@@ -124,10 +124,30 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 ul, ol { margin: 0; padding: 0; list-style: none; }
 h1, h2, h3, h4, p { margin: 0; }
 
-/* Focus states — always visible, never suppressed */
+/* Focus states — always visible, WCAG 2.1 Level AA compliant */
 :focus-visible {
   outline: 2px solid var(--color-ember);
-  outline-offset: 3px;
+  outline-offset: 2px;
+}
+
+/* Ensure all interactive elements have visible focus */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="menuitem"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :focus-visible {
+    transition: outline-color var(--duration-fast) var(--ease-precise);
+  }
 }
 
 /* Layout utility -------------------------------------------- */
@@ -1131,7 +1151,8 @@ h1, h2, h3, h4, p { margin: 0; }
 .field textarea:focus,
 .field select:focus {
   border-color: var(--color-ember);
-  outline: none;
+  outline: 2px solid var(--color-ember);
+  outline-offset: 2px;
 }
 
 /* =========================================================
@@ -1690,9 +1711,16 @@ h1, h2, h3, h4, p { margin: 0; }
   background: none;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-precise);
+  border-radius: 0;
 }
 .filter-chip:hover { border-color: var(--color-ember); color: var(--color-char); }
+.filter-chip:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 2px;
+  border-color: var(--color-ember);
+}
 .filter-chip.is-active { background: var(--color-char); border-color: var(--color-char); color: var(--color-bone); }
+.filter-chip.is-active:focus-visible { outline-color: var(--color-bone); }
 
 .toolbar {
   display: flex;
