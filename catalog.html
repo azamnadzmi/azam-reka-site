@@ -88,11 +88,11 @@
   <div class="container">
     <div class="toolbar">
       <div class="chip-row" id="filterRow">
-        <button class="filter-chip is-active" data-filter="all">All</button>
-        <button class="filter-chip" data-filter="plaques">Plaques &amp; Awards</button>
-        <button class="filter-chip" data-filter="keychains">Keychains &amp; Accessories</button>
-        <button class="filter-chip" data-filter="wedding">Wedding &amp; Mas Kahwin</button>
-        <button class="filter-chip" data-filter="decor">Gifts &amp; Home D&eacute;cor</button>
+        <button class="filter-chip is-active" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-chip" data-filter="plaques" aria-pressed="false">Plaques &amp; Awards</button>
+        <button class="filter-chip" data-filter="keychains" aria-pressed="false">Keychains &amp; Accessories</button>
+        <button class="filter-chip" data-filter="wedding" aria-pressed="false">Wedding &amp; Mas Kahwin</button>
+        <button class="filter-chip" data-filter="decor" aria-pressed="false">Gifts &amp; Home D&eacute;cor</button>
       </div>
     </div>
 
@@ -687,11 +687,26 @@
     document.getElementById('emptyState').style.display = visibleCount === 0 ? 'block' : 'none';
   }
 
+  // Filter chip click handler with accessibility support
   document.querySelectorAll('.filter-chip').forEach(function (chip) {
     chip.addEventListener('click', function () {
-      document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('is-active'); });
+      document.querySelectorAll('.filter-chip').forEach(function (c) {
+        c.classList.remove('is-active');
+        c.setAttribute('aria-pressed', 'false');
+      });
       chip.classList.add('is-active');
+      chip.setAttribute('aria-pressed', 'true');
       applyFilter(chip.dataset.filter);
+    });
+  });
+
+  // Handle keyboard navigation for filter chips
+  document.querySelectorAll('.filter-chip').forEach(function (chip) {
+    chip.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        chip.click();
+      }
     });
   });
 
@@ -700,8 +715,12 @@
   if (initialCategory) {
     var matchingChip = document.querySelector('.filter-chip[data-filter="' + initialCategory + '"]');
     if (matchingChip) {
-      document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('is-active'); });
+      document.querySelectorAll('.filter-chip').forEach(function (c) {
+        c.classList.remove('is-active');
+        c.setAttribute('aria-pressed', 'false');
+      });
       matchingChip.classList.add('is-active');
+      matchingChip.setAttribute('aria-pressed', 'true');
       applyFilter(initialCategory);
     }
   }

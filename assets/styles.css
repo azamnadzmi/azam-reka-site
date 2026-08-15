@@ -459,12 +459,18 @@ textarea:focus-visible,
   color: var(--color-bone);
   border: 1px solid var(--color-ember-soft);
   box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.04);
-  transition: background var(--duration-base) var(--ease-precise),
-              border-color var(--duration-base) var(--ease-precise);
+  transition: all var(--duration-base) var(--ease-precise);
+  cursor: pointer;
 }
 .btn-scorched:hover {
   background: linear-gradient(var(--color-ember), #9A4A2C);
   border-color: var(--color-ember);
+  box-shadow: inset 0 0 0 1px rgba(247, 245, 242, 0.08), 0 4px 12px rgba(181, 105, 74, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-scorched:active {
+  transform: translateY(0);
 }
 
 /* Faint graph-paper texture for dark technical sections */
@@ -686,8 +692,8 @@ textarea:focus-visible,
   padding: 0.95em 1.75em;
   border: 1px solid currentColor;
   border-radius: 0;
-  transition: background var(--duration-fast) var(--ease-precise),
-              color var(--duration-fast) var(--ease-precise);
+  transition: all var(--duration-fast) var(--ease-precise);
+  cursor: pointer;
 }
 
 .btn-primary {
@@ -695,20 +701,35 @@ textarea:focus-visible,
   color: var(--color-bone);
   border-color: var(--color-char);
 }
-.btn-primary:hover { background: var(--color-ember); border-color: var(--color-ember); }
+.btn-primary:hover {
+  background: var(--color-ember);
+  border-color: var(--color-ember);
+  transform: translateY(-1px);
+}
 
 .btn-outline {
   background: transparent;
   color: var(--color-char);
+  border-color: var(--color-char);
 }
-.btn-outline:hover { background: var(--color-char); color: var(--color-bone); }
+.btn-outline:hover {
+  background: var(--color-char);
+  color: var(--color-bone);
+  border-color: var(--color-char);
+  transform: translateY(-1px);
+}
 
 .btn-inverse {
   background: var(--color-bone);
   color: var(--color-void);
   border-color: var(--color-bone);
 }
-.btn-inverse:hover { background: var(--color-ember); border-color: var(--color-ember); color: var(--color-bone); }
+.btn-inverse:hover {
+  background: var(--color-ember);
+  border-color: var(--color-ember);
+  color: var(--color-bone);
+  transform: translateY(-1px);
+}
 
 /* Touch target sizing — WCAG 2.1 Level AAA: 44×44px minimum on mobile */
 @media (max-width: 768px) {
@@ -1552,6 +1573,24 @@ textarea:focus-visible,
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
+  transition: transform var(--duration-fast) var(--ease-precise);
+}
+
+.cart-count.pulse {
+  animation: cartPulse 0.6s var(--ease-precise);
+}
+
+@keyframes cartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-count.pulse {
+    animation: none;
+  }
+}
 }
 
 /* =========================================================

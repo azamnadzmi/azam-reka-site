@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return stepper ? (parseInt(stepper.textContent, 10) || 1) : 1;
   }
 
-  // Add to cart buttons
+  // Add to cart buttons — with visual feedback
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -175,9 +175,69 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = btn.dataset.addToCart;
       const price = parseFloat(btn.dataset.price);
       Cart.addItem(name, price, stepperQty(btn));
-      alert(`${name} added to cart!`);
+
+      // Visual feedback: pulse cart count badge
+      const cartCount = document.querySelector('[data-cart-count]');
+      if (cartCount) {
+        cartCount.classList.remove('pulse');
+        // Trigger reflow to restart animation
+        void cartCount.offsetWidth;
+        cartCount.classList.add('pulse');
+      }
+
+      // Show brief toast notification
+      showCartToast(`${name} added to cart!`);
     });
   });
+
+  // Toast notification for cart feedback
+  function showCartToast(message) {
+    const existing = document.querySelector('[data-cart-toast]');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.dataset.cartToast = '';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-char);
+      color: var(--color-bone);
+      padding: 1rem 1.5rem;
+      border-radius: 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      z-index: 200;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s var(--ease-precise);
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Remove after 2 seconds with fade out
+    setTimeout(() => {
+      toast.style.animation = 'slideDown 0.3s var(--ease-precise) forwards';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  }
+
+  // Add toast animations to styles
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      [data-cart-toast] { animation: none !important; opacity: 1 !important; }
+    }
+  `;
+  document.head.appendChild(style);
 
   // Buy Now — adds the item then jumps straight to checkout, skipping the cart drawer.
   document.querySelectorAll('[data-buy-now]').forEach(btn => {
