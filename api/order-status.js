@@ -5,6 +5,7 @@
 
 const { MongoClient } = require('mongodb');
 const { trackParcel } = require('./_lib/easyparcel');
+const { STAGE_LABELS, normalizeStage } = require('./_lib/order-emails');
 
 const mongoUri = process.env.MONGODB_URI;
 let cachedClient = null;
@@ -24,20 +25,13 @@ function normalizePhone(phone) {
   return String(phone || '').replace(/[^0-9]/g, '').replace(/^60/, '').replace(/^0/, '');
 }
 
-const STAGE_ORDER = ['confirmed', 'design', 'cutting', 'engraving', 'finishing_qc', 'shipped'];
-const STAGE_LABELS = {
-  confirmed: 'Order Confirmed',
-  design: 'Design Proof',
-  cutting: 'Cutting',
-  engraving: 'Engraving',
-  finishing_qc: 'Finishing & QC',
-  shipped: 'Shipped'
-};
+/* Updated 6-stage pipeline */
+const STAGE_ORDER = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped'];
 const STAGE_DESCRIPTIONS = {
   confirmed: 'We have registered your specifications. Pre-production review of coordinates is commencing.',
   design: 'Our workshop designer is preparing a high-fidelity vector layout for your approval in the message portal.',
-  cutting: 'The laser head is actively slicing your custom silhouette out of material sheet.',
-  engraving: 'Laser pulsing at high frequency to burn the custom detail into the surface.',
+  approved_queued: 'Your design is approved and queued for production.',
+  cutting_engraving: 'The laser head is actively slicing and engraving your custom piece.',
   finishing_qc: 'Hand-sanding wooden fibers, cleaning edges, and sealing with organic mineral oil, then inspecting alignment and tolerances.',
   shipped: 'Crafted piece handed over to our logistics partner. Track delivery via the courier waybill below.'
 };
@@ -75,7 +69,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const stage = order.productionStage || 'confirmed';
+    /* Normalize old stage names (cutting → cutting_engraving, etc.) for display */
+    const stage = normalizeStage(order.productionStage || 'confirmed');
     const stageIndex = STAGE_ORDER.indexOf(stage);
 
     let tracking = null;

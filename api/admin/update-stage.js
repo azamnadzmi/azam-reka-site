@@ -9,7 +9,7 @@
 // courier booked outside EasyParcel).
 
 const { MongoClient } = require('mongodb');
-const { VALID_STAGES, COURIER_LABELS, sendStageUpdateEmail } = require('../_lib/order-emails');
+const { VALID_STAGES, COURIER_LABELS, sendStageUpdateEmail, normalizeStage } = require('../_lib/order-emails');
 
 const mongoUri = process.env.MONGODB_URI?.trim();
 const adminPassword = process.env.ADMIN_PASSWORD;

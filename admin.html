@@ -266,11 +266,12 @@
 </div>
 
 <script>
+/* 6-stage production pipeline */
 const STAGES = [
   { key: 'confirmed', label: 'Order Confirmed' },
   { key: 'design', label: 'Design Proof' },
-  { key: 'cutting', label: 'Cutting' },
-  { key: 'engraving', label: 'Engraving' },
+  { key: 'approved_queued', label: 'Approved & Queued' },
+  { key: 'cutting_engraving', label: 'Cutting & Engraving' },
   { key: 'finishing_qc', label: 'Finishing & QC' },
   { key: 'shipped', label: 'Shipped' }
 ];

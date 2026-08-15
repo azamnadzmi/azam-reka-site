@@ -8,13 +8,20 @@ const { Resend } = require('resend');
 const resendApiKey = process.env.RESEND_API_KEY;
 const siteUrl = process.env.SITE_URL || 'https://azamreka.com';
 
-const VALID_STAGES = ['confirmed', 'design', 'cutting', 'engraving', 'finishing_qc', 'shipped'];
+/* Current valid stages (6-stage pipeline) */
+const VALID_STAGES = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped'];
+
+/* Old → new stage mapping for backward compatibility with existing orders */
+const STAGE_MAPPING = {
+  'cutting': 'cutting_engraving',
+  'engraving': 'cutting_engraving'
+};
 
 const STAGE_LABELS = {
   confirmed: 'Order Confirmed',
   design: 'Design Proof',
-  cutting: 'Cutting',
-  engraving: 'Engraving',
+  approved_queued: 'Approved & Queued',
+  cutting_engraving: 'Cutting & Engraving',
   finishing_qc: 'Finishing & QC',
   shipped: 'Shipped'
 };
@@ -22,8 +29,8 @@ const STAGE_LABELS = {
 const STAGE_MESSAGES = {
   confirmed: 'We\'ve confirmed your order and are getting ready to start.',
   design: 'We\'re finalizing the design proof for your piece.',
-  cutting: 'Your piece is being cut right now.',
-  engraving: 'Your piece is being engraved.',
+  approved_queued: 'Your design is approved and queued for production.',
+  cutting_engraving: 'Your piece is being cut and engraved right now.',
   finishing_qc: 'Your piece is being finished and quality-checked.',
   shipped: 'Your piece has shipped and is on its way to you!'
 };
@@ -40,12 +47,20 @@ const COURIER_LABELS = {
   NINJA: 'Ninja Van'
 };
 
+/* Map old stage names to new ones for backward compatibility */
+function normalizeStage(stage) {
+  return STAGE_MAPPING[stage] || stage;
+}
+
 async function sendStageUpdateEmail(order, stage) {
   if (!resendApiKey || !order.customerEmail) return;
   const resend = new Resend(resendApiKey);
   const trackingUrl = `${siteUrl}/track-order.html?billCode=${encodeURIComponent(order.billCode)}`;
 
-  const shippingLine = (stage === 'shipped' && order.trackingNumber)
+  /* Normalize old stage names to new ones */
+  const normalizedStage = normalizeStage(stage);
+
+  const shippingLine = (normalizedStage === 'shipped' && order.trackingNumber)
     ? `<p><strong>Courier:</strong> ${COURIER_LABELS[order.courier] || order.courier || 'N/A'}<br>` +
       `<strong>Tracking number:</strong> ${order.trackingNumber}</p>`
     : '';
@@ -54,12 +69,12 @@ async function sendStageUpdateEmail(order, stage) {
     await resend.emails.send({
       from: 'orders@azamreka.com',
       to: order.customerEmail,
-      subject: `Order #${order.billCode} update: ${STAGE_LABELS[stage]} — Azam Reka`,
+      subject: `Order #${order.billCode} update: ${STAGE_LABELS[normalizedStage]} — Azam Reka`,
       html: `
         <h2>Your order has been updated</h2>
         <p>Hi ${order.customerName},</p>
-        <p>${STAGE_MESSAGES[stage]}</p>
-        <p><strong>Current stage:</strong> ${STAGE_LABELS[stage]}</p>
+        <p>${STAGE_MESSAGES[normalizedStage]}</p>
+        <p><strong>Current stage:</strong> ${STAGE_LABELS[normalizedStage]}</p>
         ${shippingLine}
         <p><a href="${trackingUrl}">Track your order</a> for full progress details.</p>
         <p>Questions? WhatsApp us at +60 11-1085 2324.</p>
@@ -77,5 +92,7 @@ module.exports = {
   STAGE_LABELS,
   STAGE_MESSAGES,
   COURIER_LABELS,
+  STAGE_MAPPING,
+  normalizeStage,
   sendStageUpdateEmail
 };

@@ -401,6 +401,15 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 .pilot-pulse { animation: pilotPulse 2.4s ease-in-out infinite; }
 
+/* Current production stage indicator — subtle glow pulse to draw attention */
+@keyframes stagePulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-ember-soft); }
+  50%      { box-shadow: 0 0 0 6px transparent; }
+}
+.stepper__row.is-current .stepper__dot {
+  animation: stagePulse 1.8s ease-in-out infinite;
+}
+
 /* The beam itself, tracking down a sheet. A 1px ember hairline
    swept over a media frame. */
 @keyframes laserScan {

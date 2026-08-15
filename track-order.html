@@ -69,11 +69,44 @@
 .order-summary-card__item span:last-child { color: var(--color-structural); }
 .order-summary-card__courier {
   margin: 0 1.25rem 1.25rem;
-  padding: 1rem;
-  background: var(--color-bone);
-  border: 1px solid var(--color-ash);
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--color-bone) 0%, #FAFAF8 100%);
+  border: 2px solid var(--color-ember);
+  border-radius: 0;
 }
-.order-summary-card__courier-title { font-family: var(--font-micro); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ember); margin: 0 0 0.5em; }
+.order-summary-card__courier-title {
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ember);
+  margin: 0 0 0.75em;
+  font-weight: 500;
+}
+.order-summary-card__courier .courier-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-char);
+  margin: 0 0 0.5em;
+  letter-spacing: -0.01em;
+}
+.order-summary-card__courier .courier-tracking {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-ember);
+  margin: 0 0 0.75em;
+  word-break: break-all;
+}
+.order-summary-card__courier .courier-status {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  margin: 0;
+  padding: 0.5em 0.75em;
+  background: var(--color-ember-soft);
+  border-radius: 0;
+}
 
 /* Right: production timeline */
 .timeline { border: 1px solid var(--color-ash); padding: 1.5rem; }
@@ -450,10 +483,13 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
         </div>
       `).join('');
       trackingBox.innerHTML = `
-        <p class="order-summary-card__courier-title">Courier Dispatched</p>
-        <p style="margin:0;"><strong>${t.courierLabel}</strong> &middot; <span style="font-family: var(--font-mono);">${t.trackingNumber}</span></p>
-        ${t.live ? `<p style="margin:0.5em 0 0; color: var(--color-brass);">${t.live.latestStatus || ''}</p>` : `<p style="margin:0.5em 0 0; color: var(--color-structural); font-size:0.85rem;">Live status temporarily unavailable — the tracking number above still works on the courier's own site.</p>`}
-        ${events ? `<div style="margin-top:0.75em;">${events}</div>` : ''}
+        <div class="order-summary-card__courier-title">Courier Tracking</div>
+        <div class="courier-name">${t.courierLabel}</div>
+        <div class="courier-tracking">${t.trackingNumber}</div>
+        <div class="courier-status">
+          ${t.live ? `<strong>${t.live.latestStatus || 'In Transit'}</strong>` : 'Live tracking temporarily unavailable'}
+        </div>
+        ${events ? `<div style="margin-top:1em; border-top:1px solid var(--color-ash); padding-top:0.75em;">${events}</div>` : ''}
       `;
       trackingBox.style.display = 'block';
     } else {
