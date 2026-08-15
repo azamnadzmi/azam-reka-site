@@ -1631,7 +1631,6 @@ textarea:focus-visible,
     animation: none;
   }
 }
-}
 
 /* =========================================================
    PROMO BAR — rotating multi-message announcement strip
@@ -1980,3 +1979,138 @@ textarea:focus-visible,
 @media (max-width: 600px) {
   .toolbar { flex-direction: column; align-items: flex-start; }
 }
+
+/* =========================================================
+   COLLECTIONS GRID — "Materiality Matrix" style hover cards.
+   Cards sit light at rest and invert to near-black on hover
+   (not a static dark section), matching the reference site's
+   .group / .group-hover: Tailwind pattern translated to plain CSS.
+   ========================================================= */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(26, 26, 26, 0.12);
+  border: 1px solid var(--color-ash);
+}
+@media (max-width: 1023px) {
+  .collections-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 639px) {
+  .collections-grid { grid-template-columns: 1fr; }
+}
+
+.collection-card {
+  position: relative;
+  background: var(--color-bone);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 440px;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.5s var(--ease-precise);
+}
+.collection-card:hover { background: #1A1A1A; }
+
+.collection-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.collection-card__code {
+  font-family: var(--font-micro);
+  font-size: 0.625rem;
+  color: var(--color-structural);
+  transition: color 0.3s;
+}
+.collection-card:hover .collection-card__code { color: var(--color-ember); }
+
+.collection-card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(26, 26, 26, 0.2);
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+.collection-card:hover .collection-card__dot { background: var(--color-ember); }
+.collection-card__dot--active { background: var(--color-ember); }
+
+.collection-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid var(--color-ash);
+  margin-bottom: 1.25rem;
+  transition: border-color 0.3s;
+}
+.collection-card:hover .collection-card__media { border-color: rgba(184, 105, 79, 0.4); }
+
+.collection-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s var(--ease-precise);
+}
+.collection-card:hover .collection-card__media img { transform: scale(1.05); }
+
+.collection-card__media-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0);
+  transition: background-color 0.5s;
+}
+.collection-card:hover .collection-card__media-overlay { background: rgba(26, 26, 26, 0.3); }
+
+.collection-card__media-tag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  font-family: var(--font-micro);
+  font-size: 0.5625rem;
+  color: rgba(243, 236, 224, 0);
+  transition: color 0.5s;
+}
+.collection-card:hover .collection-card__media-tag { color: rgba(243, 236, 224, 0.8); }
+
+.collection-card__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-char);
+  transition: color 0.3s;
+}
+.collection-card:hover .collection-card__title { color: var(--color-bone); }
+
+.collection-card__desc {
+  font-size: 0.75rem;
+  line-height: 1.625;
+  color: rgba(26, 26, 26, 0.7);
+  margin-bottom: auto;
+  transition: color 0.3s;
+}
+.collection-card:hover .collection-card__desc { color: rgba(243, 236, 224, 0.7); }
+
+.collection-card__tags {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(26, 26, 26, 0.15);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  transition: border-color 0.3s;
+}
+.collection-card:hover .collection-card__tags { border-color: rgba(243, 236, 224, 0.15); }
+
+.collection-card__tags span {
+  font-family: var(--font-micro);
+  font-size: 0.5625rem;
+  color: var(--color-structural);
+  transition: color 0.3s;
+}
+.collection-card:hover .collection-card__tags span { color: rgba(243, 236, 224, 0.6); }
