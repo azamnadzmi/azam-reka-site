@@ -301,58 +301,87 @@
 
 <section class="section hairline-top" data-reveal>
   <div class="container">
-    <p class="eyebrow">Shop by Category</p>
-    <h2 class="h-display-3" style="margin-bottom: var(--space-4); max-width: 20ch;">Four collections. One standard of craft.</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: var(--space-4);">
-      <a href="catalog.html?category=plaques" class="kerf-card" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-        <div style="position: relative; height: 280px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=800&q=80); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; padding-bottom: 2rem; border-bottom: 1px solid var(--color-ash);">
+      <!-- Left Column -->
+      <div>
+        <p class="eyebrow" style="margin-bottom: 0.5em;">§ 02</p>
+        <h2 class="h-display-2" style="margin-top: 1.5em;">Four collections. One standard of craft.</h2>
+      </div>
+
+      <!-- Right Column: Description -->
+      <div>
+        <p class="body-base" style="color: var(--color-structural); line-height: 1.625;">Four substrates. One beam. Each collection answers the laser differently — revealing a unique signature of precision, craft, and purpose. Hover a card to inspect its character.</p>
+      </div>
+    </div>
+
+    <!-- Collections Grid -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: var(--space-4); border: 1px solid var(--color-ash); padding: 2rem; position: relative;">
+      <!-- Status Indicators Row -->
+      <div style="position: absolute; top: -2rem; left: 0; display: flex; gap: 2rem; width: 100%;">
+        <div style="text-align: center;">
+          <span style="font-size: 0.6rem; color: var(--color-structural); display: block; margin-bottom: 0.25rem;">C.01</span>
+          <span class="pilot-pulse" style="display: inline-block; width: 8px; height: 8px; background: var(--color-char); border-radius: 50%;"></span>
         </div>
-        <p class="mono-label" style="color: var(--color-structural); margin-bottom: 0.5rem;">C.01</p>
-        <h3 class="h-heading">Plaques &amp; Awards</h3>
-        <p class="body-sm" style="color: var(--color-structural); margin-top: 0.5rem; margin-bottom: 1rem;">Recognition and distinction. Laser-cut plaques for achievements, milestones, and memories.</p>
+        <div style="text-align: center;">
+          <span style="font-size: 0.6rem; color: var(--color-structural); display: block; margin-bottom: 0.25rem;">C.02</span>
+          <span style="display: inline-block; width: 8px; height: 8px; background: var(--color-ember); border-radius: 50%;"></span>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-size: 0.6rem; color: var(--color-structural); display: block; margin-bottom: 0.25rem;">C.03</span>
+          <span style="display: inline-block; width: 8px; height: 8px; background: var(--color-structural); border-radius: 50%;"></span>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-size: 0.6rem; color: var(--color-structural); display: block; margin-bottom: 0.25rem;">C.04</span>
+          <span style="display: inline-block; width: 8px; height: 8px; background: var(--color-structural); border-radius: 50%;"></span>
+        </div>
+      </div>
+
+      <!-- Collection Cards -->
+      <a href="catalog.html?category=plaques" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column; padding-top: 1rem;">
+        <div style="position: relative; height: 220px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=400&q=80); background-size: cover; background-position: center; transition: transform var(--duration-base) var(--ease-precise);" style="hover: transform: scale(1.05);">
+        </div>
+        <h3 class="h-heading" style="font-size: 1.125rem; margin-bottom: 0.5rem;">Plaques &amp; Awards</h3>
+        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1rem; line-height: 1.5;">Recognition and distinction. Laser-cut plaques for achievements, milestones, and memories.</p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;">
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">PLAQUES</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">ACRYLIC · WOOD</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">CUSTOMIZABLE</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">PLAQUES</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">ACRYLIC</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">WOOD</span>
         </div>
       </a>
 
-      <a href="catalog.html?category=keychains" class="kerf-card" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-        <div style="position: relative; height: 280px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=800&q=80); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;">
+      <a href="catalog.html?category=keychains" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column; padding-top: 1rem;">
+        <div style="position: relative; height: 220px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=400&q=80); background-size: cover; background-position: center; transition: transform var(--duration-base) var(--ease-precise);">
         </div>
-        <p class="mono-label" style="color: var(--color-structural); margin-bottom: 0.5rem;">C.02</p>
-        <h3 class="h-heading">Keychains &amp; Accessories</h3>
-        <p class="body-sm" style="color: var(--color-structural); margin-top: 0.5rem; margin-bottom: 1rem;">Pocket-sized charm. Precision-cut keychains and accessories for daily carry.</p>
+        <h3 class="h-heading" style="font-size: 1.125rem; margin-bottom: 0.5rem;">Keychains &amp; Accessories</h3>
+        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1rem; line-height: 1.5;">Pocket-sized charm. Precision-cut keychains and accessories for daily carry.</p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;">
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">KEYCHAINS</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">WOOD · LEATHER</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">PERSONAL</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">KEYCHAINS</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">WOOD</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">LEATHER</span>
         </div>
       </a>
 
-      <a href="catalog.html?category=wedding" class="kerf-card" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-        <div style="position: relative; height: 280px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;">
+      <a href="catalog.html?category=wedding" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column; padding-top: 1rem;">
+        <div style="position: relative; height: 220px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=80); background-size: cover; background-position: center; transition: transform var(--duration-base) var(--ease-precise);">
         </div>
-        <p class="mono-label" style="color: var(--color-structural); margin-bottom: 0.5rem;">C.03</p>
-        <h3 class="h-heading">Wedding &amp; Mas Kahwin</h3>
-        <p class="body-sm" style="color: var(--color-structural); margin-top: 0.5rem; margin-bottom: 1rem;">Celebrate moments that matter. Custom pieces for weddings and cultural ceremonies.</p>
+        <h3 class="h-heading" style="font-size: 1.125rem; margin-bottom: 0.5rem;">Wedding &amp; Mas Kahwin</h3>
+        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1rem; line-height: 1.5;">Celebrate moments that matter. Custom pieces for weddings and cultural ceremonies.</p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;">
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">CEREMONIAL</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">PREMIUM MATERIALS</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">BESPOKE</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">CEREMONIAL</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">PREMIUM</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">BESPOKE</span>
         </div>
       </a>
 
-      <a href="catalog.html?category=decor" class="kerf-card" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column;">
-        <div style="position: relative; height: 280px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=800&q=80); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;">
+      <a href="catalog.html?category=decor" style="cursor: pointer; transition: all var(--duration-base) var(--ease-precise); text-decoration: none; color: inherit; display: flex; flex-direction: column; padding-top: 1rem;">
+        <div style="position: relative; height: 220px; margin-bottom: 1rem; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=400&q=80); background-size: cover; background-position: center; transition: transform var(--duration-base) var(--ease-precise);">
         </div>
-        <p class="mono-label" style="color: var(--color-structural); margin-bottom: 0.5rem;">C.04</p>
-        <h3 class="h-heading">Gifts &amp; Home Décor</h3>
-        <p class="body-sm" style="color: var(--color-structural); margin-top: 0.5rem; margin-bottom: 1rem;">Thoughtful designs. Curated pieces that bring beauty and personality to any space.</p>
+        <h3 class="h-heading" style="font-size: 1.125rem; margin-bottom: 0.5rem;">Gifts &amp; Home Décor</h3>
+        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1rem; line-height: 1.5;">Thoughtful designs. Curated pieces that bring beauty and personality to any space.</p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;">
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">HOME</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">DECORATIVE</span>
-          <span class="mono-label" style="color: var(--color-structural); font-size: 0.6rem;">VERSATILE</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">HOME</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">DECORATIVE</span>
+          <span class="mono-label" style="color: var(--color-structural); font-size: 0.55rem;">VERSATILE</span>
         </div>
       </a>
     </div>
