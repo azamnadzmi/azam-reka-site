@@ -710,6 +710,41 @@ textarea:focus-visible,
 }
 .btn-inverse:hover { background: var(--color-ember); border-color: var(--color-ember); color: var(--color-bone); }
 
+/* Touch target sizing — WCAG 2.1 Level AAA: 44×44px minimum on mobile */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75em 1.25em;
+  }
+
+  /* Ensure adequate spacing between touch targets (8px minimum) */
+  .btn + .btn,
+  .btn + [role="button"],
+  [role="button"] + .btn {
+    margin-left: 0.5rem;
+  }
+
+  /* Form elements touch target sizing */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    min-height: 44px;
+    padding: 0.75rem;
+  }
+
+  /* Navigation touch targets */
+  .site-header__nav a {
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 /* -----------------------------------------------------------
    KERF-LINE CARD — signature interaction.
    On hover, a thin copper line traces the card perimeter like
@@ -1494,6 +1529,12 @@ textarea:focus-visible,
 
 .cart-button {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
 }
 
 .cart-count {
@@ -1706,6 +1747,9 @@ textarea:focus-visible,
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0.6em 1.1em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   border: 1px solid var(--color-ash);
   color: var(--color-structural);
   background: none;
