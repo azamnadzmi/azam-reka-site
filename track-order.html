@@ -29,7 +29,56 @@
 }
 .tracker-form input:focus { outline: none; border-color: var(--color-ember); }
 
-.stepper { max-width: 640px; margin: var(--space-5) auto 0; }
+/* Two-column result layout — order summary card + production timeline,
+   matching the reference's track page. Stacks on mobile. */
+.track-result-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  max-width: 960px;
+  margin: var(--space-5) auto 0;
+  align-items: start;
+}
+@media (min-width: 860px) {
+  .track-result-grid { grid-template-columns: 1fr 1.2fr; }
+}
+
+/* Left: order summary card */
+.order-summary-card { border: 1px solid var(--color-ash); }
+.order-summary-card__header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--color-ash);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.order-summary-card__id { font-family: var(--font-display); font-weight: 750; font-size: 1.25rem; letter-spacing: -0.01em; }
+.order-summary-card__meta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-structural); margin-top: 0.4em; }
+.order-summary-card__badge {
+  font-family: var(--font-micro);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35em 0.6em;
+  border: 1px solid var(--color-ember-soft);
+  color: var(--color-ember);
+  white-space: nowrap;
+}
+.order-summary-card__items { padding: 1rem 1.25rem; }
+.order-summary-card__item { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.85rem; padding: 0.4em 0; }
+.order-summary-card__item span:last-child { color: var(--color-structural); }
+.order-summary-card__courier {
+  margin: 0 1.25rem 1.25rem;
+  padding: 1rem;
+  background: var(--color-bone);
+  border: 1px solid var(--color-ash);
+}
+.order-summary-card__courier-title { font-family: var(--font-micro); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ember); margin: 0 0 0.5em; }
+
+/* Right: production timeline */
+.timeline { border: 1px solid var(--color-ash); padding: 1.5rem; }
+.timeline__title { font-family: var(--font-micro); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-structural); margin: 0 0 1.25rem; }
+.stepper { }
 .stepper__row {
   display: flex;
   align-items: flex-start;
@@ -65,6 +114,7 @@
 .stepper__row.is-current .stepper__dot { background: var(--color-brass); color: var(--color-bone); box-shadow: 0 0 0 4px var(--color-brass-soft); }
 .stepper__label { font-weight: 600; padding-top: 0.4em; }
 .stepper__row.is-current .stepper__label { color: var(--color-brass); }
+.stepper__desc { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; color: var(--color-structural); margin-top: 0.3em; max-width: 40ch; }
 
 #result { display: none; }
 #notFound { display: none; }
@@ -213,13 +263,26 @@
       <div id="errorMsg" style="display:none; color:#B5694A; background: var(--color-ember-soft); padding: 1em; border-radius: 0; margin-top: 1em; font-size: var(--text-sm);"></div>
     </form>
 
-    <div id="result" class="stepper">
-      <div style="text-align:center; margin-bottom: var(--space-4);">
-        <p class="mono-label" id="resultBillCode"></p>
-        <h2 class="h-heading" id="resultName" style="margin-top: 0.3em;"></h2>
+    <div id="result">
+      <div class="track-result-grid">
+        <div class="order-summary-card">
+          <div class="order-summary-card__header">
+            <div>
+              <p class="order-summary-card__id" id="resultBillCode"></p>
+              <p class="order-summary-card__meta" id="resultName"></p>
+              <p class="order-summary-card__meta" id="resultMeta"></p>
+            </div>
+            <span class="order-summary-card__badge" id="resultBadge"></span>
+          </div>
+          <div class="order-summary-card__items" id="resultItems"></div>
+          <div id="trackingBox" class="order-summary-card__courier" style="display:none;"></div>
+        </div>
+
+        <div class="timeline">
+          <p class="timeline__title">Production Timeline</p>
+          <div id="stepperRows" class="stepper"></div>
+        </div>
       </div>
-      <div id="stepperRows"></div>
-      <div id="trackingBox" style="display:none; background: var(--color-bone-alt, #f5f3f0); border: 1px solid var(--color-ash); border-radius: 0; padding: 1.25em; margin-top: var(--space-4);"></div>
 
       <div class="message-portal">
         <div class="message-portal__header">
@@ -342,8 +405,25 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
       return;
     }
 
-    document.getElementById('resultBillCode').textContent = `Order #${data.billCode}`;
+    document.getElementById('resultBillCode').textContent = `#${data.billCode}`;
     document.getElementById('resultName').textContent = `Hi ${data.customerName}!`;
+    const submittedDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-MY', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    document.getElementById('resultMeta').textContent = submittedDate ? `Submitted on ${submittedDate}` : '';
+    document.getElementById('resultBadge').textContent = data.stageLabel;
+
+    const itemsTotal = (data.items || []).reduce((sum, it) => sum + (it.price * it.qty), 0);
+    const itemsHtml = (data.items || []).map(it => `
+      <div class="order-summary-card__item">
+        <span>${it.name} &times;${it.qty}</span>
+        <span>RM ${(it.price * it.qty).toFixed(2)}</span>
+      </div>
+    `).join('') + `
+      <div class="order-summary-card__item" style="border-top: 1px solid var(--color-ash); margin-top: 0.4em; padding-top: 0.6em; font-weight: 600;">
+        <span>Total</span>
+        <span>RM ${(data.totalAmount || itemsTotal).toFixed(2)}</span>
+      </div>
+    `;
+    document.getElementById('resultItems').innerHTML = itemsHtml;
 
     const rows = data.stages.map((s, i) => {
       const isCurrent = i === data.stageIndex;
@@ -351,7 +431,10 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
       return `
         <div class="stepper__row ${cls}">
           <div class="stepper__dot">${s.completed && !isCurrent ? '&#10003;' : i + 1}</div>
-          <div class="stepper__label">${s.label}</div>
+          <div>
+            <div class="stepper__label">${s.label}</div>
+            <p class="stepper__desc">${s.description || ''}</p>
+          </div>
         </div>
       `;
     }).join('');
@@ -367,7 +450,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
         </div>
       `).join('');
       trackingBox.innerHTML = `
-        <p class="mono-label" style="margin:0 0 0.5em;">Shipment</p>
+        <p class="order-summary-card__courier-title">Courier Dispatched</p>
         <p style="margin:0;"><strong>${t.courierLabel}</strong> &middot; <span style="font-family: var(--font-mono);">${t.trackingNumber}</span></p>
         ${t.live ? `<p style="margin:0.5em 0 0; color: var(--color-brass);">${t.live.latestStatus || ''}</p>` : `<p style="margin:0.5em 0 0; color: var(--color-structural); font-size:0.85rem;">Live status temporarily unavailable — the tracking number above still works on the courier's own site.</p>`}
         ${events ? `<div style="margin-top:0.75em;">${events}</div>` : ''}

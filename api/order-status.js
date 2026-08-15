@@ -33,6 +33,14 @@ const STAGE_LABELS = {
   finishing_qc: 'Finishing & QC',
   shipped: 'Shipped'
 };
+const STAGE_DESCRIPTIONS = {
+  confirmed: 'We have registered your specifications. Pre-production review of coordinates is commencing.',
+  design: 'Our workshop designer is preparing a high-fidelity vector layout for your approval in the message portal.',
+  cutting: 'The laser head is actively slicing your custom silhouette out of material sheet.',
+  engraving: 'Laser pulsing at high frequency to burn the custom detail into the surface.',
+  finishing_qc: 'Hand-sanding wooden fibers, cleaning edges, and sealing with organic mineral oil, then inspecting alignment and tolerances.',
+  shipped: 'Crafted piece handed over to our logistics partner. Track delivery via the courier waybill below.'
+};
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -99,6 +107,7 @@ module.exports = async function handler(req, res) {
       stages: STAGE_ORDER.map((s, i) => ({
         key: s,
         label: STAGE_LABELS[s],
+        description: STAGE_DESCRIPTIONS[s],
         completed: i <= stageIndex
       })),
       tracking,
