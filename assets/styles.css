@@ -162,11 +162,11 @@ textarea:focus-visible,
 .hairline-bottom { border-bottom: var(--hairline); }
 
 .section {
-  padding-block: var(--space-7);
+  padding-block: 8rem; /* 128px — matches reference's py-32 section rhythm */
 }
 
 @media (max-width: 749px) {
-  .section { padding-block: var(--space-5); }
+  .section { padding-block: 5rem; } /* 80px — matches reference's py-20 mobile rhythm */
 }
 /* =========================================================
    AZAM REKA — Typography
