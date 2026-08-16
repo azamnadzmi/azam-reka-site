@@ -432,8 +432,9 @@ textarea:focus-visible,
 /* Pilot light — the ring that tells you the machine is armed.
    Reserved for the single primary CTA on a page. */
 @keyframes pilotPulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--color-ember-soft); }
-  50%      { box-shadow: 0 0 0 10px transparent; }
+  0%   { box-shadow: 0 0 0 0 rgba(184, 92, 56, 0.55); }
+  70%  { box-shadow: 0 0 0 10px rgba(184, 92, 56, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(184, 92, 56, 0); }
 }
 .pilot-pulse { animation: pilotPulse 2.4s ease-in-out infinite; }
 
