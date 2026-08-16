@@ -130,16 +130,16 @@
 /* Right: production timeline */
 .timeline { border: 1px solid var(--color-ash); padding: 2rem 1.75rem; }
 .timeline__title { font-family: var(--font-micro); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-structural); margin: 0 0 2rem; }
-.stepper { }
-.stepper__row {
+.track-stepper { }
+.track-stepper__row {
   display: flex;
   align-items: flex-start;
   gap: 1.25rem;
   padding-bottom: 2rem;
   position: relative;
 }
-.stepper__row:last-child { padding-bottom: 0; }
-.stepper__row:not(:last-child)::before {
+.track-stepper__row:last-child { padding-bottom: 0; }
+.track-stepper__row:not(:last-child)::before {
   content: '';
   position: absolute;
   left: 19px;
@@ -148,8 +148,8 @@
   height: calc(100% - 30px);
   background: var(--color-ash);
 }
-.stepper__row.is-complete:not(:last-child)::before { background: var(--color-ember); }
-.stepper__dot {
+.track-stepper__row.is-complete:not(:last-child)::before { background: var(--color-ember); }
+.track-stepper__dot {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -163,9 +163,9 @@
   flex-shrink: 0;
   z-index: 1;
 }
-.stepper__row.is-complete .stepper__dot { background: var(--color-ember); color: var(--color-bone); }
-.stepper__row.is-current .stepper__dot { background: var(--color-brass); color: var(--color-bone); box-shadow: 0 0 0 5px var(--color-brass-soft); }
-.stepper__label {
+.track-stepper__row.is-complete .track-stepper__dot { background: var(--color-ember); color: var(--color-bone); }
+.track-stepper__row.is-current .track-stepper__dot { background: var(--color-brass); color: var(--color-bone); box-shadow: 0 0 0 5px var(--color-brass-soft); }
+.track-stepper__label {
   font-family: var(--font-micro);
   font-size: 0.8rem;
   letter-spacing: 0.04em;
@@ -173,8 +173,8 @@
   font-weight: 700;
   padding-top: 0.65em;
 }
-.stepper__row.is-current .stepper__label { color: var(--color-brass); }
-.stepper__desc { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.6; color: var(--color-structural); margin-top: 0.4em; max-width: 44ch; }
+.track-stepper__row.is-current .track-stepper__label { color: var(--color-brass); }
+.track-stepper__desc { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.6; color: var(--color-structural); margin-top: 0.4em; max-width: 44ch; }
 
 #result { display: none; }
 #notFound { display: none; }
@@ -388,7 +388,7 @@
 
         <div class="timeline">
           <p class="timeline__title">Production Timeline</p>
-          <div id="stepperRows" class="stepper"></div>
+          <div id="stepperRows" class="track-stepper"></div>
         </div>
       </div>
 
@@ -671,11 +671,11 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
       const isCurrent = i === data.stageIndex;
       const cls = s.completed ? (isCurrent ? 'is-current' : 'is-complete') : '';
       return `
-        <div class="stepper__row ${cls}">
-          <div class="stepper__dot">${s.completed && !isCurrent ? '&#10003;' : i + 1}</div>
+        <div class="track-stepper__row ${cls}">
+          <div class="track-stepper__dot">${s.completed && !isCurrent ? '&#10003;' : i + 1}</div>
           <div>
-            <div class="stepper__label">${s.label}</div>
-            <p class="stepper__desc">${s.description || ''}</p>
+            <div class="track-stepper__label">${s.label}</div>
+            <p class="track-stepper__desc">${s.description || ''}</p>
           </div>
         </div>
       `;
