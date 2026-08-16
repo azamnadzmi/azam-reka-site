@@ -707,6 +707,16 @@ body {
 
 <script src="assets/main.js"></script>
 <script>
+// Escapes untrusted values before insertion into innerHTML. The cart is
+// stored in localStorage and could contain arbitrary item names if
+// tampered with client-side; this same data is later stored server-side
+// and shown to the admin, so keep it clean here too.
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 // Product image mapping (from catalog folder, resized to assets/products)
 const productImages = {
   'Plaque': 'assets/products/plaque-01.jpg',
@@ -746,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return `
       <div class="summary-item">
         <div class="summary-item-image">
-          <img src="${imageUrl}" alt="${item.name}">
+          <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.name)}">
         </div>
         <div class="summary-item-details">
-          <div class="summary-item-name">${item.name}</div>
+          <div class="summary-item-name">${escapeHtml(item.name)}</div>
           <div class="summary-item-meta">RM ${item.price.toFixed(2)} &times; ${item.qty}</div>
           <div class="summary-item-price">RM ${itemTotal}</div>
         </div>

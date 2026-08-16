@@ -269,6 +269,23 @@
 </div>
 
 <script>
+// Escapes untrusted values (customer names, phone numbers, item names — all
+// attacker-controlled via the checkout form or a manipulated cart) before
+// they're placed into innerHTML. Without this, a customer name like
+// <img src=x onerror=alert(document.cookie)> executes in the admin's
+// browser the moment the order list renders, exposing the admin session.
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+// billCode -> order lookup for click handlers that need the raw (unescaped)
+// customerName/phone as JS values — avoids ever embedding untrusted text
+// inside an inline onclick="..." attribute string, which is a second,
+// independent injection vector even when the visible text is escaped.
+let ordersById = new Map();
+
 /* 7-stage production pipeline */
 const STAGES = [
   { key: 'confirmed', label: 'Order Confirmed' },
@@ -356,28 +373,33 @@ function renderOrders(orders) {
   }
   emptyMsg.style.display = 'none';
 
+  ordersById = new Map(orders.map(o => [o.billCode, o]));
+
   tbody.innerHTML = orders.map(order => {
-    const itemsSummary = (order.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
+    const itemsSummary = (order.items || []).map(i => `${escapeHtml(i.name)} x${Number(i.qty) || 0}`).join(', ');
     const paidDate = order.paidAt ? new Date(order.paidAt).toLocaleDateString() : '—';
     const isWhatsApp = order.source === 'whatsapp';
     const sourceBadge = isWhatsApp
       ? `<span class="source-badge whatsapp">WhatsApp</span>`
       : `<span class="source-badge online">Online</span>`;
 
+    // data-bill-code (escaped, machine-generated IDs only) instead of an
+    // inline onclick embedding raw customerName/phone — keeps untrusted
+    // text out of any HTML attribute or inline JS string entirely.
     const shareBtn = isWhatsApp
-      ? `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showWaMessage('${order.billCode}','${order.customerName.replace(/'/g,"\\'")}','${order.customerPhone}')">Share ID</button>`
+      ? `<button class="btn btn-outline share-id-btn" data-bill-code="${escapeHtml(order.billCode)}" style="font-size:0.75rem; padding:0.3em 0.6em;">Share ID</button>`
       : '';
-    const messagesBtn = `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showMessages('${order.billCode}')">Messages${order.messages && order.messages.length ? ` (${order.messages.length})` : ''}</button>`;
+    const messagesBtn = `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showMessages('${escapeHtml(order.billCode)}')">Messages${order.messages && order.messages.length ? ` (${order.messages.length})` : ''}</button>`;
     const currentStage = order.productionStage || 'confirmed';
     const badgeClass = (currentStage === 'shipped' || currentStage === 'delivered') ? 'stage-badge shipped' : 'stage-badge';
 
     let zohoBadge;
     if (order.zohoSalesOrderId) {
       const unmappedNote = (order.zohoUnmappedItems && order.zohoUnmappedItems.length)
-        ? ` title="Unmapped items: ${order.zohoUnmappedItems.join(', ')} — check the Sales Order in Zoho"` : '';
-      zohoBadge = `<span class="zoho-badge synced"${unmappedNote}>#${order.zohoSalesOrderNumber || order.zohoSalesOrderId}${order.zohoUnmappedItems && order.zohoUnmappedItems.length ? ' ⚠' : ''}</span>`;
+        ? ` title="Unmapped items: ${escapeHtml(order.zohoUnmappedItems.join(', '))} — check the Sales Order in Zoho"` : '';
+      zohoBadge = `<span class="zoho-badge synced"${unmappedNote}>#${escapeHtml(order.zohoSalesOrderNumber || order.zohoSalesOrderId)}${order.zohoUnmappedItems && order.zohoUnmappedItems.length ? ' ⚠' : ''}</span>`;
     } else if (order.zohoSyncError) {
-      zohoBadge = `<span class="zoho-badge failed" title="${order.zohoSyncError.replace(/"/g, '&quot;')}">Sync Failed</span>`;
+      zohoBadge = `<span class="zoho-badge failed" title="${escapeHtml(order.zohoSyncError)}">Sync Failed</span>`;
     } else {
       zohoBadge = `<span class="zoho-badge pending">Pending</span>`;
     }
@@ -388,9 +410,9 @@ function renderOrders(orders) {
 
     return `
       <tr>
-        <td><strong>${order.billCode}</strong>${shareBtn ? '<br>' + shareBtn : ''}<br>${messagesBtn}</td>
+        <td><strong>${escapeHtml(order.billCode)}</strong>${shareBtn ? '<br>' + shareBtn : ''}<br>${messagesBtn}</td>
         <td>${sourceBadge}</td>
-        <td>${order.customerName}<br><span style="color:var(--color-structural); font-size:0.8em;">${order.customerPhone}</span></td>
+        <td>${escapeHtml(order.customerName)}<br><span style="color:var(--color-structural); font-size:0.8em;">${escapeHtml(order.customerPhone)}</span></td>
         <td style="max-width:220px;">${itemsSummary}</td>
         <td>RM ${Number(order.totalAmount).toFixed(2)}</td>
         <td>${paidDate}</td>
@@ -445,6 +467,16 @@ function renderOrders(orders) {
   document.querySelectorAll('.stage-select').forEach(select => {
     select.addEventListener('change', (e) => {
       submitStageUpdate(e.target.dataset.billCode, e.target.value, { toggleEl: e.target });
+    });
+  });
+
+  // Reads customerName/phone from the ordersById lookup (real JS values)
+  // rather than an inline onclick built from string interpolation — see
+  // the escapeHtml() comment above for why that mattered.
+  document.querySelectorAll('.share-id-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const order = ordersById.get(e.target.dataset.billCode);
+      if (order) showWaMessage(order.billCode, order.customerName, order.customerPhone);
     });
   });
 
@@ -561,8 +593,8 @@ function renderAdminMessages(messages) {
     const time = new Date(m.timestamp).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     const senderLabel = m.sender === 'admin' ? 'You' : 'Customer';
     const bubbleClass = m.sender === 'admin' ? 'msg-bubble--admin' : 'msg-bubble--customer';
-    const imageHtml = m.imageUrl ? `<img src="${m.imageUrl}" alt="Attachment">` : '';
-    const textHtml = m.text ? `<div>${m.text.replace(/</g, '&lt;')}</div>` : '';
+    const imageHtml = m.imageUrl ? `<img src="${escapeHtml(m.imageUrl)}" alt="Attachment">` : '';
+    const textHtml = m.text ? `<div>${escapeHtml(m.text)}</div>` : '';
     return `<div class="msg-bubble ${bubbleClass}">${textHtml}${imageHtml}<span class="msg-bubble__time">${senderLabel} &middot; ${time}</span></div>`;
   }).join('');
   list.scrollTop = list.scrollHeight;

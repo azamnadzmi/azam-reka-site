@@ -523,6 +523,14 @@ const productImages = {
   'Thank You Succulent HG25': 'assets/products/keychain-02.jpg'
 };
 
+// Escapes untrusted values (message text can come from either the customer
+// or the admin) before insertion into innerHTML.
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 // Kept for the message portal to reuse after a successful lookup.
 let trackedBillCode = null;
 
@@ -536,8 +544,8 @@ function renderMessages(messages) {
     const time = new Date(m.timestamp).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     const senderLabel = m.sender === 'admin' ? 'Workshop' : 'You';
     const bubbleClass = m.sender === 'admin' ? 'message-bubble--admin' : 'message-bubble--customer';
-    const imageHtml = m.imageUrl ? `<img src="${m.imageUrl}" alt="Attachment">` : '';
-    const textHtml = m.text ? `<div>${m.text.replace(/</g, '&lt;')}</div>` : '';
+    const imageHtml = m.imageUrl ? `<img src="${escapeHtml(m.imageUrl)}" alt="Attachment">` : '';
+    const textHtml = m.text ? `<div>${escapeHtml(m.text)}</div>` : '';
     const alignClass = m.sender === 'admin' ? 'message-group--admin' : 'message-group--customer';
     return `
       <div class="message-group ${alignClass}">
@@ -592,8 +600,8 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
     const itemsTotal = (data.items || []).reduce((sum, it) => sum + (it.price * it.qty), 0);
     const itemsHtml = (data.items || []).map(it => `
       <div class="order-summary-card__item">
-        <img class="order-summary-card__item-thumb" src="${productImages[it.name] || 'assets/logo.png'}" alt="">
-        <span class="order-summary-card__item-name">${it.name} &times;${it.qty}</span>
+        <img class="order-summary-card__item-thumb" src="${escapeHtml(productImages[it.name] || 'assets/logo.png')}" alt="">
+        <span class="order-summary-card__item-name">${escapeHtml(it.name)} &times;${Number(it.qty) || 0}</span>
         <span class="order-summary-card__item-price">RM ${(it.price * it.qty).toFixed(2)}</span>
       </div>
     `).join('') + `

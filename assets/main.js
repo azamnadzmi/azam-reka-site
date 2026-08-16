@@ -1,5 +1,16 @@
 /* AZAM REKA — main.js (static catalog site with cart) */
 
+// Escapes untrusted values before insertion into innerHTML or an HTML
+// attribute. The cart is stored in localStorage — normally populated only
+// via fixed catalog buttons, but nothing stops a tampered client from
+// writing arbitrary item names, and this data later flows through to
+// server storage and admin-facing views.
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 // ============ CART MANAGEMENT ============
 const Cart = {
   getCart() {
@@ -335,16 +346,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
       <div class="cart-modal__item">
         <div class="cart-modal__item-image">
-          <img src="${imageUrl}" alt="${item.name}">
+          <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.name)}">
         </div>
         <div class="cart-modal__item-details">
-          <p class="cart-modal__item-name">${item.name}</p>
+          <p class="cart-modal__item-name">${escapeHtml(item.name)}</p>
           <p class="cart-modal__item-price">RM ${item.price.toFixed(2)}</p>
           <div class="cart-modal__item-controls">
-            <button class="cart-modal__qty-btn" data-qty-minus="${item.name}" aria-label="Decrease quantity">−</button>
+            <button class="cart-modal__qty-btn" data-qty-minus="${escapeHtml(item.name)}" aria-label="Decrease quantity">−</button>
             <span class="cart-modal__qty-value">${item.qty}</span>
-            <button class="cart-modal__qty-btn" data-qty-plus="${item.name}" aria-label="Increase quantity">+</button>
-            <span class="cart-modal__item-remove" data-remove="${item.name}">Remove</span>
+            <button class="cart-modal__qty-btn" data-qty-plus="${escapeHtml(item.name)}" aria-label="Increase quantity">+</button>
+            <span class="cart-modal__item-remove" data-remove="${escapeHtml(item.name)}">Remove</span>
           </div>
         </div>
       </div>
