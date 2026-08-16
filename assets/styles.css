@@ -2152,6 +2152,7 @@ textarea:focus-visible,
   50% { opacity: 0.15; }
 }
 .logo-dot {
+  fill: #B6694A;
   animation: logoDotBlink 1.8s ease-in-out infinite;
   transform-origin: center;
 }
