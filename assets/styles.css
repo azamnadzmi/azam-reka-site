@@ -557,7 +557,7 @@ textarea:focus-visible,
 .site-header__nav {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: clamp(1rem, 1.5vw, var(--space-4));
 }
 
 .site-header__nav a {
@@ -1897,11 +1897,14 @@ textarea:focus-visible,
 
 .how-it-works-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1px;
   background: rgba(247, 243, 236, 0.1);
   border: 1px solid rgba(247, 243, 236, 0.1);
   margin-top: var(--space-4);
+}
+@media (max-width: 1099px) {
+  .how-it-works-row { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 749px) {
   .how-it-works-row { grid-template-columns: 1fr; }

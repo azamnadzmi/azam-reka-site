@@ -39,7 +39,9 @@
     <nav class="site-header__nav">
       <a href="about.html">About</a>
       <a href="catalog.html">Catalogue</a>
+      <a href="index.html#how-to-order">Process</a>
       <a href="track-order.html">Track</a>
+      <a href="index.html#spec-sheet">Spec Sheet</a>
     </nav>
     <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
       <button data-cart-btn class="cart-button" aria-label="Shopping cart" style="background:none; border:none; cursor:pointer; font-size:0;">
@@ -56,15 +58,17 @@
   <div class="mobile-nav" data-mobile-nav data-open="false" style="display:none; flex-direction:column; padding: 1rem clamp(1.25rem,4vw,4rem); border-top: 1px solid var(--color-ash); background: var(--color-bone);">
     <a href="about.html" style="padding-block:0.5em;">About</a>
     <a href="catalog.html" style="padding-block:0.5em;">Catalogue</a>
+    <a href="index.html#how-to-order" style="padding-block:0.5em;">Process</a>
     <a href="track-order.html" style="padding-block:0.5em;">Track</a>
+    <a href="index.html#spec-sheet" style="padding-block:0.5em;">Spec Sheet</a>
     <a href="contact.html" style="padding-block:0.5em;">Custom Orders</a>
   </div>
 </header>
 <!-- ============ END HEADER ============ -->
 
-<section class="corner-frame" style="position: relative; padding-block: 8rem 6rem; overflow: hidden;">
-  <span class="coord-label coord-label--desktop-only" style="top: 2rem; left: var(--container-pad);">X:000.00 Y:000.00</span>
-  <span class="coord-label coord-label--desktop-only" style="top: 2rem; right: var(--container-pad);">X:100.00 Y:000.00</span>
+<section class="corner-frame" style="position: relative; padding-block: 3rem 6rem; overflow: hidden;">
+  <span class="coord-label coord-label--desktop-only" style="top: 1.25rem; left: var(--container-pad);">X:000.00 Y:000.00</span>
+  <span class="coord-label coord-label--desktop-only" style="top: 1.25rem; right: var(--container-pad);">X:100.00 Y:000.00</span>
   <div class="container scan-in hero-grid">
     <div>
       <p class="eyebrow">Plywood &middot; Acrylic &middot; Precision Cut</p>
@@ -405,7 +409,7 @@
   </div>
 </section>
 
-<section class="grid-bg" data-theme="dark" style="background-color: #1A1A1A; color: var(--color-bone); padding-block: 8rem;" data-reveal>
+<section id="how-to-order" class="grid-bg" data-theme="dark" style="background-color: #1A1A1A; color: var(--color-bone); padding-block: 8rem; scroll-margin-top: 5rem;" data-reveal>
   <div class="container">
     <p class="section-num">&sect; How to Order</p>
     <h2 style="font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 1.5rem + 2.5vw, 3.5rem); letter-spacing: -0.02em; line-height: 1; margin-top: 0.3em;">Simple, direct, personal</h2>
@@ -452,23 +456,38 @@
           <span class="how-it-works-label">Fabrication</span>
         </div>
         <h3 class="how-it-works-title">Craft &amp; Ship</h3>
-        <p class="how-it-works-desc">We craft your piece and ship it out — track it anytime</p>
+        <p class="how-it-works-desc">We craft your piece and ship it out via courier</p>
         <div class="how-it-works-tags">
           <span>Cut</span>
           <span>Engrave</span>
           <span>Ship</span>
         </div>
       </div>
+      <div class="how-it-works-step corner-frame">
+        <div class="how-it-works-top">
+          <span class="how-it-works-num">05</span>
+          <span class="how-it-works-label">Delivery</span>
+        </div>
+        <h3 class="how-it-works-title">Track</h3>
+        <p class="how-it-works-desc">Follow live courier updates &amp; message your designer anytime</p>
+        <div class="how-it-works-tags">
+          <span>Live Tracking</span>
+          <span>Messages</span>
+        </div>
+      </div>
     </div>
 
     <div class="how-it-works-footer">
       <p class="how-it-works-status"><span class="how-it-works-status-dot pilot-pulse"></span>Now accepting orders</p>
-      <a href="catalog.html" class="btn btn-scorched">Start Your Order</a>
+      <div style="display:flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="catalog.html" class="btn btn-scorched">Start Your Order</a>
+        <a href="track-order.html" class="btn btn-inverse">Track Your Order</a>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section hairline-top" data-reveal>
+<section id="spec-sheet" class="section hairline-top" style="scroll-margin-top: 5rem;" data-reveal>
   <div class="container" style="max-width: 100%; padding-left: 0; padding-right: 0;">
     <div class="grid-2" style="gap: 4rem; align-items: start; padding: 0 clamp(1.25rem,4vw,4rem);">
       <!-- Left Column -->
