@@ -289,7 +289,7 @@
   padding: 1.5rem 0;
 }
 
-/* Review portal — post-delivery star rating + free-text review */
+/* Review portal — post-delivery Google Review CTA */
 .review-portal {
   max-width: 1120px;
   margin: var(--space-5) auto 0;
@@ -297,41 +297,6 @@
   background: #FFFFFF;
   padding: 2rem 1.75rem;
 }
-.review-stars {
-  display: flex;
-  gap: 0.4em;
-  margin-bottom: 1.25rem;
-}
-.review-stars button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--color-ash);
-  transition: color 0.15s;
-}
-.review-stars button.is-active { color: var(--color-ember); }
-.review-stars--readonly span {
-  font-size: 1.75rem;
-  line-height: 1;
-  color: var(--color-ash);
-}
-.review-stars--readonly span.is-filled { color: var(--color-ember); }
-.review-portal__textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 0.85em;
-  border: 1px solid var(--color-ash);
-  border-radius: 0;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  resize: vertical;
-  box-sizing: border-box;
-  margin-bottom: 1.25rem;
-}
-.review-portal__textarea:focus { outline: none; border-color: var(--color-ember); }
 </style>
 </head>
 <body>
