@@ -817,9 +817,14 @@ textarea:focus-visible,
     margin-bottom: 2rem;
   }
 
-  /* Link/button spacing in lists and menus */
+  /* Link/button spacing in lists and menus. Excludes .product-card and
+     .collection-card: both are full card layouts built on an <a href>
+     wrapper (display:flex; flex-direction:column, plus an explicit
+     min-height on .collection-card) -- this generic rule was matching
+     them too and clobbering align-items to center (breaking child
+     stretch) and .collection-card's min-height down to 44px. */
   .product-card__view,
-  a[href] {
+  a[href]:not(.product-card):not(.collection-card) {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
@@ -1741,12 +1746,14 @@ textarea:focus-visible,
 }
 
 @media (max-width: 640px) {
-  .scroll-row .product-card { width: 200px; }
+  .scroll-row .product-card { width: 220px; }
 
-  /* At 200px wide, "RM 15.00" + "VIEW ->" don't both fit on one line at
-     their desktop sizes -- price and link overlapped/clipped past the
-     card edge. Tighter padding + a smaller price size buys enough room
-     for both to sit on one line with a visible gap again. */
+  /* At the old 200px width, "RM 15.00" + "VIEW ->" almost exactly filled
+     the available space -- justify-content: space-between had nothing
+     left to distribute, so the two sat touching instead of reading as
+     clearly left-aligned / right-aligned. Widened the card so there's
+     real slack for space-between to turn into a visible gap, and kept
+     the tighter padding/price size from the original overflow fix. */
   .product-card__footer {
     padding: 0.85rem 1rem;
   }
