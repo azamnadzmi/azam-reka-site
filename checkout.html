@@ -180,6 +180,105 @@ body {
   color: var(--color-char);
 }
 
+/* Shipping method — courier picker cards */
+.shipping-method-box--info {
+  background: var(--color-ash);
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-structural);
+}
+
+.shipping-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shipping-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-ash);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.shipping-option:hover {
+  border-color: var(--color-structural);
+}
+
+.shipping-option.is-selected {
+  border-color: var(--color-ember);
+  background: var(--color-ember-soft);
+}
+
+.shipping-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-ember);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.shipping-option__logo {
+  width: 56px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-ash);
+  background: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.shipping-option__logo--jnt {
+  background: #E60000;
+  border-color: #E60000;
+}
+
+.shipping-option__logo img {
+  max-width: 78%;
+  max-height: 65%;
+  object-fit: contain;
+}
+
+.shipping-option__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.shipping-option__info strong {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.shipping-option__meta {
+  font-size: 0.75rem;
+  color: var(--color-structural);
+}
+
+.shipping-option__price {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: #1A1A1A;
+  white-space: nowrap;
+}
+
+.shipping-method-note {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--color-structural);
+  line-height: 1.5;
+}
+
 .delivery-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -635,8 +734,8 @@ body {
     <!-- SHIPPING METHOD -->
     <div class="form-section">
       <h2 data-number="03">Shipping method</h2>
-      <div id="shippingMethodBox" style="background: var(--color-ash); padding: 1rem; border-radius: 0; font-size: 0.85rem; color: var(--color-char);">
-        <div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>
+      <div id="shippingMethodBox">
+        <div class="shipping-method-box--info">Enter your postcode and state above to see shipping cost.</div>
       </div>
     </div>
 
@@ -938,34 +1037,52 @@ document.addEventListener('DOMContentLoaded', () => {
     return courier === 'MELPLUS' ? `${period} (Mon&ndash;Sat only)` : `${period} (every day)`;
   }
 
+  // Official logos pulled from each courier's own site: Pos Malaysia's
+  // corporate mark (assets.pos.com.my) covers Poslaju, its flagship express
+  // service; J&T's mark (jtexpress.my) is white-on-transparent, made for
+  // their red branding, so it sits on a matching red chip here instead of
+  // disappearing against the white card.
+  const COURIER_LOGO = {
+    MELPLUS: { src: 'assets/couriers/poslaju.svg', cls: '' },
+    JNT: { src: 'assets/couriers/jnt.png', cls: 'shipping-option__logo--jnt' }
+  };
+
   function renderShippingBox(state) {
     const box = document.getElementById('shippingMethodBox');
     if (state === 'loading') {
-      box.innerHTML = '<div style="color: var(--color-structural);">Calculating shipping…</div>';
+      box.innerHTML = '<div class="shipping-method-box--info">Calculating shipping…</div>';
     } else if (state === 'error') {
-      box.innerHTML = '<div style="color: var(--color-structural);">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
+      box.innerHTML = '<div class="shipping-method-box--info">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
     } else if (state === 'ready') {
-      box.innerHTML = shippingOptions.map((opt, i) => `
-        <label style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; padding: 0.6em 0; cursor: pointer; ${i > 0 ? 'border-top: 1px solid var(--color-ash);' : ''}">
-          <span style="display:flex; align-items:center; gap: 0.6em;">
-            <input type="radio" name="shippingOption" value="${i}" ${i === 0 ? 'checked' : ''}>
-            <span>
-              <strong>📦 ${opt.courierName || 'Courier'}</strong>
-              <div style="color: var(--color-structural); font-size: 0.8rem;">Shipping from Johor Bahru &middot; Est. delivery ${estimatedDeliveryText(opt.courier, shippingDestState)}</div>
-            </span>
+      box.innerHTML = '<div class="shipping-options">' + shippingOptions.map((opt, i) => {
+        const logo = COURIER_LOGO[opt.courier] || { src: '', cls: '' };
+        return `
+        <label class="shipping-option${i === 0 ? ' is-selected' : ''}">
+          <input type="radio" name="shippingOption" value="${i}" ${i === 0 ? 'checked' : ''}>
+          <span class="shipping-option__logo ${logo.cls}">
+            ${logo.src ? `<img src="${logo.src}" alt="${escapeHtml(opt.courierName || '')}">` : ''}
           </span>
-          <span style="color: var(--color-char); white-space: nowrap;">RM ${opt.cost.toFixed(2)}</span>
+          <span class="shipping-option__info">
+            <strong>${escapeHtml(opt.courierName || 'Courier')}</strong>
+            <span class="shipping-option__meta">Shipping from Johor Bahru &middot; Est. delivery ${estimatedDeliveryText(opt.courier, shippingDestState)}</span>
+          </span>
+          <span class="shipping-option__price">RM ${opt.cost.toFixed(2)}</span>
         </label>
-      `).join('') + `
-        <div style="border-top: 1px solid var(--color-ash); margin-top: 0.5rem; padding-top: 0.5rem; font-size: 0.75rem; color: var(--color-structural);">
+      `;
+      }).join('') + '</div>' + `
+        <div class="shipping-method-note">
           Poslaju only collects and delivers Monday&ndash;Saturday, so an order placed Friday evening or over the weekend is typically collected the following Monday. J&amp;T Express runs every day, including Sundays and public holidays.
         </div>
       `;
       box.querySelectorAll('input[name="shippingOption"]').forEach(input => {
-        input.addEventListener('change', (e) => selectShippingOption(Number(e.target.value)));
+        input.addEventListener('change', (e) => {
+          selectShippingOption(Number(e.target.value));
+          box.querySelectorAll('.shipping-option').forEach(el => el.classList.remove('is-selected'));
+          e.target.closest('.shipping-option').classList.add('is-selected');
+        });
       });
     } else {
-      box.innerHTML = '<div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>';
+      box.innerHTML = '<div class="shipping-method-box--info">Enter your postcode and state above to see shipping cost.</div>';
     }
   }
   const MIN_DELIVERY_FEE_DISPLAY = '10.00';
