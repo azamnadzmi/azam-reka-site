@@ -857,6 +857,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let shippingCourierName = null;
   let shippingServiceId = null;
+  let shippingOptions = [];
+
+  function selectShippingOption(index) {
+    const opt = shippingOptions[index];
+    if (!opt) return;
+    shippingCost = opt.cost;
+    shippingCourierName = opt.courierName || 'Standard Shipping';
+    shippingServiceId = opt.serviceId || null;
+    updateTotal();
+  }
 
   function renderShippingBox(state) {
     const box = document.getElementById('shippingMethodBox');
@@ -865,11 +875,21 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (state === 'error') {
       box.innerHTML = '<div style="color: var(--color-structural);">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
     } else if (state === 'ready') {
-      box.innerHTML = `
-        <div style="margin-bottom: 0.5rem;"><strong>📦 ${shippingCourierName || 'Courier'}</strong></div>
-        <div style="color: var(--color-structural);">Shipping from Johor Bahru</div>
-        <div style="margin-top: 0.5rem; color: var(--color-char);">RM ${shippingCost.toFixed(2)}</div>
-      `;
+      box.innerHTML = shippingOptions.map((opt, i) => `
+        <label style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; padding: 0.6em 0; cursor: pointer; ${i > 0 ? 'border-top: 1px solid var(--color-ash);' : ''}">
+          <span style="display:flex; align-items:center; gap: 0.6em;">
+            <input type="radio" name="shippingOption" value="${i}" ${i === 0 ? 'checked' : ''}>
+            <span>
+              <strong>📦 ${opt.courierName || 'Courier'}</strong>
+              <div style="color: var(--color-structural); font-size: 0.8rem;">Shipping from Johor Bahru${opt.delivery ? ' &middot; ' + opt.delivery : ''}</div>
+            </span>
+          </span>
+          <span style="color: var(--color-char); white-space: nowrap;">RM ${opt.cost.toFixed(2)}</span>
+        </label>
+      `).join('');
+      box.querySelectorAll('input[name="shippingOption"]').forEach(input => {
+        input.addEventListener('change', (e) => selectShippingOption(Number(e.target.value)));
+      });
     } else {
       box.innerHTML = '<div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>';
     }
@@ -891,12 +911,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await response.json();
-      if (data.success) {
+      if (data.success && !data.degraded && Array.isArray(data.options) && data.options.length > 0) {
+        shippingOptions = data.options;
+        selectShippingOption(0);
+        renderShippingBox('ready');
+      } else if (data.success) {
         shippingCost = data.shippingCost;
         shippingCourierName = data.courierName || 'Standard Shipping';
         shippingServiceId = data.serviceId || null;
         updateTotal();
-        renderShippingBox(data.degraded ? 'error' : 'ready');
+        renderShippingBox('error');
       } else {
         renderShippingBox('error');
       }

@@ -79,14 +79,29 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const cheapest = rates[0];
-    const shippingCost = Math.max(cheapest.price, MIN_DELIVERY_FEE);
+    // Return every matched courier (PosLaju/MelPlus and J&T) so the customer
+    // can pick, not just whichever is cheapest — checkout.html renders these
+    // as selectable options and defaults to the first (cheapest, since
+    // checkRates() sorts ascending by price).
+    const options = rates.map(rate => ({
+      courier: rate.courier,
+      courierName: rate.courierName,
+      serviceId: rate.serviceId,
+      serviceName: rate.serviceName,
+      delivery: rate.delivery,
+      cost: Math.max(rate.price, MIN_DELIVERY_FEE)
+    }));
+
+    const cheapest = options[0];
 
     return res.status(200).json({
       success: true,
       weight: totalWeight,
-      shippingCost,
       minFee: MIN_DELIVERY_FEE,
+      options,
+      // Kept for backward compatibility with any caller still reading the
+      // single-courier shape.
+      shippingCost: cheapest.cost,
       courier: cheapest.courier,
       courierName: cheapest.courierName,
       serviceId: cheapest.serviceId,
