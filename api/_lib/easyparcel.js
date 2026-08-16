@@ -235,6 +235,10 @@ async function checkRates({ pickCode, pickState, sendCode, sendState, weight }) 
     throw new Error(`Rate check failed: ${row.message || row.status || 'unknown'}`);
   }
 
+  // EasyParcel returns "MelPlus" and "Poslaju" as separate line items even
+  // though they're the same underlying courier/network — display name only.
+  const DISPLAY_NAME = { MELPLUS: 'Poslaju', JNT: 'J&T Express' };
+
   const matched = [];
   for (const rate of row.quotations || []) {
     const courier = rate.courier || {};
@@ -247,14 +251,25 @@ async function checkRates({ pickCode, pickState, sendCode, sendState, weight }) 
     if (!courier.is_pickup) continue;
     matched.push({
       courier: classified,
-      courierName: courier.courier_name,
+      courierName: DISPLAY_NAME[classified] || courier.courier_name,
       serviceId: courier.service_id,
       serviceName: courier.service_name,
       price: parseFloat((rate.pricing || {}).total_amount || '0'),
       delivery: courier.delivery_duration || null
     });
   }
-  return matched.sort((a, b) => a.price - b.price);
+  matched.sort((a, b) => a.price - b.price);
+
+  // Collapse to one entry per courier (MelPlus/Poslaju is a single courier
+  // under two names) — keep the cheapest service in each group.
+  const seen = new Set();
+  const deduped = [];
+  for (const rate of matched) {
+    if (seen.has(rate.courier)) continue;
+    seen.add(rate.courier);
+    deduped.push(rate);
+  }
+  return deduped;
 }
 
 /** Raw, unfiltered quotation response — for diagnosing "0 matched rates". */

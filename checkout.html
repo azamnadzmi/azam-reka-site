@@ -869,39 +869,25 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTotal();
   }
 
-  // PosLaju/J&T don't collect or deliver on Sundays or Malaysian public
-  // holidays. EasyParcel's quotation response doesn't return a reliable
+  // EasyParcel's quotation response doesn't return a reliable
   // delivery_duration for this route, so the transit estimate below is a
   // deliberately conservative rule of thumb (same-state / other West
-  // Malaysia / East Malaysia), not a courier-quoted figure.
+  // Malaysia / East Malaysia), shown as a day-count period rather than
+  // exact dates. Poslaju only collects/delivers Mon-Sat (no Sundays or
+  // public holidays); J&T Express runs 365 days a year including Sundays
+  // and public holidays (confirmed via J&T Malaysia's own FAQ/socials), so
+  // its window doesn't need the "working days" caveat.
   const EAST_MALAYSIA_STATES = ['sbh', 'srw', 'lbn'];
-  function estimateTransitWorkingDays(destState) {
+  function estimateTransitDays(destState) {
     if (destState === 'jhr') return [1, 2];
     if (EAST_MALAYSIA_STATES.includes(destState)) return [3, 5];
     return [2, 3];
   }
 
-  function addWorkingDays(date, days) {
-    const result = new Date(date);
-    let added = 0;
-    while (added < days) {
-      result.setDate(result.getDate() + 1);
-      if (result.getDay() !== 0) added++; // skip Sundays — no pickup/delivery
-    }
-    return result;
-  }
-
-  function formatShortDate(date) {
-    return date.toLocaleDateString('en-MY', { weekday: 'short', day: 'numeric', month: 'short' });
-  }
-
-  function estimatedDeliveryRangeText(destState) {
-    const [minDays, maxDays] = estimateTransitWorkingDays(destState);
-    // Collection happens the next working day after the order is placed.
-    const collectionDay = addWorkingDays(new Date(), 1);
-    const earliest = addWorkingDays(collectionDay, minDays);
-    const latest = addWorkingDays(collectionDay, maxDays);
-    return `${formatShortDate(earliest)} &ndash; ${formatShortDate(latest)}`;
+  function estimatedDeliveryText(courier, destState) {
+    const [minDays, maxDays] = estimateTransitDays(destState);
+    const period = `${minDays}-${maxDays} days`;
+    return courier === 'MELPLUS' ? `${period} (Mon&ndash;Sat only)` : `${period} (every day)`;
   }
 
   function renderShippingBox(state) {
@@ -911,21 +897,20 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (state === 'error') {
       box.innerHTML = '<div style="color: var(--color-structural);">Could not calculate shipping automatically — a flat RM ' + MIN_DELIVERY_FEE_DISPLAY + ' fee applies, we\'ll confirm final cost via WhatsApp.</div>';
     } else if (state === 'ready') {
-      const estRange = estimatedDeliveryRangeText(shippingDestState);
       box.innerHTML = shippingOptions.map((opt, i) => `
         <label style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; padding: 0.6em 0; cursor: pointer; ${i > 0 ? 'border-top: 1px solid var(--color-ash);' : ''}">
           <span style="display:flex; align-items:center; gap: 0.6em;">
             <input type="radio" name="shippingOption" value="${i}" ${i === 0 ? 'checked' : ''}>
             <span>
               <strong>📦 ${opt.courierName || 'Courier'}</strong>
-              <div style="color: var(--color-structural); font-size: 0.8rem;">Shipping from Johor Bahru &middot; Est. delivery ${estRange}</div>
+              <div style="color: var(--color-structural); font-size: 0.8rem;">Shipping from Johor Bahru &middot; Est. delivery ${estimatedDeliveryText(opt.courier, shippingDestState)}</div>
             </span>
           </span>
           <span style="color: var(--color-char); white-space: nowrap;">RM ${opt.cost.toFixed(2)}</span>
         </label>
       `).join('') + `
         <div style="border-top: 1px solid var(--color-ash); margin-top: 0.5rem; padding-top: 0.5rem; font-size: 0.75rem; color: var(--color-structural);">
-          Estimate assumes collection the next working day. Couriers do not collect or deliver on Sundays or Malaysian public holidays, so orders placed on a Friday evening, Saturday, or Sunday are typically collected the following Monday.
+          Poslaju only collects and delivers Monday&ndash;Saturday, so an order placed Friday evening or over the weekend is typically collected the following Monday. J&amp;T Express runs every day, including Sundays and public holidays.
         </div>
       `;
       box.querySelectorAll('input[name="shippingOption"]').forEach(input => {
