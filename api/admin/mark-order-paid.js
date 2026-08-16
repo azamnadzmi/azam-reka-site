@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      order: result.value
+      order: result
     });
   } catch (error) {
     console.error('Mark order paid error:', error);

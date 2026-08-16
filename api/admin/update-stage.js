@@ -67,13 +67,13 @@ module.exports = async function handler(req, res) {
       { returnDocument: 'after' }
     );
 
-    if (!result.value) {
+    if (!result) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    await sendStageUpdateEmail(result.value, stage);
+    await sendStageUpdateEmail(result, stage);
 
-    return res.status(200).json({ success: true, order: result.value });
+    return res.status(200).json({ success: true, order: result });
   } catch (error) {
     console.error('Update stage error:', error);
     return res.status(500).json({ error: 'Failed to update order stage' });

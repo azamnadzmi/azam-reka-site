@@ -135,11 +135,11 @@ module.exports = async function handler(req, res) {
       { returnDocument: 'after' }
     );
 
-    await sendStageUpdateEmail(result.value, 'shipped');
+    await sendStageUpdateEmail(result, 'shipped');
 
     return res.status(200).json({
       success: true,
-      order: result.value,
+      order: result,
       booking
     });
   } catch (error) {

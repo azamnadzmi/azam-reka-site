@@ -118,15 +118,15 @@ module.exports = async function handler(req, res) {
       { returnDocument: 'after' }
     );
 
-    if (result.value) {
+    if (result) {
       // Send confirmation email
-      await sendConfirmationEmail(result.value);
+      await sendConfirmationEmail(result);
 
       // Create the Sales Order in Zoho Books — guarded so a duplicate webhook
       // fire (Billplz can retry) never creates two Sales Orders for one order.
-      if (!result.value.zohoSalesOrderId) {
+      if (!result.zohoSalesOrderId) {
         try {
-          const zohoResult = await createSalesOrder(result.value);
+          const zohoResult = await createSalesOrder(result);
           await orders.updateOne(
             { billplzId },
             {
@@ -152,7 +152,7 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ received: true, updated: !!result.value });
+    return res.status(200).json({ received: true, updated: !!result });
   } catch (error) {
     console.error('Webhook error:', error);
     return res.status(200).json({ received: true }); // Always return 200 to Billplz
