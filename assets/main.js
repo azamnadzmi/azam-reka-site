@@ -748,19 +748,13 @@ document.addEventListener('DOMContentLoaded', () => {
     Wishlist.updateBadge();
   })();
 
-  // WhatsApp float button — a one-time label so first-time visitors know
-  // what the floating icon does, rather than relying solely on the icon.
-  // Shown once per session (matches the intro loader's once-per-session
-  // pattern) and dismissed on click/tap anywhere.
+  // WhatsApp float button — the label is always in the DOM (shows on
+  // hover/focus via CSS) and additionally auto-shown once per session so
+  // first-time visitors notice it without having to hover.
   (() => {
-    const float = document.querySelector('.whatsapp-float');
-    if (!float) return;
+    const label = document.querySelector('.whatsapp-float__label');
+    if (!label) return;
     if (sessionStorage.getItem('azamReka_waLabelSeen')) return;
-
-    const label = document.createElement('span');
-    label.className = 'whatsapp-float__label';
-    label.textContent = 'Chat with us';
-    float.appendChild(label);
     sessionStorage.setItem('azamReka_waLabelSeen', '1');
 
     setTimeout(() => label.classList.add('is-visible'), 800);

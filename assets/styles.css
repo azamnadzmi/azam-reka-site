@@ -2115,7 +2115,9 @@ textarea:focus-visible,
   pointer-events: none;
   transition: opacity var(--duration-base) var(--ease-precise), transform var(--duration-base) var(--ease-precise);
 }
-.whatsapp-float__label.is-visible {
+.whatsapp-float__label.is-visible,
+.whatsapp-float:hover .whatsapp-float__label,
+.whatsapp-float:focus-visible .whatsapp-float__label {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
