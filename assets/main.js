@@ -676,10 +676,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Heart toggle on every product card's media, injected once per card.
     function refreshHeartButtons() {
       document.querySelectorAll('.product-card').forEach(card => {
-        const media = card.querySelector('.product-card__media');
+        // Catalogue/product-detail cards use .product-card__media (carousel);
+        // the homepage's Best Sellers/Wedding Collection cards use
+        // .hover-swap-media instead -- support both so the heart shows up
+        // everywhere a product card appears, not just on the catalogue.
+        const media = card.querySelector('.product-card__media, .hover-swap-media');
         const titleEl = card.querySelector('.product-card__title');
         const priceEl = card.querySelector('.mono-price');
-        const img = card.querySelector('.product-card__media img');
+        const img = media ? media.querySelector('img') : null;
         if (!media || !titleEl || !priceEl) return;
 
         const name = titleEl.textContent.trim();
