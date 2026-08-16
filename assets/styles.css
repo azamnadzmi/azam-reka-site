@@ -2145,3 +2145,16 @@ textarea:focus-visible,
 @media (prefers-reduced-motion: reduce), (max-width: 480px) {
   .intro-loader { display: none; }
 }
+
+/* Header logo — the small circle blinks in a slow, steady loop */
+@keyframes logoDotBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.logo-dot {
+  animation: logoDotBlink 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-dot { animation: none; }
+}
