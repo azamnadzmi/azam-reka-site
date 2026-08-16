@@ -71,33 +71,30 @@ body {
 
 .form-section {
   margin-bottom: 3rem;
-  position: relative;
-  padding-left: 3rem;
 }
 
 .form-section:last-child {
   margin-bottom: 0;
 }
 
-.form-section::before {
-  content: attr(data-number);
-  position: absolute;
-  left: 0;
-  top: 0;
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-ember, #b87333);
-  line-height: 1;
-}
-
 .form-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
   font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: #1A1A1A;
   margin: 0 0 1.5rem 0;
+}
+
+.form-section h2::before {
+  content: attr(data-number);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-ember, #b87333);
 }
 
 .form-group {
@@ -569,8 +566,8 @@ body {
     </div>
 
     <!-- DELIVERY SECTION -->
-    <div class="form-section" data-number="01">
-      <h2>Delivery</h2>
+    <div class="form-section">
+      <h2 data-number="01">Delivery</h2>
 
       <div class="form-group">
         <label>Country/Region</label>
@@ -625,8 +622,8 @@ body {
     </div>
 
     <!-- CONTACT SECTION -->
-    <div class="form-section" data-number="02">
-      <h2>Contact</h2>
+    <div class="form-section">
+      <h2 data-number="02">Contact</h2>
       <div class="form-group">
         <label>Email</label>
         <input type="email" id="email" required>
@@ -634,16 +631,16 @@ body {
     </div>
 
     <!-- SHIPPING METHOD -->
-    <div class="form-section" data-number="03">
-      <h2>Shipping method</h2>
+    <div class="form-section">
+      <h2 data-number="03">Shipping method</h2>
       <div id="shippingMethodBox" style="background: var(--color-ash); padding: 1rem; border-radius: 0; font-size: 0.85rem; color: var(--color-char);">
         <div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>
       </div>
     </div>
 
     <!-- EXPECTED ARRIVAL & RUSH CHARGES -->
-    <div class="form-section" data-number="04">
-      <h2>Expected Arrival</h2>
+    <div class="form-section">
+      <h2 data-number="04">Expected Arrival</h2>
       <div class="form-group">
         <label>When do you need this? *</label>
         <input type="date" id="arrivalDate" required>
@@ -661,8 +658,8 @@ body {
     </div>
 
     <!-- DISCLAIMER -->
-    <div class="form-section" data-number="05">
-      <h2>Disclaimer</h2>
+    <div class="form-section">
+      <h2 data-number="05">Disclaimer</h2>
       <div style="background: var(--color-ash); padding: 1rem; border-radius: 0; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--color-char);">
         <ul style="margin: 0; padding-left: 1.2rem;">
           <li><strong>Communication:</strong> By submitting this form, you agree to be contacted by azam.reka via WhatsApp using the phone number provided to discuss designs and order confirmation.</li>
@@ -677,8 +674,8 @@ body {
     </div>
 
     <!-- PAYMENT SECTION -->
-    <div class="form-section" data-number="06">
-      <h2>Payment</h2>
+    <div class="form-section">
+      <h2 data-number="06">Payment</h2>
       <button type="submit" class="pay-button" id="payBtn">Pay Now</button>
       <div class="loading" id="loading">Processing your payment...</div>
       <div class="error-msg" id="errorMsg"></div>
