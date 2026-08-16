@@ -168,10 +168,15 @@
   z-index: 1;
 }
 .track-stepper__row.is-complete .track-stepper__dot { background: var(--color-ember); color: var(--color-bone); }
+@keyframes trackDotPulse {
+  0% { box-shadow: 0 0 0 0 rgba(184, 115, 51, 0.55); }
+  70% { box-shadow: 0 0 0 12px rgba(184, 115, 51, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(184, 115, 51, 0); }
+}
 .track-stepper__row.is-current .track-stepper__dot {
   background: var(--color-brass);
   color: var(--color-bone);
-  animation: stagePulse 1.8s ease-in-out infinite;
+  animation: trackDotPulse 1.8s ease-in-out infinite;
 }
 .track-stepper__label {
   font-family: var(--font-micro);
@@ -215,20 +220,24 @@
   flex-direction: column;
   gap: 1rem;
 }
-.message-bubble {
+.message-group {
+  display: flex;
+  flex-direction: column;
   max-width: 78%;
+}
+.message-group--customer { align-self: flex-end; align-items: flex-end; }
+.message-group--admin { align-self: flex-start; align-items: flex-start; }
+.message-bubble {
   padding: 0.9em 1.15em;
   font-family: var(--font-body);
   font-size: 0.9rem;
   line-height: 1.6;
 }
 .message-bubble--customer {
-  align-self: flex-end;
   background: var(--color-ember);
   color: var(--color-bone);
 }
 .message-bubble--admin {
-  align-self: flex-start;
   background: #F1EFEC;
   color: var(--color-char);
 }
@@ -242,8 +251,8 @@
   font-family: var(--font-micro);
   font-size: 0.6875rem;
   letter-spacing: 0.05em;
-  opacity: 0.6;
-  margin-top: 0.5em;
+  color: var(--color-structural);
+  margin-top: 0.4em;
 }
 .message-portal__form {
   display: flex;
@@ -529,10 +538,13 @@ function renderMessages(messages) {
     const bubbleClass = m.sender === 'admin' ? 'message-bubble--admin' : 'message-bubble--customer';
     const imageHtml = m.imageUrl ? `<img src="${m.imageUrl}" alt="Attachment">` : '';
     const textHtml = m.text ? `<div>${m.text.replace(/</g, '&lt;')}</div>` : '';
+    const alignClass = m.sender === 'admin' ? 'message-group--admin' : 'message-group--customer';
     return `
-      <div class="message-bubble ${bubbleClass}">
-        ${textHtml}
-        ${imageHtml}
+      <div class="message-group ${alignClass}">
+        <div class="message-bubble ${bubbleClass}">
+          ${textHtml}
+          ${imageHtml}
+        </div>
         <span class="message-bubble__time">${senderLabel} &middot; ${time}</span>
       </div>
     `;
