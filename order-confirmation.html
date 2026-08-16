@@ -6,6 +6,23 @@
 <title>Order Confirmed — Azam Reka</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/styles.css">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2076031446636271');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2076031446636271&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -154,6 +171,20 @@ localStorage.removeItem('azamReka_cart');
 // hand to use on the tracking page.
 const params = new URLSearchParams(window.location.search);
 const billCode = params.get('billplz[id]');
+
+// Only fire Purchase on an actually-confirmed payment (billplz[paid]=true),
+// not just on landing on this page -- Billplz redirects here on failed/
+// cancelled payments too, and counting those as sales would corrupt ad
+// conversion data and budget optimisation.
+const paidParam = params.get('billplz[paid]');
+if (paidParam === 'true' && lastTotal && window.fbq) {
+  fbq('track', 'Purchase', {
+    value: parseFloat(lastTotal),
+    currency: 'MYR',
+    content_ids: [billCode || 'unknown'],
+    content_type: 'product'
+  });
+}
 
 if (billCode || lastTotal) {
   document.getElementById('orderSummaryBox').style.display = 'block';

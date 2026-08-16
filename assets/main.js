@@ -29,6 +29,14 @@ const Cart = {
       cart.push({ name, price, qty });
     }
     this.saveCart(cart);
+    if (window.fbq) {
+      fbq('track', 'AddToCart', {
+        content_name: name,
+        content_type: 'product',
+        value: price * qty,
+        currency: 'MYR'
+      });
+    }
   },
   removeItem(name) {
     let cart = this.getCart();
@@ -142,6 +150,16 @@ const Wishlist = {
 
 document.addEventListener('DOMContentLoaded', () => {
   Cart.updateCartCount();
+
+  // WhatsApp click tracking — delegated so it covers the float button, the
+  // header/hero "Order via WhatsApp" links, and any product-page "Ask a
+  // Question" link without needing a listener wired to each one individually.
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href*="wa.me"]');
+    if (link && window.fbq) {
+      fbq('track', 'Contact', { content_name: 'WhatsApp' });
+    }
+  });
 
   const header = document.querySelector('.site-header');
   if (header) {
