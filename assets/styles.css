@@ -1832,13 +1832,13 @@ textarea:focus-visible,
    ========================================================= */
 
 .btn-whatsapp {
-  background: var(--color-char);
-  color: var(--color-bone);
+  background: transparent;
+  color: var(--color-char);
   border-color: var(--color-char);
   width: 100%;
   justify-content: center;
 }
-.btn-whatsapp:hover { background: var(--color-ember); border-color: var(--color-ember); }
+.btn-whatsapp:hover { background: var(--color-char); color: var(--color-bone); border-color: var(--color-char); }
 
 .filter-chip {
   font-family: var(--font-micro);
