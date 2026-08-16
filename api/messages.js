@@ -3,9 +3,10 @@
 // handles both directions and both GET (read thread) and POST (send),
 // to stay within Vercel Hobby's 12-function cap.
 //
-// Auth: a request is either the customer (billCode + phone, same
-// verification as api/order-status.js) or the admin (adminPassword).
-// Exactly one of these two must be supplied and valid.
+// Auth: a request is either the admin (adminPassword) or the customer.
+// Customer auth is just knowing the billCode — same as api/order-status.js,
+// since billCode is a Billplz-generated random hex ID, not a guessable
+// sequential number. Requiring phone too was mostly login friction.
 
 const { MongoClient } = require('mongodb');
 const { uploadImage } = require('./_lib/google-drive');
@@ -21,21 +22,17 @@ async function getMongoClient() {
   return cachedClient;
 }
 
-// Same normalization as api/order-status.js — keep in sync.
-function normalizePhone(phone) {
-  return String(phone || '').replace(/[^0-9]/g, '').replace(/^60/, '').replace(/^0/, '');
-}
-
 /**
  * Resolves the caller's identity for a given order. Returns 'admin',
  * 'customer', or null (unauthorized). Never trusts the caller's claimed
- * role — always re-checks against the order record / env password.
+ * role — always re-checks against the env password. The 'order' param
+ * having already been found by billCode is what authorizes 'customer'.
  */
-function resolveSender({ order, phone, adminPassword }) {
+function resolveSender({ order, adminPassword }) {
   if (adminPassword && adminPasswordEnv && adminPassword === adminPasswordEnv) {
     return 'admin';
   }
-  if (phone && order && normalizePhone(order.customerPhone) === normalizePhone(phone)) {
+  if (order) {
     return 'customer';
   }
   return null;
@@ -48,27 +45,27 @@ module.exports = async function handler(req, res) {
     const orders = db.collection('orders');
 
     if (req.method === 'GET') {
-      const { billCode, phone, adminPassword } = req.query;
+      const { billCode, adminPassword } = req.query;
       if (!billCode) return res.status(400).json({ error: 'billCode is required' });
 
       const order = await orders.findOne({ billCode: billCode.trim() });
       if (!order) return res.status(404).json({ error: 'Order not found' });
 
-      const sender = resolveSender({ order, phone, adminPassword });
+      const sender = resolveSender({ order, adminPassword });
       if (!sender) return res.status(403).json({ error: 'Not authorized to view this order' });
 
       return res.status(200).json({ messages: order.messages || [] });
     }
 
     if (req.method === 'POST') {
-      const { billCode, phone, adminPassword, text, imageBase64, imageMimeType } = req.body || {};
+      const { billCode, adminPassword, text, imageBase64, imageMimeType } = req.body || {};
       if (!billCode) return res.status(400).json({ error: 'billCode is required' });
       if (!text && !imageBase64) return res.status(400).json({ error: 'Message text or image is required' });
 
       const order = await orders.findOne({ billCode: billCode.trim() });
       if (!order) return res.status(404).json({ error: 'Order not found' });
 
-      const sender = resolveSender({ order, phone, adminPassword });
+      const sender = resolveSender({ order, adminPassword });
       if (!sender) return res.status(403).json({ error: 'Not authorized to message on this order' });
 
       let imageUrl = null;

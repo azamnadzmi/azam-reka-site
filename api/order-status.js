@@ -1,7 +1,10 @@
 // api/order-status.js
-// Public endpoint — customer looks up their order by billCode + phone number.
-// Requiring both prevents someone from guessing/enumerating order IDs to see
-// other customers' names, addresses, or order contents.
+// Public endpoint — customer looks up their order by billCode alone.
+// billCode is a Billplz-generated random hex ID (e.g. "061ccc797af20366"),
+// not a small sequential number, so it's already an unguessable secret —
+// requiring a second factor (phone) was mostly just login friction, and
+// phone-number format mismatches were making it hard for real customers
+// to look up their own orders.
 
 const { MongoClient } = require('mongodb');
 const { trackParcel } = require('./_lib/easyparcel');
@@ -17,12 +20,6 @@ async function getMongoClient() {
   cachedClient = new MongoClient(mongoUri);
   await cachedClient.connect();
   return cachedClient;
-}
-
-// Normalize phone numbers for comparison — strips spaces, dashes, leading
-// zeros/country code quirks so "011-1085 2324" and "60111085234" etc. match.
-function normalizePhone(phone) {
-  return String(phone || '').replace(/[^0-9]/g, '').replace(/^60/, '').replace(/^0/, '');
 }
 
 /* Updated 6-stage pipeline */
@@ -42,10 +39,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { billCode, phone } = req.query;
+    const { billCode } = req.query;
 
-    if (!billCode || !phone) {
-      return res.status(400).json({ error: 'Order ID and phone number are required' });
+    if (!billCode) {
+      return res.status(400).json({ error: 'Order ID is required' });
     }
 
     const client = await getMongoClient();
@@ -54,10 +51,8 @@ module.exports = async function handler(req, res) {
 
     const order = await orders.findOne({ billCode: billCode.trim() });
 
-    if (!order || normalizePhone(order.customerPhone) !== normalizePhone(phone)) {
-      // Same generic message whether the order doesn't exist or the phone
-      // doesn't match — avoids confirming/denying an order ID's existence.
-      return res.status(404).json({ error: 'We could not find an order matching those details. Double-check your Order ID and phone number.' });
+    if (!order) {
+      return res.status(404).json({ error: 'We could not find an order matching that Order ID. Double-check it and try again.' });
     }
 
     if (order.status !== 'paid') {

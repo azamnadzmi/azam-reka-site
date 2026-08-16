@@ -1741,6 +1741,9 @@ textarea:focus-visible,
    ========================================================= */
 .hover-swap-media {
   position: relative;
+  width: 100%; /* both child images are position:absolute (no in-flow content),
+    so this flex item has nothing to derive a stretch width from on its own —
+    without an explicit width it can collapse to ~1px in narrow flex rows */
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--color-ash);
