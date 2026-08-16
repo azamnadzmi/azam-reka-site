@@ -15,48 +15,18 @@ body {
   font-family: var(--font-body);
 }
 
-.checkout-header {
-  background: var(--color-bone);
-  border-bottom: 1px solid var(--color-ash);
-  padding: 1rem clamp(1.25rem, 4vw, 4rem);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.checkout-header .logo {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 0.02em;
-}
-
-.checkout-header .cart-icon {
-  display: flex;
-  cursor: pointer;
-}
-
 .checkout-wrapper {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: var(--space-4) clamp(1.25rem, 4vw, 4rem) var(--space-7);
   display: grid;
   grid-template-columns: 1fr 380px;
-  gap: 0;
-  min-height: calc(100vh - 60px);
+  gap: 3rem;
+  align-items: start;
 }
 
-.checkout-form {
-  background: white;
-  padding: 3rem;
-}
-
-.checkout-form h1 {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0 0 3rem 0;
-  color: #1A1A1A;
+@media (max-width: 900px) {
+  .checkout-wrapper { grid-template-columns: 1fr; }
 }
 
 /* Error Summary — accessible error messaging */
@@ -325,15 +295,13 @@ body {
   display: block;
 }
 
-/* Checkout Summary - Right Sidebar */
+/* Checkout Summary — boxed card, matches order-summary-card elsewhere */
 .checkout-summary {
-  background: var(--color-bone);
+  background: white;
+  border: 1px solid var(--color-ash);
   padding: 2rem;
-  border-left: 1px solid var(--color-ash);
   position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  top: calc(var(--space-4) + 1rem);
 }
 
 .summary-header {
@@ -521,14 +489,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .checkout-form {
-    padding: 1.5rem;
-  }
-
   .checkout-summary {
-    border-left: none;
-    border-top: 1px solid var(--color-ash);
-    height: auto;
     position: static;
   }
 
@@ -544,26 +505,63 @@ body {
 </head>
 <body>
 
-<div class="checkout-header">
-  <a href="index.html" class="logo" style="text-decoration:none; color:inherit; display:flex; align-items:center;" aria-label="Azam Reka">
-    <svg viewBox="0 0 123.27 117.02" style="height:32px; width:auto;" role="img" aria-label="Azam Reka">
-      <path fill="#231f20" d="M113.14,54.04c0-4.06-2.43-7.73-6.16-9.31L9.76,3.46v20.08l83.1,35.27v21.66L23.81,51.17c-6.66-2.83-14.05,2.06-14.05,9.3v51.7l20.28-8.61v-27.71l83.1,35.27v-22.03l-20.12-8.54,20.12-8.54v-17.97Z"/>
-      <circle class="logo-dot" fill="#231f20" cx="47.49" cy="102.05" r="10.11"/>
-    </svg>
-  </a>
-  <div class="cart-icon">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--color-char)">
-      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-    </svg>
+<div class="promo-bar">
+  <button class="promo-arrow promo-arrow--prev" aria-label="Previous announcement">&#8249;</button>
+  <div class="promo-track">
+    <div class="promo-slide is-active">Custom Wedding &amp; Hari Guru orders now open &mdash; <a href="/contact.html">WhatsApp for a quote</a></div>
+    <div class="promo-slide">Rated 5.0 on Google &mdash; loved by teachers &amp; newlyweds</div>
+    <div class="promo-slide">Placed an order? <a href="/track-order.html">Track it here</a></div>
   </div>
+  <button class="promo-arrow promo-arrow--next" aria-label="Next announcement">&#8250;</button>
 </div>
+
+<header class="site-header" data-scrolled="false">
+  <div class="container site-header__inner">
+    <a href="index.html" class="site-header__logo" aria-label="Azam Reka">
+      <svg class="site-header__logo-svg" viewBox="0 0 123.27 117.02" style="height:42px; width:auto;" role="img" aria-label="Azam Reka">
+        <path fill="#231f20" d="M113.14,54.04c0-4.06-2.43-7.73-6.16-9.31L9.76,3.46v20.08l83.1,35.27v21.66L23.81,51.17c-6.66-2.83-14.05,2.06-14.05,9.3v51.7l20.28-8.61v-27.71l83.1,35.27v-22.03l-20.12-8.54,20.12-8.54v-17.97Z"/>
+        <circle class="logo-dot" fill="#231f20" cx="47.49" cy="102.05" r="10.11"/>
+      </svg>
+    </a>
+    <nav class="site-header__nav">
+      <a href="about.html">About</a>
+      <a href="catalog.html">Catalogue</a>
+      <a href="index.html#how-to-order">Process</a>
+      <a href="track-order.html">Track</a>
+      <a href="index.html#spec-sheet">Spec Sheet</a>
+    </nav>
+    <div class="site-header__actions" style="display:flex; align-items:center; gap: 1rem;">
+      <button data-cart-btn class="cart-button" aria-label="Shopping cart" style="background:none; border:none; cursor:pointer; font-size:0;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--color-char)">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span data-cart-count class="cart-count"></span>
+      </button>
+      <a href="contact.html" class="btn btn-primary" style="padding: 0.6em 1.2em;">Custom Orders</a>
+      <button class="site-header__mobile-toggle" data-mobile-nav-toggle aria-label="Open menu" aria-expanded="false">&#9776;</button>
+    </div>
+  </div>
+  <div class="mobile-nav" data-mobile-nav data-open="false" style="display:none; flex-direction:column; padding: 1rem clamp(1.25rem,4vw,4rem); border-top: 1px solid var(--color-ash); background: var(--color-bone);">
+    <a href="about.html" style="padding-block:0.5em;">About</a>
+    <a href="catalog.html" style="padding-block:0.5em;">Catalogue</a>
+    <a href="index.html#how-to-order" style="padding-block:0.5em;">Process</a>
+    <a href="track-order.html" style="padding-block:0.5em;">Track</a>
+    <a href="index.html#spec-sheet" style="padding-block:0.5em;">Spec Sheet</a>
+    <a href="contact.html" style="padding-block:0.5em;">Custom Orders</a>
+  </div>
+</header>
+
+<section class="section hairline-top" style="padding-bottom: 0;">
+  <div class="container">
+    <p class="eyebrow" style="display: flex; align-items: center; gap: 0.6em;">&sect; Checkout <span style="display:inline-block; width: 2rem; height: 1px; background: var(--color-ember);"></span></p>
+    <h1 class="h-display-2" style="margin-top: 0.3em;">Complete your order</h1>
+  </div>
+</section>
 
 <div class="checkout-wrapper">
   <!-- LEFT: FORM -->
   <form id="checkoutForm" class="checkout-form">
-    <h1>Checkout</h1>
-
     <!-- Error Summary — screen reader and keyboard user friendly -->
     <div id="formErrorSummary" role="alert" aria-labelledby="errorSummaryTitle" class="form-error-summary" style="display: none;">
       <h2 id="errorSummaryTitle" class="form-error-summary__title">Please fix the following errors:</h2>
@@ -571,7 +569,7 @@ body {
     </div>
 
     <!-- DELIVERY SECTION -->
-    <div class="form-section">
+    <div class="form-section" data-number="01">
       <h2>Delivery</h2>
 
       <div class="form-group">
@@ -627,7 +625,7 @@ body {
     </div>
 
     <!-- CONTACT SECTION -->
-    <div class="form-section">
+    <div class="form-section" data-number="02">
       <h2>Contact</h2>
       <div class="form-group">
         <label>Email</label>
@@ -636,7 +634,7 @@ body {
     </div>
 
     <!-- SHIPPING METHOD -->
-    <div class="form-section">
+    <div class="form-section" data-number="03">
       <h2>Shipping method</h2>
       <div id="shippingMethodBox" style="background: var(--color-ash); padding: 1rem; border-radius: 0; font-size: 0.85rem; color: var(--color-char);">
         <div style="color: var(--color-structural);">Enter your postcode and state above to see shipping cost.</div>
@@ -644,7 +642,7 @@ body {
     </div>
 
     <!-- EXPECTED ARRIVAL & RUSH CHARGES -->
-    <div class="form-section">
+    <div class="form-section" data-number="04">
       <h2>Expected Arrival</h2>
       <div class="form-group">
         <label>When do you need this? *</label>
@@ -663,7 +661,7 @@ body {
     </div>
 
     <!-- DISCLAIMER -->
-    <div class="form-section">
+    <div class="form-section" data-number="05">
       <h2>Disclaimer</h2>
       <div style="background: var(--color-ash); padding: 1rem; border-radius: 0; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--color-char);">
         <ul style="margin: 0; padding-left: 1.2rem;">
@@ -679,7 +677,7 @@ body {
     </div>
 
     <!-- PAYMENT SECTION -->
-    <div class="form-section">
+    <div class="form-section" data-number="06">
       <h2>Payment</h2>
       <button type="submit" class="pay-button" id="payBtn">Pay Now</button>
       <div class="loading" id="loading">Processing your payment...</div>
@@ -726,6 +724,35 @@ body {
     </p>
   </aside>
 </div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <div class="h-heading" style="color: var(--color-bone); margin-bottom: var(--space-2);">AZAM REKA</div>
+        <p class="body-sm" style="color: var(--color-structural); max-width: 34ch;">
+          Custom laser-cutting and engraving, crafted with passion, precision, and a touch of artistry.
+        </p>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Catalogue</p>
+        <a href="catalog.html?category=plaques">Plaques &amp; Awards</a>
+        <a href="catalog.html?category=keychains">Keychains &amp; Accessories</a>
+        <a href="catalog.html?category=wedding">Wedding &amp; Mas Kahwin</a>
+        <a href="catalog.html?category=decor">Gifts &amp; Home D&eacute;cor</a>
+      </div>
+      <div>
+        <p class="mono-label" style="color: var(--color-bone); margin-bottom: var(--space-2);">Reach Us</p>
+        <a href="https://wa.me/601110852324">WhatsApp</a>
+        <a href="https://instagram.com/azam.reka">Instagram @azam.reka</a>
+        <a href="mailto:azam.r3ka@gmail.com">Email</a>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 Azam Reka. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
 
 <script src="assets/main.js"></script>
 <script>
