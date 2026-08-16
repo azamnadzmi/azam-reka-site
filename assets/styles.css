@@ -2041,8 +2041,13 @@ textarea:focus-visible,
 
 /* Save-for-later heart on product cards — sits opposite the category tag. */
 .product-card__wish {
+  /* Bottom-right, not top-right: the top-right corner is also where
+     .video-badge sits on carousel slides with a video (rehal-lite,
+     plaque-wood-acrylic, plaque-portrait-a4), and the two were
+     overlapping. Bottom-right is clear of the arrows (vertically
+     centered) and dots (bottom, but horizontally centered). */
   position: absolute;
-  top: 0.75rem;
+  bottom: 0.75rem;
   right: 0.75rem;
   z-index: 3;
   width: 32px;
