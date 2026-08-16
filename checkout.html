@@ -630,6 +630,15 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=2076031446636271&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-229EHNK79E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-229EHNK79E');
+</script>
 </head>
 <body>
 
@@ -943,6 +952,13 @@ document.addEventListener('DOMContentLoaded', () => {
       contents: cart.map(item => ({ id: item.name, quantity: item.qty })),
       value: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
       currency: 'MYR'
+    });
+  }
+  if (window.gtag) {
+    gtag('event', 'begin_checkout', {
+      currency: 'MYR',
+      value: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+      items: cart.map(item => ({ item_name: item.name, price: item.price, quantity: item.qty }))
     });
   }
 

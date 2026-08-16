@@ -37,6 +37,13 @@ const Cart = {
         currency: 'MYR'
       });
     }
+    if (window.gtag) {
+      gtag('event', 'add_to_cart', {
+        currency: 'MYR',
+        value: price * qty,
+        items: [{ item_name: name, price, quantity: qty }]
+      });
+    }
   },
   removeItem(name) {
     let cart = this.getCart();
@@ -156,8 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Question" link without needing a listener wired to each one individually.
   document.addEventListener('click', (e) => {
     const link = e.target.closest('a[href*="wa.me"]');
-    if (link && window.fbq) {
+    if (!link) return;
+    if (window.fbq) {
       fbq('track', 'Contact', { content_name: 'WhatsApp' });
+    }
+    if (window.gtag) {
+      // GA4 has no dedicated "contact" event; generate_lead is the
+      // recommended standard event for this kind of conversion action.
+      gtag('event', 'generate_lead', { method: 'WhatsApp' });
     }
   });
 
