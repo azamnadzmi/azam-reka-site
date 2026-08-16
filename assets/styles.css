@@ -593,6 +593,18 @@ textarea:focus-visible,
   .site-header__mobile-toggle { display: block; }
 }
 
+/* Below ~460px, logo + cart + full-text CTA button + hamburger no longer
+   fit the viewport width (they measured out to exactly 375px with zero
+   margin on an iPhone-width screen). Drop the CTA button from the header
+   row and rely on the equivalent link added to the mobile-nav dropdown
+   instead. Scoped to headers that actually have a hamburger fallback —
+   pages without one (order-confirmation.html) keep the button visible. */
+@media (max-width: 460px) {
+  .site-header:has(.site-header__mobile-toggle) .site-header__actions .btn-primary {
+    display: none;
+  }
+}
+
 /* Grid systems ------------------------------------------------ */
 .grid-2 {
   display: grid;

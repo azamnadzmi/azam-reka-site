@@ -176,8 +176,9 @@ PRODUCT_PAGE_TEMPLATE = '''<!doctype html>
     </div>
   </div>
   <div class="mobile-nav" data-mobile-nav data-open="false" style="display:none; flex-direction:column; padding: 1rem clamp(1.25rem,4vw,4rem); border-top: 1px solid var(--color-ash); background: var(--color-bone);">
-    <a href="../catalog.html" style="padding-block:0.5em;">Catalogue</a>
     <a href="../about.html" style="padding-block:0.5em;">About</a>
+    <a href="../catalog.html" style="padding-block:0.5em;">Catalogue</a>
+    <a href="../track-order.html" style="padding-block:0.5em;">Track</a>
     <a href="../contact.html" style="padding-block:0.5em;">Custom Orders</a>
   </div>
 </header>
