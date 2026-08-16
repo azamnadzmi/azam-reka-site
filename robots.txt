@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /checkout.html
+Disallow: /order-confirmation.html
+Disallow: /api/
+
+Sitemap: https://azamreka.com/sitemap.xml
