@@ -698,6 +698,21 @@ textarea:focus-visible,
   color: var(--color-structural);
 }
 
+.site-footer__legal {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.site-footer__legal a { color: var(--color-structural); }
+.site-footer__legal a:hover { color: var(--color-bone); }
+
+/* Legal page body copy (Privacy/Terms/Shipping) */
+.legal-copy p { margin: 0 0 1em; line-height: 1.7; }
+.legal-copy h2.h-heading { margin-bottom: 0.75em; }
+
 @media (max-width: 749px) {
   .site-footer__grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2001,6 +2016,52 @@ textarea:focus-visible,
   transition: background var(--duration-fast) var(--ease-precise), transform var(--duration-fast) var(--ease-precise);
 }
 .whatsapp-float:hover { background: var(--color-ember); transform: scale(1.06); }
+
+.whatsapp-float__label {
+  position: absolute;
+  right: 68px;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: var(--color-char);
+  color: var(--color-bone);
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  padding: 0.6em 0.9em;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-precise), transform var(--duration-base) var(--ease-precise);
+}
+.whatsapp-float__label.is-visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Save-for-later heart on product cards — sits opposite the category tag. */
+.product-card__wish {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(247, 245, 242, 0.9);
+  border: 1px solid var(--color-ash);
+  color: var(--color-char);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-precise), color var(--duration-fast) var(--ease-precise);
+}
+.product-card__wish:hover { border-color: var(--color-ember); color: var(--color-ember); }
+.product-card__wish.is-active {
+  color: var(--color-ember);
+  border-color: var(--color-ember);
+}
+.product-card__wish.is-active svg { fill: var(--color-ember); }
 
 .how-it-works-row {
   display: grid;

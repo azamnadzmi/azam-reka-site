@@ -67,6 +67,46 @@ const Cart = {
   }
 };
 
+// ============ WISHLIST (save for later) ============
+// Scoped to product cards (catalogue grid + homepage carousels) — the
+// browsing surfaces where "save this for later" actually applies. Product
+// detail pages already have a direct Add to Cart / Buy Now decision point,
+// so a heart toggle there would just add another choice without much
+// upside.
+const Wishlist = {
+  getList() {
+    return JSON.parse(localStorage.getItem('azamReka_wishlist') || '[]');
+  },
+  saveList(list) {
+    localStorage.setItem('azamReka_wishlist', JSON.stringify(list));
+    this.updateBadge();
+  },
+  isWished(name) {
+    return this.getList().some(item => item.name === name);
+  },
+  toggle(item) {
+    let list = this.getList();
+    if (this.isWished(item.name)) {
+      list = list.filter(i => i.name !== item.name);
+    } else {
+      list.push(item);
+    }
+    this.saveList(list);
+    return this.isWished(item.name);
+  },
+  remove(name) {
+    this.saveList(this.getList().filter(i => i.name !== name));
+  },
+  updateBadge() {
+    const count = this.getList().length;
+    const badge = document.querySelector('[data-wishlist-count]');
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+  }
+};
+
 // Intro loader — plays once per browser session, skipped on repeat visits
 // within the same tab/session and for prefers-reduced-motion users (handled
 // in CSS). Runs before DOMContentLoaded's other setup so it doesn't delay it.
@@ -535,4 +575,160 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
     targets.forEach((el) => observer.observe(el));
   }
+
+  // ---- Wishlist UI: header button, per-card heart toggles, modal ----
+  // All injected via JS rather than hand-added to every page's markup, so
+  // the feature works uniformly on the ~40 pages that render product cards
+  // without a matching HTML edit on each one.
+  (() => {
+    const cartBtn = document.querySelector('[data-cart-btn]');
+    if (!cartBtn) return; // page has no header cart affordance to sit next to
+
+    if (!document.querySelector('[data-wishlist-btn]')) {
+      const wishBtn = document.createElement('button');
+      wishBtn.type = 'button';
+      wishBtn.dataset.wishlistBtn = '';
+      wishBtn.className = 'cart-button';
+      wishBtn.setAttribute('aria-label', 'Saved items');
+      wishBtn.style.cssText = 'background:none; border:none; cursor:pointer; font-size:0;';
+      wishBtn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--color-char)">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span data-wishlist-count class="cart-count"></span>
+      `;
+      cartBtn.insertAdjacentElement('beforebegin', wishBtn);
+    }
+
+    if (!document.querySelector('[data-wishlist-modal]')) {
+      const modal = document.createElement('div');
+      modal.dataset.wishlistModal = '';
+      modal.className = 'cart-modal';
+      modal.style.display = 'none';
+      modal.innerHTML = `
+        <div class="cart-modal__content">
+          <div class="cart-modal__header">
+            <h2 class="h-heading" style="margin:0;">Saved Items</h2>
+            <button data-wishlist-close class="cart-modal__close" aria-label="Close">&times;</button>
+          </div>
+          <div class="cart-modal__body">
+            <div data-wishlist-items></div>
+            <div data-wishlist-empty style="text-align:center; padding: 2rem 0;">
+              <p class="body-base" style="color: var(--color-structural);">Nothing saved yet.</p>
+              <p class="body-sm" style="color: var(--color-structural);">Tap the heart on any piece to save it for later.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const wishBtn = document.querySelector('[data-wishlist-btn]');
+    const wishModal = document.querySelector('[data-wishlist-modal]');
+    const wishClose = wishModal.querySelector('[data-wishlist-close]');
+
+    function renderWishlist() {
+      const list = Wishlist.getList();
+      const itemsEl = wishModal.querySelector('[data-wishlist-items]');
+      const emptyEl = wishModal.querySelector('[data-wishlist-empty]');
+      if (list.length === 0) {
+        itemsEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+      itemsEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+      itemsEl.innerHTML = list.map(item => `
+        <div class="cart-modal__item">
+          <a href="${escapeHtml(item.href)}" class="cart-modal__item-image">
+            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
+          </a>
+          <div class="cart-modal__item-details">
+            <a href="${escapeHtml(item.href)}" class="cart-modal__item-name" style="text-decoration:none; color:inherit;">${escapeHtml(item.name)}</a>
+            <div class="cart-modal__item-price">RM ${Number(item.price).toFixed(2)}</div>
+          </div>
+          <button class="cart-modal__item-remove" data-wishlist-remove="${escapeHtml(item.name)}" aria-label="Remove ${escapeHtml(item.name)} from saved items">&times;</button>
+        </div>
+      `).join('');
+      itemsEl.querySelectorAll('[data-wishlist-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          Wishlist.remove(btn.dataset.wishlistRemove);
+          renderWishlist();
+          refreshHeartButtons();
+        });
+      });
+    }
+
+    function openWishlist() {
+      wishModal.style.display = 'block';
+      void wishModal.offsetHeight;
+      wishModal.dataset.open = 'true';
+      renderWishlist();
+    }
+    function closeWishlist() {
+      wishModal.dataset.open = 'false';
+      setTimeout(() => { wishModal.style.display = 'none'; }, 320);
+    }
+    wishBtn.addEventListener('click', openWishlist);
+    wishClose.addEventListener('click', closeWishlist);
+    wishModal.addEventListener('click', (e) => { if (e.target === wishModal) closeWishlist(); });
+
+    // Heart toggle on every product card's media, injected once per card.
+    function refreshHeartButtons() {
+      document.querySelectorAll('.product-card').forEach(card => {
+        const media = card.querySelector('.product-card__media');
+        const titleEl = card.querySelector('.product-card__title');
+        const priceEl = card.querySelector('.mono-price');
+        const img = card.querySelector('.product-card__media img');
+        if (!media || !titleEl || !priceEl) return;
+
+        const name = titleEl.textContent.trim();
+        let heart = media.querySelector('[data-wishlist-heart]');
+        if (!heart) {
+          heart = document.createElement('button');
+          heart.type = 'button';
+          heart.dataset.wishlistHeart = '';
+          heart.className = 'product-card__wish';
+          heart.setAttribute('aria-label', 'Save for later');
+          heart.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+          heart.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const price = parseFloat((priceEl.textContent.match(/[\d.]+/) || ['0'])[0]);
+            const wished = Wishlist.toggle({
+              name,
+              price,
+              image: img ? img.getAttribute('src') : '',
+              href: card.getAttribute('href') || '#'
+            });
+            heart.classList.toggle('is-active', wished);
+          });
+          media.appendChild(heart);
+        }
+        heart.classList.toggle('is-active', Wishlist.isWished(name));
+      });
+    }
+
+    refreshHeartButtons();
+    Wishlist.updateBadge();
+  })();
+
+  // WhatsApp float button — a one-time label so first-time visitors know
+  // what the floating icon does, rather than relying solely on the icon.
+  // Shown once per session (matches the intro loader's once-per-session
+  // pattern) and dismissed on click/tap anywhere.
+  (() => {
+    const float = document.querySelector('.whatsapp-float');
+    if (!float) return;
+    if (sessionStorage.getItem('azamReka_waLabelSeen')) return;
+
+    const label = document.createElement('span');
+    label.className = 'whatsapp-float__label';
+    label.textContent = 'Chat with us';
+    float.appendChild(label);
+    sessionStorage.setItem('azamReka_waLabelSeen', '1');
+
+    setTimeout(() => label.classList.add('is-visible'), 800);
+    setTimeout(() => label.classList.remove('is-visible'), 5000);
+  })();
 });
