@@ -56,6 +56,39 @@ const Cart = {
   }
 };
 
+// Intro loader — plays once per browser session, skipped on repeat visits
+// within the same tab/session and for prefers-reduced-motion users (handled
+// in CSS). Runs before DOMContentLoaded's other setup so it doesn't delay it.
+(() => {
+  const loader = document.getElementById('introLoader');
+  if (!loader) return;
+
+  if (sessionStorage.getItem('azamReka_introSeen')) {
+    loader.remove();
+    return;
+  }
+
+  const dismiss = () => {
+    if (loader.dataset.visible === 'false') return; // already dismissing
+    loader.dataset.visible = 'false';
+    sessionStorage.setItem('azamReka_introSeen', '1');
+    setTimeout(() => loader.remove(), 700); // match CSS transition duration
+  };
+
+  const video = loader.querySelector('.intro-loader__video');
+  if (video) {
+    video.addEventListener('ended', dismiss);
+    video.addEventListener('error', dismiss);
+    // Safety net in case 'ended' never fires (autoplay blocked, stalled load, etc.)
+    setTimeout(dismiss, 6000);
+  } else {
+    dismiss();
+  }
+
+  // Let impatient visitors skip straight to the site
+  loader.addEventListener('click', dismiss);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   Cart.updateCartCount();
 

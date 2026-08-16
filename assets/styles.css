@@ -2114,3 +2114,33 @@ textarea:focus-visible,
   transition: color 0.3s;
 }
 .collection-card:hover .collection-card__tags span { color: rgba(243, 236, 224, 0.6); }
+
+/* =========================================================
+   INTRO LOADER — one-time logo animation on first visit
+   ========================================================= */
+.intro-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0D0906;
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-precise);
+}
+
+.intro-loader[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-loader__video {
+  width: min(60vw, 420px);
+  height: auto;
+  mix-blend-mode: screen; /* video's near-black bg drops out, only the glowing mark shows */
+}
+
+@media (prefers-reduced-motion: reduce), (max-width: 480px) {
+  .intro-loader { display: none; }
+}
