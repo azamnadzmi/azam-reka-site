@@ -577,9 +577,17 @@ textarea:focus-visible,
   align-items: center;
   padding-block: var(--space-2);
 }
-.site-header__logo { justify-self: start; }
-.site-header__nav { justify-self: center; }
-.site-header__actions { justify-self: end; }
+/* Explicit grid-column, not just source order: when .site-header__nav
+   goes display:none below 900px, CSS Grid's auto-placement doesn't
+   reserve its column slot -- it just skips straight to the next item,
+   so .site-header__actions slid into the middle "auto" track (sized to
+   fit its own content) instead of the right-hand 1fr track, leaving a
+   large empty gap where that real right column should have been. Pinning
+   each item to its column keeps the 1fr/auto/1fr split correct whether
+   or not the middle item is present. */
+.site-header__logo { grid-column: 1; justify-self: start; }
+.site-header__nav { grid-column: 2; justify-self: center; }
+.site-header__actions { grid-column: 3; justify-self: end; }
 
 .site-header__logo {
   font-family: var(--font-display);
