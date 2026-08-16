@@ -731,25 +731,67 @@ textarea:focus-visible,
 .legal-copy p { margin: 0 0 1em; line-height: 1.7; }
 .legal-copy h2.h-heading { margin-bottom: 0.75em; }
 
-/* FAQ page */
-.faq-list { display: flex; flex-direction: column; }
-.faq-item {
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: var(--space-2);
-  padding-block: var(--space-3);
-  border-bottom: 1px solid var(--color-ash);
+/* FAQ page (accordion, matches reference) */
+.faq-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-structural);
+  margin-bottom: 2rem;
 }
-.faq-item:first-child { padding-top: 0; }
+.faq-breadcrumb a { color: var(--color-structural); }
+.faq-breadcrumb a:hover { color: var(--color-ember); }
+.faq-list { border-top: 1px solid var(--color-ash); }
+.faq-item { border-bottom: 1px solid var(--color-ash); }
+.faq-item__summary {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2rem;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: 1.5rem;
+  cursor: pointer;
+  list-style: none;
+}
+.faq-item__summary::-webkit-details-marker,
+.faq-item__summary::marker { display: none; content: ''; }
 .faq-item__num {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  color: var(--color-structural);
-  padding-top: 0.2em;
+  color: var(--color-ember);
 }
-.faq-item h2.h-heading { margin-bottom: 0.5em; }
+.faq-item__q {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1A1A1A;
+}
+.faq-item__toggle {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-ash);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-structural);
+  flex-shrink: 0;
+}
+.faq-item__toggle::before { content: '+'; }
+.faq-item[open] .faq-item__toggle::before { content: '\2212'; }
+.faq-item__answer {
+  padding: 0 2rem 1.5rem 2.5rem;
+  margin: 0;
+  color: var(--color-structural);
+  line-height: 1.7;
+  max-width: 60ch;
+}
 @media (max-width: 599px) {
-  .faq-item { grid-template-columns: 2rem 1fr; }
+  .faq-item__summary { grid-template-columns: 1.75rem 1fr 1.75rem; }
+  .faq-item__answer { padding-left: 1.75rem; padding-right: 0; }
+  .faq-item__toggle { width: 24px; height: 24px; }
 }
 
 @media (max-width: 749px) {
