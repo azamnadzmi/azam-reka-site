@@ -5,14 +5,15 @@
    ========================================================= */
 
 :root {
-  /* Color — warm neutral, fashion-retail palette (Khatam-inspired direction) */
+  /* Color — matched to reference (azmrkatest.base44.app) exactly, measured
+     via getComputedStyle rather than eyeballed. */
   --color-void: #241D17;        /* warm espresso-brown, not cold black */
-  --color-bone: #F3ECE0;        /* warm linen/oat background */
-  --color-char: #3B322A;        /* warm charcoal-brown text */
+  --color-bone: #F7F5F2;        /* reference background: hsl(38 24% 95%) */
+  --color-char: #1A1A1A;        /* reference foreground: hsl(0 0% 10%) */
   --color-structural: #948573;  /* warm taupe secondary text */
   --color-ash: #E3D6C3;         /* soft tan hairlines, borders */
-  --color-ember: #B8694F;       /* everyday accent — warm terracotta/clay */
-  --color-ember-soft: #B8694F22; /* ember at low opacity, for washes */
+  --color-ember: #B85C38;       /* reference primary/accent: hsl(18 58% 47%) */
+  --color-ember-soft: #B85C3822; /* ember at low opacity, for washes */
   --color-brass: #B87333;       /* premium accent — reserved for the Wedding line only */
   --color-brass-soft: #B8733322;
 
