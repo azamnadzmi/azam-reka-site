@@ -223,6 +223,49 @@
   font-size: 0.85rem;
   padding: 1rem 0;
 }
+
+/* Review portal — post-delivery star rating + free-text review */
+.review-portal {
+  max-width: 640px;
+  margin: var(--space-4) auto 0;
+  border: 1px solid var(--color-ash);
+  padding: 1.5rem 1.25rem;
+}
+.review-stars {
+  display: flex;
+  gap: 0.35em;
+  margin-bottom: 1rem;
+}
+.review-stars button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--color-ash);
+  transition: color 0.15s;
+}
+.review-stars button.is-active { color: var(--color-ember); }
+.review-stars--readonly span {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-ash);
+}
+.review-stars--readonly span.is-filled { color: var(--color-ember); }
+.review-portal__textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 0.75em;
+  border: 1px solid var(--color-ash);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+.review-portal__textarea:focus { outline: none; border-color: var(--color-ember); }
 </style>
 </head>
 <body>
@@ -325,6 +368,29 @@
         <div id="imagePreviewName" style="display:none; padding: 0 1.25rem 0.75rem; font-size: 0.75rem; color: var(--color-structural);"></div>
       </div>
 
+      <div class="review-portal" id="reviewPortal" style="display:none;">
+        <p class="mono-label" style="margin-bottom: 0.25em;">How was your artifact?</p>
+        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1.25rem;">Your commission has been delivered. Share your experience to help future patrons and the atelier.</p>
+
+        <div id="reviewForm">
+          <div class="review-stars" id="reviewStars">
+            <button type="button" data-star="1" aria-label="1 star">&#9733;</button>
+            <button type="button" data-star="2" aria-label="2 stars">&#9733;</button>
+            <button type="button" data-star="3" aria-label="3 stars">&#9733;</button>
+            <button type="button" data-star="4" aria-label="4 stars">&#9733;</button>
+            <button type="button" data-star="5" aria-label="5 stars">&#9733;</button>
+          </div>
+          <textarea id="reviewText" class="review-portal__textarea" placeholder="Tell us about the craftsmanship, delivery, and your overall experience."></textarea>
+          <button type="button" class="btn btn-primary" id="reviewSubmitBtn">Submit Review &rarr;</button>
+          <div id="reviewError" style="display:none; color:#B5694A; background: var(--color-ember-soft); padding: 0.75em 1em; margin-top: 0.75em; font-size: 0.85rem;"></div>
+        </div>
+
+        <div id="reviewThanks" style="display:none;">
+          <div class="review-stars review-stars--readonly" id="reviewThanksStars"></div>
+          <p class="body-sm" id="reviewThanksText" style="color: var(--color-structural); margin-top: 0.5em;"></p>
+        </div>
+      </div>
+
       <div style="text-align:center; margin-top: var(--space-4);">
         <p class="body-sm" style="color: var(--color-structural);">Questions about your order?</p>
         <a href="https://wa.me/601110852324" class="btn btn-outline" style="margin-top: 0.5em;">WhatsApp Us</a>
@@ -401,6 +467,96 @@ function renderMessages(messages) {
   list.scrollTop = list.scrollHeight;
 }
 
+// Review portal — only shown once the order has shipped (there's nothing
+// to review before delivery). Shows the submit form, or a read-only
+// "thanks" summary if this order was already reviewed.
+let selectedRating = 0;
+
+function paintStars() {
+  document.querySelectorAll('#reviewStars button').forEach(btn => {
+    const starValue = Number(btn.dataset.star);
+    btn.classList.toggle('is-active', starValue <= selectedRating);
+  });
+}
+
+document.querySelectorAll('#reviewStars button').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    const hoverValue = Number(btn.dataset.star);
+    document.querySelectorAll('#reviewStars button').forEach(b => {
+      b.classList.toggle('is-active', Number(b.dataset.star) <= hoverValue);
+    });
+  });
+  btn.addEventListener('click', () => {
+    selectedRating = Number(btn.dataset.star);
+    paintStars();
+  });
+});
+document.getElementById('reviewStars').addEventListener('mouseleave', paintStars);
+
+document.getElementById('reviewSubmitBtn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('reviewError');
+  errorEl.style.display = 'none';
+
+  if (selectedRating < 1) {
+    errorEl.textContent = 'Please select a star rating first.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('reviewSubmitBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/order-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        billCode: trackedBillCode,
+        rating: selectedRating,
+        review: document.getElementById('reviewText').value.trim()
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to submit review');
+
+    showReviewThanks(selectedRating, document.getElementById('reviewText').value.trim());
+  } catch (err) {
+    errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function showReviewThanks(rating, reviewText) {
+  document.getElementById('reviewForm').style.display = 'none';
+  const thanksStars = document.getElementById('reviewThanksStars');
+  thanksStars.innerHTML = [1, 2, 3, 4, 5].map(i =>
+    `<span class="${i <= rating ? 'is-filled' : ''}">&#9733;</span>`
+  ).join('');
+  document.getElementById('reviewThanksText').textContent = reviewText
+    ? `Thanks for your review: "${reviewText}"`
+    : 'Thanks for rating your experience!';
+  document.getElementById('reviewThanks').style.display = 'block';
+}
+
+function initReviewPortal(stage, existingRating, existingReview) {
+  const portal = document.getElementById('reviewPortal');
+  if (stage !== 'shipped') {
+    portal.style.display = 'none';
+    return;
+  }
+  portal.style.display = 'block';
+  selectedRating = 0;
+  paintStars();
+  document.getElementById('reviewText').value = '';
+  document.getElementById('reviewForm').style.display = 'block';
+  document.getElementById('reviewThanks').style.display = 'none';
+
+  if (existingRating) {
+    showReviewThanks(existingRating, existingReview);
+  }
+}
+
 document.getElementById('trackForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const billCode = document.getElementById('billCode').value.trim();
@@ -471,7 +627,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
         </div>
       `).join('');
       trackingBox.innerHTML = `
-        <div class="order-summary-card__courier-title">Courier Tracking</div>
+        <div class="order-summary-card__courier-title">&#10003; Courier Dispatched</div>
         <div class="courier-name">${t.courierLabel}</div>
         <div class="courier-tracking">${t.trackingNumber}</div>
         <div class="courier-status">
@@ -486,6 +642,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
 
     trackedBillCode = billCode;
     renderMessages(data.messages);
+    initReviewPortal(data.stage, data.customerRating, data.customerReview);
 
     result.style.display = 'block';
   } catch (err) {
