@@ -280,6 +280,29 @@ textarea:focus-visible,
   color: var(--color-char);
 }
 
+/* Small social-proof chip on product detail pages — reviews otherwise
+   only appear on the homepage, but purchase intent is highest here. */
+.product-review-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.6em;
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  color: var(--color-structural);
+}
+.product-review-chip__stars {
+  color: var(--color-ember);
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+}
+.product-review-chip a {
+  color: var(--color-structural);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.product-review-chip a:hover { color: var(--color-ember); }
+
 .mono-spec {
   font-family: var(--font-mono);
   font-size: var(--text-sm);

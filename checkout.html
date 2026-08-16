@@ -336,6 +336,19 @@ body {
   transform: scale(0.98);
 }
 
+.pay-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.85rem;
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-structural);
+  text-align: center;
+}
+
 .pay-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -778,6 +791,12 @@ body {
     <div class="form-section">
       <h2 data-number="06">Payment</h2>
       <button type="submit" class="pay-button" id="payBtn">Pay Now</button>
+      <div class="pay-trust">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Secure payment via Billplz &middot; FPX, cards &amp; e-wallets accepted
+      </div>
       <div class="loading" id="loading">Processing your payment...</div>
       <div class="error-msg" id="errorMsg"></div>
     </div>
