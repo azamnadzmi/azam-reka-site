@@ -15,10 +15,12 @@ body {
   font-family: var(--font-body);
 }
 
+/* Uses the same .container class (max-width + padding-inline) as the
+   heading section above it, so both line up on the same left edge --
+   a separate max-width here previously produced a different center
+   point and threw the two out of alignment at wide viewports. */
 .checkout-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-4) clamp(1.25rem, 4vw, 4rem) var(--space-7);
+  padding-block: var(--space-4) var(--space-7);
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 3rem;
@@ -556,7 +558,7 @@ body {
   </div>
 </section>
 
-<div class="checkout-wrapper">
+<div class="checkout-wrapper container">
   <!-- LEFT: FORM -->
   <form id="checkoutForm" class="checkout-form">
     <!-- Error Summary — screen reader and keyboard user friendly -->
