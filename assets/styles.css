@@ -2136,7 +2136,7 @@ textarea:focus-visible,
 }
 
 .intro-loader__video {
-  width: min(60vw, 420px);
+  width: min(85vw, 900px);
   height: auto;
   mix-blend-mode: screen; /* video's near-black bg drops out, only the glowing mark shows */
 }
