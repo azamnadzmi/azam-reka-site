@@ -197,9 +197,15 @@
 .message-portal__header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   padding: 1.25rem 1.75rem;
   border-bottom: 1px solid var(--color-ash);
+}
+.message-portal__subtitle {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-structural);
+  margin: 0.3em 0 0;
 }
 .message-portal__body {
   max-height: 400px;
@@ -218,12 +224,12 @@
 }
 .message-bubble--customer {
   align-self: flex-end;
-  background: var(--color-char);
+  background: var(--color-ember);
   color: var(--color-bone);
 }
 .message-bubble--admin {
   align-self: flex-start;
-  background: var(--color-ash);
+  background: #F1EFEC;
   color: var(--color-char);
 }
 .message-bubble img {
@@ -407,8 +413,11 @@
 
       <div class="message-portal">
         <div class="message-portal__header">
-          <span class="mono-label">Design Update Portal</span>
-          <span class="mono-label" style="color: var(--color-ember);">&bull; Live</span>
+          <div>
+            <p class="mono-label" style="margin: 0;">Design Update Portal</p>
+            <p class="message-portal__subtitle">Send proofs, mockups &amp; messages to your designer</p>
+          </div>
+          <span class="mono-label" style="color: var(--color-ember); white-space: nowrap;">&bull; Live</span>
         </div>
         <div class="message-portal__body" id="messageList"></div>
         <form class="message-portal__form" id="messageForm">
@@ -423,26 +432,13 @@
       </div>
 
       <div class="review-portal" id="reviewPortal" style="display:none;">
-        <p class="mono-label" style="margin-bottom: 0.25em;">How was your artifact?</p>
-        <p class="body-sm" style="color: var(--color-structural); margin-bottom: 1.25rem;">Your commission has been delivered. Share your experience to help future patrons and the atelier.</p>
+        <p class="eyebrow" style="display: flex; align-items: center; gap: 0.6em;">&sect; Review <span style="display:inline-block; width: 2rem; height: 1px; background: var(--color-ember);"></span></p>
+        <h2 class="h-display-3" style="margin-top: 0.3em;">How was your artifact?</h2>
+        <p class="body-base" style="color: var(--color-structural); margin-top: 0.5em; max-width: 48ch;">Your commission has been delivered. We'd love it if you shared your experience on Google to help future patrons find the atelier.</p>
 
-        <div id="reviewForm">
-          <div class="review-stars" id="reviewStars">
-            <button type="button" data-star="1" aria-label="1 star">&#9733;</button>
-            <button type="button" data-star="2" aria-label="2 stars">&#9733;</button>
-            <button type="button" data-star="3" aria-label="3 stars">&#9733;</button>
-            <button type="button" data-star="4" aria-label="4 stars">&#9733;</button>
-            <button type="button" data-star="5" aria-label="5 stars">&#9733;</button>
-          </div>
-          <textarea id="reviewText" class="review-portal__textarea" placeholder="Tell us about the craftsmanship, delivery, and your overall experience."></textarea>
-          <button type="button" class="btn btn-primary" id="reviewSubmitBtn">Submit Review &rarr;</button>
-          <div id="reviewError" style="display:none; color:#B5694A; background: var(--color-ember-soft); padding: 0.75em 1em; margin-top: 0.75em; font-size: 0.85rem;"></div>
-        </div>
-
-        <div id="reviewThanks" style="display:none;">
-          <div class="review-stars review-stars--readonly" id="reviewThanksStars"></div>
-          <p class="body-sm" id="reviewThanksText" style="color: var(--color-structural); margin-top: 0.5em;"></p>
-        </div>
+        <a href="https://www.google.com/maps/place/AzamReka/@1.4593967,103.7670874,1086m/data=!3m1!1e3!4m8!3m7!1s0x31da138f5091b1bb:0x7218c566eebdef7d!8m2!3d1.4593913!4d103.7696623!9m1!1b1!16s%2Fg%2F11ybzzxvzt?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top: 1.5rem;">
+          Leave us a Google Review &rarr;
+        </a>
       </div>
 
       <div style="text-align:center; margin-top: var(--space-4);">
@@ -544,94 +540,10 @@ function renderMessages(messages) {
   list.scrollTop = list.scrollHeight;
 }
 
-// Review portal — only shown once the order has shipped (there's nothing
-// to review before delivery). Shows the submit form, or a read-only
-// "thanks" summary if this order was already reviewed.
-let selectedRating = 0;
-
-function paintStars() {
-  document.querySelectorAll('#reviewStars button').forEach(btn => {
-    const starValue = Number(btn.dataset.star);
-    btn.classList.toggle('is-active', starValue <= selectedRating);
-  });
-}
-
-document.querySelectorAll('#reviewStars button').forEach(btn => {
-  btn.addEventListener('mouseenter', () => {
-    const hoverValue = Number(btn.dataset.star);
-    document.querySelectorAll('#reviewStars button').forEach(b => {
-      b.classList.toggle('is-active', Number(b.dataset.star) <= hoverValue);
-    });
-  });
-  btn.addEventListener('click', () => {
-    selectedRating = Number(btn.dataset.star);
-    paintStars();
-  });
-});
-document.getElementById('reviewStars').addEventListener('mouseleave', paintStars);
-
-document.getElementById('reviewSubmitBtn').addEventListener('click', async () => {
-  const errorEl = document.getElementById('reviewError');
-  errorEl.style.display = 'none';
-
-  if (selectedRating < 1) {
-    errorEl.textContent = 'Please select a star rating first.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('reviewSubmitBtn');
-  btn.disabled = true;
-  try {
-    const res = await fetch('/api/order-status', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        billCode: trackedBillCode,
-        rating: selectedRating,
-        review: document.getElementById('reviewText').value.trim()
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to submit review');
-
-    showReviewThanks(selectedRating, document.getElementById('reviewText').value.trim());
-  } catch (err) {
-    errorEl.textContent = err.message || 'Something went wrong. Please try again.';
-    errorEl.style.display = 'block';
-  } finally {
-    btn.disabled = false;
-  }
-});
-
-function showReviewThanks(rating, reviewText) {
-  document.getElementById('reviewForm').style.display = 'none';
-  const thanksStars = document.getElementById('reviewThanksStars');
-  thanksStars.innerHTML = [1, 2, 3, 4, 5].map(i =>
-    `<span class="${i <= rating ? 'is-filled' : ''}">&#9733;</span>`
-  ).join('');
-  document.getElementById('reviewThanksText').textContent = reviewText
-    ? `Thanks for your review: "${reviewText}"`
-    : 'Thanks for rating your experience!';
-  document.getElementById('reviewThanks').style.display = 'block';
-}
-
-function initReviewPortal(stage, existingRating, existingReview) {
-  const portal = document.getElementById('reviewPortal');
-  if (stage !== 'shipped') {
-    portal.style.display = 'none';
-    return;
-  }
-  portal.style.display = 'block';
-  selectedRating = 0;
-  paintStars();
-  document.getElementById('reviewText').value = '';
-  document.getElementById('reviewForm').style.display = 'block';
-  document.getElementById('reviewThanks').style.display = 'none';
-
-  if (existingRating) {
-    showReviewThanks(existingRating, existingReview);
-  }
+// Review portal — a Google Review CTA, only shown once the order has
+// shipped (there's nothing to review before delivery).
+function initReviewPortal(stage) {
+  document.getElementById('reviewPortal').style.display = stage === 'shipped' ? 'block' : 'none';
 }
 
 document.getElementById('trackForm').addEventListener('submit', async (e) => {
@@ -720,7 +632,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e) => {
 
     trackedBillCode = billCode;
     renderMessages(data.messages);
-    initReviewPortal(data.stage, data.customerRating, data.customerReview);
+    initReviewPortal(data.stage);
 
     result.style.display = 'block';
   } catch (err) {
