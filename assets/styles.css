@@ -1741,6 +1741,17 @@ textarea:focus-visible,
 
 @media (max-width: 640px) {
   .scroll-row .product-card { width: 200px; }
+
+  /* At 200px wide, "RM 15.00" + "VIEW ->" don't both fit on one line at
+     their desktop sizes -- price and link overlapped/clipped past the
+     card edge. Tighter padding + a smaller price size buys enough room
+     for both to sit on one line with a visible gap again. */
+  .product-card__footer {
+    padding: 0.85rem 1rem;
+  }
+  .product-card__footer .mono-price {
+    font-size: 1.05rem;
+  }
 }
 
 /* =========================================================
