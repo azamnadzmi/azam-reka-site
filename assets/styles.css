@@ -2164,8 +2164,9 @@ textarea:focus-visible,
 
 /* Header logo — the small circle blinks in a slow, steady loop */
 @keyframes logoDotBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.15; }
+  0% { opacity: 1; box-shadow: 0 0 0 0 rgba(182, 105, 74, 0.65); }
+  50% { opacity: 0.15; box-shadow: 0 0 0 5px rgba(182, 105, 74, 0); }
+  100% { opacity: 1; box-shadow: 0 0 0 0 rgba(182, 105, 74, 0); }
 }
 .logo-dot {
   fill: #B6694A;
