@@ -22,15 +22,16 @@ async function getMongoClient() {
   return cachedClient;
 }
 
-/* Updated 6-stage pipeline */
-const STAGE_ORDER = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped'];
+/* Updated 7-stage pipeline */
+const STAGE_ORDER = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped', 'delivered'];
 const STAGE_DESCRIPTIONS = {
   confirmed: 'We have registered your specifications. Pre-production review of coordinates is commencing.',
   design: 'Our workshop designer is preparing a high-fidelity vector layout for your approval in the message portal.',
   approved_queued: 'Your design is approved and queued for production.',
   cutting_engraving: 'The laser head is actively slicing and engraving your custom piece.',
   finishing_qc: 'Hand-sanding wooden fibers, cleaning edges, and sealing with organic mineral oil, then inspecting alignment and tolerances.',
-  shipped: 'Crafted piece handed over to our logistics partner. Track delivery via the courier waybill below.'
+  shipped: 'Crafted piece handed over to our logistics partner. Track delivery via the courier waybill below.',
+  delivered: 'Package delivered successfully to customer address. Thank you for choosing azam.reka!'
 };
 
 // Review submission is folded into this endpoint (POST) rather than a

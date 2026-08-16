@@ -543,7 +543,7 @@ function renderMessages(messages) {
 // Review portal — a Google Review CTA, only shown once the order has
 // shipped (there's nothing to review before delivery).
 function initReviewPortal(stage) {
-  document.getElementById('reviewPortal').style.display = stage === 'shipped' ? 'block' : 'none';
+  document.getElementById('reviewPortal').style.display = stage === 'delivered' ? 'block' : 'none';
 }
 
 document.getElementById('trackForm').addEventListener('submit', async (e) => {

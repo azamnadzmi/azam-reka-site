@@ -8,8 +8,8 @@ const { Resend } = require('resend');
 const resendApiKey = process.env.RESEND_API_KEY;
 const siteUrl = process.env.SITE_URL || 'https://azamreka.com';
 
-/* Current valid stages (6-stage pipeline) */
-const VALID_STAGES = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped'];
+/* Current valid stages (7-stage pipeline) */
+const VALID_STAGES = ['confirmed', 'design', 'approved_queued', 'cutting_engraving', 'finishing_qc', 'shipped', 'delivered'];
 
 /* Old → new stage mapping for backward compatibility with existing orders */
 const STAGE_MAPPING = {
@@ -23,7 +23,8 @@ const STAGE_LABELS = {
   approved_queued: 'Approved & Queued',
   cutting_engraving: 'Cutting & Engraving',
   finishing_qc: 'Finishing & QC',
-  shipped: 'Shipped'
+  shipped: 'Shipped',
+  delivered: 'Order Delivered'
 };
 
 const STAGE_MESSAGES = {
@@ -32,7 +33,8 @@ const STAGE_MESSAGES = {
   approved_queued: 'Your design is approved and queued for production.',
   cutting_engraving: 'Your piece is being cut and engraved right now.',
   finishing_qc: 'Your piece is being finished and quality-checked.',
-  shipped: 'Your piece has shipped and is on its way to you!'
+  shipped: 'Your piece has shipped and is on its way to you!',
+  delivered: 'Your piece has been delivered. Thank you for choosing Azam Reka!'
 };
 
 // EasyParcel bookings only ever produce MELPLUS or JNT (see
@@ -60,7 +62,7 @@ async function sendStageUpdateEmail(order, stage) {
   /* Normalize old stage names to new ones */
   const normalizedStage = normalizeStage(stage);
 
-  const shippingLine = (normalizedStage === 'shipped' && order.trackingNumber)
+  const shippingLine = ((normalizedStage === 'shipped' || normalizedStage === 'delivered') && order.trackingNumber)
     ? `<p><strong>Courier:</strong> ${COURIER_LABELS[order.courier] || order.courier || 'N/A'}<br>` +
       `<strong>Tracking number:</strong> ${order.trackingNumber}</p>`
     : '';

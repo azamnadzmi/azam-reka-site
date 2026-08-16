@@ -269,14 +269,15 @@
 </div>
 
 <script>
-/* 6-stage production pipeline */
+/* 7-stage production pipeline */
 const STAGES = [
   { key: 'confirmed', label: 'Order Confirmed' },
   { key: 'design', label: 'Design Proof' },
   { key: 'approved_queued', label: 'Approved & Queued' },
   { key: 'cutting_engraving', label: 'Cutting & Engraving' },
   { key: 'finishing_qc', label: 'Finishing & QC' },
-  { key: 'shipped', label: 'Shipped' }
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'delivered', label: 'Order Delivered' }
 ];
 
 let adminPassword = sessionStorage.getItem('azamReka_adminPw') || '';
@@ -368,7 +369,7 @@ function renderOrders(orders) {
       : '';
     const messagesBtn = `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3em 0.6em;" onclick="showMessages('${order.billCode}')">Messages${order.messages && order.messages.length ? ` (${order.messages.length})` : ''}</button>`;
     const currentStage = order.productionStage || 'confirmed';
-    const badgeClass = currentStage === 'shipped' ? 'stage-badge shipped' : 'stage-badge';
+    const badgeClass = (currentStage === 'shipped' || currentStage === 'delivered') ? 'stage-badge shipped' : 'stage-badge';
 
     let zohoBadge;
     if (order.zohoSalesOrderId) {
@@ -398,7 +399,7 @@ function renderOrders(orders) {
         <td>
           <div style="display:flex; flex-direction:column; gap:0.4rem;">
             <select data-bill-code="${order.billCode}" class="stage-select">${options}</select>
-            <div class="tracking-row" data-for="${order.billCode}" style="${currentStage === 'shipped' ? '' : 'display:none;'}">
+            <div class="tracking-row" data-for="${order.billCode}" style="${(currentStage === 'shipped' || currentStage === 'delivered') ? '' : 'display:none;'}">
               ${buildShippingBookingHtml(order)}
             </div>
           </div>
@@ -411,7 +412,7 @@ function renderOrders(orders) {
     if (toggleEl) toggleEl.disabled = true;
 
     const trackingRow = document.querySelector(`.tracking-row[data-for="${billCode}"]`);
-    if (trackingRow) trackingRow.style.display = newStage === 'shipped' ? '' : 'none';
+    if (trackingRow) trackingRow.style.display = (newStage === 'shipped' || newStage === 'delivered') ? '' : 'none';
     const trackingInput = trackingRow ? trackingRow.querySelector('.tracking-input') : null;
     const courierSelect = trackingRow ? trackingRow.querySelector('.courier-select') : null;
 
