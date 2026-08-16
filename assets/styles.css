@@ -1782,54 +1782,41 @@ textarea:focus-visible,
   background: var(--color-bone);
   border: 1px solid var(--color-ash);
   border-radius: 6px;
-  padding: var(--space-3);
+  overflow: hidden;
   flex: 0 0 auto;
-  width: 300px;
+  width: 380px;
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  gap: 0.6em;
 }
 
-/* Reviews marquee — the track is the review list rendered twice back to
-   back, then animated exactly -50% (one full copy's width) so the loop
-   point is invisible. Hidden overflow + edge mask keep the illusion clean;
-   hover/focus and prefers-reduced-motion both freeze it for readability. */
-.review-marquee {
+.review-card__media {
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 
-.review-marquee__track {
+.review-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-card__body {
+  padding: var(--space-3);
   display: flex;
-  gap: var(--space-3);
-  width: max-content;
-  animation: reviewMarquee 45s linear infinite;
-}
-
-.review-marquee:hover .review-marquee__track,
-.review-marquee:focus-within .review-marquee__track {
-  animation-play-state: paused;
-}
-
-@keyframes reviewMarquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .review-marquee__track { animation: none; }
+  flex-direction: column;
+  gap: 0.6em;
+  flex-grow: 1;
 }
 
 .review-card__stars {
   color: var(--color-ember);
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   letter-spacing: 0.1em;
 }
 
 .review-card__quote {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   line-height: 1.55;
   color: var(--color-char);
   flex-grow: 1;
@@ -1844,6 +1831,10 @@ textarea:focus-visible,
   color: var(--color-structural);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+@media (max-width: 640px) {
+  .review-card { width: 300px; }
 }
 
 .review-summary {
