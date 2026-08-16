@@ -29,8 +29,13 @@
   .track-result-grid { grid-template-columns: 0.85fr 1.15fr; }
 }
 
-/* Left: order summary card */
-.order-summary-card { border: 1px solid var(--color-ash); background: var(--color-bone); }
+/* Left: order summary card + courier box, stacked as two separate cards */
+.track-result-grid__left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.order-summary-card { border: 1px solid var(--color-ash); background: #FFFFFF; }
 .order-summary-card__header {
   padding: 1.75rem;
   border-bottom: 1px solid var(--color-ash);
@@ -87,9 +92,8 @@
   color: var(--color-char);
 }
 .order-summary-card__courier {
-  margin: 0 1.75rem 1.75rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--color-bone) 0%, #FAFAF8 100%);
+  background: #FFFFFF;
   border: 2px solid var(--color-ember);
   border-radius: 0;
 }
@@ -128,7 +132,7 @@
 }
 
 /* Right: production timeline */
-.timeline { border: 1px solid var(--color-ash); padding: 2rem 1.75rem; }
+.timeline { border: 1px solid var(--color-ash); background: #FFFFFF; padding: 2rem 1.75rem; }
 .timeline__title { font-family: var(--font-micro); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-structural); margin: 0 0 2rem; }
 .track-stepper { }
 .track-stepper__row {
@@ -164,7 +168,11 @@
   z-index: 1;
 }
 .track-stepper__row.is-complete .track-stepper__dot { background: var(--color-ember); color: var(--color-bone); }
-.track-stepper__row.is-current .track-stepper__dot { background: var(--color-brass); color: var(--color-bone); box-shadow: 0 0 0 5px var(--color-brass-soft); }
+.track-stepper__row.is-current .track-stepper__dot {
+  background: var(--color-brass);
+  color: var(--color-bone);
+  animation: stagePulse 1.8s ease-in-out infinite;
+}
 .track-stepper__label {
   font-family: var(--font-micro);
   font-size: 0.8rem;
@@ -181,9 +189,10 @@
 
 /* Design Update Portal — message thread */
 .message-portal {
-  max-width: 720px;
+  max-width: 1120px;
   margin: var(--space-5) auto 0;
   border: 1px solid var(--color-ash);
+  background: #FFFFFF;
 }
 .message-portal__header {
   display: flex;
@@ -267,9 +276,10 @@
 
 /* Review portal — post-delivery star rating + free-text review */
 .review-portal {
-  max-width: 720px;
+  max-width: 1120px;
   margin: var(--space-5) auto 0;
   border: 1px solid var(--color-ash);
+  background: #FFFFFF;
   padding: 2rem 1.75rem;
 }
 .review-stars {
@@ -373,16 +383,19 @@
 
     <div id="result">
       <div class="track-result-grid">
-        <div class="order-summary-card">
-          <div class="order-summary-card__header">
-            <div>
-              <p class="order-summary-card__id" id="resultBillCode"></p>
-              <p class="order-summary-card__meta" id="resultName"></p>
-              <p class="order-summary-card__meta" id="resultMeta"></p>
+        <div class="track-result-grid__left">
+          <div class="order-summary-card">
+            <div class="order-summary-card__header">
+              <div>
+                <p class="order-summary-card__id" id="resultBillCode"></p>
+                <p class="order-summary-card__meta" id="resultName"></p>
+                <p class="order-summary-card__meta" id="resultMeta"></p>
+              </div>
+              <span class="order-summary-card__badge" id="resultBadge"></span>
             </div>
-            <span class="order-summary-card__badge" id="resultBadge"></span>
+            <div class="order-summary-card__items" id="resultItems"></div>
           </div>
-          <div class="order-summary-card__items" id="resultItems"></div>
+
           <div id="trackingBox" class="order-summary-card__courier" style="display:none;"></div>
         </div>
 
