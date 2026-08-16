@@ -533,7 +533,7 @@ function renderOrders(orders) {
 }
 
 async function loadOrders() {
-  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(adminPassword)}`);
+  const res = await fetch('/api/admin/list-orders', { headers: { 'X-Admin-Password': adminPassword } });
   if (!res.ok) {
     document.getElementById('gate').style.display = 'block';
     document.getElementById('adminPanel').style.display = 'none';
@@ -547,7 +547,7 @@ async function loadOrders() {
 
 async function tryUnlock(password) {
   adminPassword = password;
-  const res = await fetch(`/api/admin/list-orders?password=${encodeURIComponent(password)}`);
+  const res = await fetch('/api/admin/list-orders', { headers: { 'X-Admin-Password': password } });
   if (res.ok) {
     sessionStorage.setItem('azamReka_adminPw', password);
     document.getElementById('gate').style.display = 'none';
@@ -611,7 +611,7 @@ async function showMessages(billCode) {
   document.getElementById('messagesModal').classList.add('open');
 
   try {
-    const res = await fetch(`/api/messages?billCode=${encodeURIComponent(billCode)}&adminPassword=${encodeURIComponent(adminPassword)}`);
+    const res = await fetch(`/api/messages?billCode=${encodeURIComponent(billCode)}`, { headers: { 'X-Admin-Password': adminPassword } });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to load messages');
     renderAdminMessages(data.messages);
@@ -678,7 +678,7 @@ document.getElementById('msgSendBtn').addEventListener('click', async () => {
     document.getElementById('msgImageInput').value = '';
     document.getElementById('msgImagePreviewName').style.display = 'none';
 
-    const refreshed = await fetch(`/api/messages?billCode=${encodeURIComponent(msgActiveBillCode)}&adminPassword=${encodeURIComponent(adminPassword)}`);
+    const refreshed = await fetch(`/api/messages?billCode=${encodeURIComponent(msgActiveBillCode)}`, { headers: { 'X-Admin-Password': adminPassword } });
     const refreshedData = await refreshed.json();
     if (refreshed.ok) renderAdminMessages(refreshedData.messages);
   } catch (err) {

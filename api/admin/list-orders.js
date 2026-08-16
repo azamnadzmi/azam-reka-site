@@ -1,8 +1,10 @@
 // api/admin/list-orders.js
 // Protected — returns recent paid orders for the admin dashboard.
-// Auth: expects { password } as a query param, checked against ADMIN_PASSWORD.
-// This is a single-shared-password gate, appropriate for a solo-operator
-// business — not meant to scale to multiple staff accounts.
+// Auth: expects an X-Admin-Password header, checked against ADMIN_PASSWORD.
+// (Not a query param — query strings get written to server access logs,
+// browser history, and proxy/CDN logs in plaintext.) This is a
+// single-shared-password gate, appropriate for a solo-operator business —
+// not meant to scale to multiple staff accounts.
 
 const { MongoClient } = require('mongodb');
 
@@ -28,7 +30,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { password } = req.query;
+  const password = req.headers['x-admin-password'];
   if (!adminPassword || password !== adminPassword) {
     return res.status(401).json({ error: 'Unauthorized' });
   }

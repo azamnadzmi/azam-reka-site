@@ -15,7 +15,8 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { password, search } = req.query;
+    const { search } = req.query;
+    const password = req.headers['x-admin-password'];
 
     if (!adminPassword || password !== adminPassword) {
       return res.status(401).json({ error: 'Unauthorized' });

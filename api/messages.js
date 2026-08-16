@@ -45,7 +45,8 @@ module.exports = async function handler(req, res) {
     const orders = db.collection('orders');
 
     if (req.method === 'GET') {
-      const { billCode, adminPassword } = req.query;
+      const { billCode } = req.query;
+      const adminPassword = req.headers['x-admin-password'];
       if (!billCode) return res.status(400).json({ error: 'billCode is required' });
 
       const order = await orders.findOne({ billCode: billCode.trim() });
