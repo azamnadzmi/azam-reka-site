@@ -11,6 +11,36 @@ function escapeHtml(str) {
   }[c]));
 }
 
+// ============ BULK PRICING ============
+// Quantity discount applies per cart line (same product), not cart-wide qty.
+// Tiers are flat site-wide for now — override per-product later by keying
+// this off item name/category if a product ever needs a different curve.
+const BULK_TIERS = [
+  { min: 20, pct: 0.15 },
+  { min: 10, pct: 0.10 },
+  { min: 5, pct: 0.05 }
+];
+const BulkPricing = {
+  getDiscountPct(qty) {
+    const tier = BULK_TIERS.find(t => qty >= t.min);
+    return tier ? tier.pct : 0;
+  },
+  getUnitPrice(price, qty) {
+    const pct = this.getDiscountPct(qty);
+    return pct ? Math.round(price * (1 - pct) * 100) / 100 : price;
+  },
+  // Human-readable note for the tier a given qty is currently in, and how
+  // far to the next one — used both in the cart and on product pages.
+  describe(qty) {
+    const pct = this.getDiscountPct(qty);
+    const next = [...BULK_TIERS].reverse().find(t => qty < t.min);
+    if (pct && !next) return `${Math.round(pct * 100)}% bulk discount applied`;
+    if (pct && next) return `${Math.round(pct * 100)}% off applied — ${next.min - qty} more for ${Math.round(next.pct * 100)}% off`;
+    if (next) return `${next.min - qty} more for ${Math.round(next.pct * 100)}% off`;
+    return '';
+  }
+};
+
 // ============ CART MANAGEMENT ============
 const Cart = {
   getCart() {
@@ -29,19 +59,21 @@ const Cart = {
       cart.push({ name, price, qty });
     }
     this.saveCart(cart);
+    const finalQty = existing ? existing.qty : qty;
+    const unitPrice = BulkPricing.getUnitPrice(price, finalQty);
     if (window.fbq) {
       fbq('track', 'AddToCart', {
         content_name: name,
         content_type: 'product',
-        value: price * qty,
+        value: unitPrice * qty,
         currency: 'MYR'
       });
     }
     if (window.gtag) {
       gtag('event', 'add_to_cart', {
         currency: 'MYR',
-        value: price * qty,
-        items: [{ item_name: name, price, quantity: qty }]
+        value: unitPrice * qty,
+        items: [{ item_name: name, price: unitPrice, quantity: qty }]
       });
     }
   },
@@ -71,12 +103,16 @@ const Cart = {
   },
   getTotal() {
     const cart = this.getCart();
-    return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    return cart.reduce((sum, item) => sum + (BulkPricing.getUnitPrice(item.price, item.qty) * item.qty), 0);
   },
   generateWhatsAppMessage() {
     const cart = this.getCart();
     if (cart.length === 0) return '';
-    const items = cart.map(item => `• ${item.name} (RM ${item.price.toFixed(2)}) x${item.qty}`).join('\n');
+    const items = cart.map(item => {
+      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty);
+      const discountNote = unitPrice < item.price ? ` [bulk price, was RM ${item.price.toFixed(2)}]` : '';
+      return `• ${item.name} (RM ${unitPrice.toFixed(2)}) x${item.qty}${discountNote}`;
+    }).join('\n');
     const total = this.getTotal();
     return `Hi Azam Reka, I'd like to order:\n\n${items}\n\nTotal: RM ${total.toFixed(2)}`;
   }
@@ -252,19 +288,34 @@ document.addEventListener('DOMContentLoaded', () => {
     select.addEventListener('change', sync);
   });
 
-  // Quantity steppers on product detail pages
+  // Quantity steppers on product detail pages — plus a live bulk-pricing
+  // hint injected after the stepper, since product pages are generated
+  // statically and don't know about pricing tiers at build time.
   document.querySelectorAll('[data-qty-stepper]').forEach(stepper => {
     const valueEl = stepper.querySelector('[data-qty-stepper-value]');
     const minusBtn = stepper.querySelector('[data-qty-stepper-minus]');
     const plusBtn = stepper.querySelector('[data-qty-stepper-plus]');
     if (!valueEl) return;
+
+    const hint = document.createElement('p');
+    hint.className = 'qty-stepper__bulk-hint';
+    stepper.insertAdjacentElement('afterend', hint);
+    const updateHint = () => {
+      const qty = parseInt(valueEl.textContent, 10) || 1;
+      hint.textContent = BulkPricing.describe(qty);
+      hint.style.display = hint.textContent ? 'block' : 'none';
+    };
+    updateHint();
+
     minusBtn.addEventListener('click', () => {
       const current = parseInt(valueEl.textContent, 10) || 1;
       valueEl.textContent = Math.max(1, current - 1);
+      updateHint();
     });
     plusBtn.addEventListener('click', () => {
       const current = parseInt(valueEl.textContent, 10) || 1;
       valueEl.textContent = current + 1;
+      updateHint();
     });
   });
 
@@ -414,6 +465,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cartItems.innerHTML = cart.map(item => {
       const imageUrl = CART_PRODUCT_IMAGES[item.name] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop';
+      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty);
+      const priceHtml = unitPrice < item.price
+        ? `RM ${unitPrice.toFixed(2)} <span class="cart-modal__item-price--was">RM ${item.price.toFixed(2)}</span>`
+        : `RM ${item.price.toFixed(2)}`;
+      const tierNote = BulkPricing.describe(item.qty);
       return `
       <div class="cart-modal__item">
         <div class="cart-modal__item-image">
@@ -421,13 +477,14 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="cart-modal__item-details">
           <p class="cart-modal__item-name">${escapeHtml(item.name)}</p>
-          <p class="cart-modal__item-price">RM ${item.price.toFixed(2)}</p>
+          <p class="cart-modal__item-price">${priceHtml}</p>
           <div class="cart-modal__item-controls">
             <button class="cart-modal__qty-btn" data-qty-minus="${escapeHtml(item.name)}" aria-label="Decrease quantity">−</button>
             <span class="cart-modal__qty-value">${item.qty}</span>
             <button class="cart-modal__qty-btn" data-qty-plus="${escapeHtml(item.name)}" aria-label="Increase quantity">+</button>
             <span class="cart-modal__item-remove" data-remove="${escapeHtml(item.name)}">Remove</span>
           </div>
+          ${tierNote ? `<p class="cart-modal__item-tier">${escapeHtml(tierNote)}</p>` : ''}
         </div>
       </div>
     `;

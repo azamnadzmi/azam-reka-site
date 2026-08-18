@@ -953,22 +953,27 @@ document.addEventListener('DOMContentLoaded', () => {
     fbq('track', 'InitiateCheckout', {
       content_type: 'product',
       contents: cart.map(item => ({ id: item.name, quantity: item.qty })),
-      value: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+      value: cart.reduce((sum, item) => sum + BulkPricing.getUnitPrice(item.price, item.qty) * item.qty, 0),
       currency: 'MYR'
     });
   }
   if (window.gtag) {
     gtag('event', 'begin_checkout', {
       currency: 'MYR',
-      value: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
-      items: cart.map(item => ({ item_name: item.name, price: item.price, quantity: item.qty }))
+      value: cart.reduce((sum, item) => sum + BulkPricing.getUnitPrice(item.price, item.qty) * item.qty, 0),
+      items: cart.map(item => ({ item_name: item.name, price: BulkPricing.getUnitPrice(item.price, item.qty), quantity: item.qty }))
     });
   }
 
   // Render items
   const itemsHTML = cart.map(item => {
-    const itemTotal = (item.price * item.qty).toFixed(2);
+    const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty);
+    const itemTotal = (unitPrice * item.qty).toFixed(2);
     const imageUrl = productImages[item.name] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop';
+    const unitMeta = unitPrice < item.price
+      ? `RM ${unitPrice.toFixed(2)} <span style="text-decoration:line-through; opacity:0.6;">RM ${item.price.toFixed(2)}</span> &times; ${item.qty}`
+      : `RM ${item.price.toFixed(2)} &times; ${item.qty}`;
+    const tierNote = BulkPricing.describe(item.qty);
     return `
       <div class="summary-item">
         <div class="summary-item-image">
@@ -976,8 +981,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="summary-item-details">
           <div class="summary-item-name">${escapeHtml(item.name)}</div>
-          <div class="summary-item-meta">RM ${item.price.toFixed(2)} &times; ${item.qty}</div>
+          <div class="summary-item-meta">${unitMeta}</div>
           <div class="summary-item-price">RM ${itemTotal}</div>
+          ${tierNote ? `<div style="font-family: var(--font-micro); font-size: 0.7rem; color: var(--color-ember); margin-top: 0.3em;">${escapeHtml(tierNote)}</div>` : ''}
         </div>
       </div>
     `;
@@ -987,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('itemCount').textContent = cart.length;
 
   // Calculate totals
-  let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  let subtotal = cart.reduce((sum, item) => sum + (BulkPricing.getUnitPrice(item.price, item.qty) * item.qty), 0);
   let shippingCost = 0;
   let rushCharge = 0;
   let rushChargePercent = 0;
@@ -1287,7 +1293,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cost: shippingCost
       },
       notes: `Expected arrival: ${document.getElementById('arrivalDate').value}. Rush charge: +${Math.round((rushCharge / subtotal) * 100 || 0)}%`,
-      items: cart,
+      // Send the bulk-discounted unit price, not the list price in `cart` —
+      // this is what actually gets charged and must match what's posted to
+      // Billplz/MongoDB/Zoho, or their records would show the wrong rate.
+      items: cart.map(item => ({ ...item, price: BulkPricing.getUnitPrice(item.price, item.qty) })),
       total: total
     };
 

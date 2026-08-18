@@ -333,6 +333,12 @@ textarea:focus-visible,
   font-family: var(--font-mono);
   font-size: 0.95rem;
 }
+.qty-stepper__bulk-hint {
+  font-family: var(--font-micro);
+  font-size: 0.75rem;
+  color: var(--color-ember);
+  margin: 0.6em 0 0;
+}
 
 .spec-list {
   font-family: var(--font-mono);
@@ -1700,6 +1706,18 @@ textarea:focus-visible,
   font-size: 0.8rem;
   color: var(--color-structural);
   margin: 0 0 0.6em;
+}
+.cart-modal__item-price--was {
+  text-decoration: line-through;
+  color: var(--color-structural);
+  opacity: 0.6;
+  margin-left: 0.5em;
+}
+.cart-modal__item-tier {
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  color: var(--color-ember);
+  margin: 0.4em 0 0;
 }
 .cart-modal__item-controls {
   display: flex;
