@@ -511,6 +511,13 @@ body {
   white-space: nowrap;
 }
 
+.summary-item-tier {
+  font-family: var(--font-micro);
+  font-size: 0.7rem;
+  color: var(--color-ember);
+  margin-top: 0.4rem;
+}
+
 .summary-promo {
   display: flex;
   gap: 0.5rem;
@@ -980,10 +987,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.name)}">
         </div>
         <div class="summary-item-details">
-          <div class="summary-item-name">${escapeHtml(item.name)}</div>
-          <div class="summary-item-meta">${unitMeta}</div>
+          <div>
+            <div class="summary-item-name">${escapeHtml(item.name)}</div>
+            <div class="summary-item-meta">${unitMeta}</div>
+            ${tierNote ? `<div class="summary-item-tier">${escapeHtml(tierNote)}</div>` : ''}
+          </div>
           <div class="summary-item-price">RM ${itemTotal}</div>
-          ${tierNote ? `<div style="font-family: var(--font-micro); font-size: 0.7rem; color: var(--color-ember); margin-top: 0.3em;">${escapeHtml(tierNote)}</div>` : ''}
         </div>
       </div>
     `;
