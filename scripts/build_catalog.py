@@ -35,6 +35,8 @@ MEDIA_PATH = os.path.join(SCRIPTS_DIR, "catalog-media.json")
 CATALOG_PATH = os.path.join(SITE_DIR, "catalog.html")
 PRODUCTS_DIR = os.path.join(SITE_DIR, "products")
 ITEM_MAP_PATH = os.path.join(SITE_DIR, "api", "zoho-item-map.json")
+WEIGHTS_PATH = os.path.join(SITE_DIR, "api", "product-weights.json")
+DEFAULT_WEIGHT_G = 30
 
 PLACEHOLDER_IMG = "assets/products/plaque-01.jpg"
 
@@ -265,7 +267,13 @@ def price_html(product):
     return f'RM {product["price"]:.2f}'
 
 
-SPEC_FIELDS = [("material", "Material"), ("size", "Size"), ("weight", "Weight")]
+def spec_field_values(specs):
+    """Material/Size/Weight display strings from a product's specs dict -
+    weight_g (a plain int) is formatted here, everything else is used as-is."""
+    weight = f'±{specs["weight_g"]}g' if specs.get("weight_g") is not None else None
+    return [("material", "Material", specs.get("material")),
+            ("size", "Size", specs.get("size")),
+            ("weight", "Weight", weight)]
 
 
 def build_specs_html(product):
@@ -274,8 +282,7 @@ def build_specs_html(product):
     placeholder for any field - or the whole block - not yet filled in."""
     specs = product["specs"]
     items = []
-    for key, label in SPEC_FIELDS:
-        value = specs.get(key)
+    for key, label, value in spec_field_values(specs):
         items.append(f'<li>{label} — {esc(value)}</li>' if value
                       else f'<li>{label} — <em>add {label.lower()}</em></li>')
     placeholder_attr = "" if specs else " data-specs-placeholder"
@@ -713,9 +720,26 @@ def main():
         json.dump(item_map, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
+    # name -> weight (grams), used by api/calculate-shipping.js to get a real
+    # EasyParcel quote. Missing weight_g falls back to DEFAULT_WEIGHT_G there,
+    # same as it always has - this just keeps known weights in sync with the
+    # spec list instead of a second, hand-maintained, silently-stale copy.
+    weights = {}
+    for p in products:
+        weight_g = p["specs"].get("weight_g")
+        if weight_g is None:
+            continue
+        names = [v["name"] for v in p["variants"]] if p["variants"] else [p["name"]]
+        for n in names:
+            weights[n] = weight_g
+    with open(WEIGHTS_PATH, "w", encoding="utf-8") as f:
+        json.dump(weights, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
     print(f"\nWrote {len(products)} product cards into catalog.html")
     print(f"Wrote {len(products)} detail pages into products/")
     print(f"Wrote {len(item_map)} Zoho item mappings into api/zoho-item-map.json")
+    print(f"Wrote {len(weights)} product weights into api/product-weights.json")
     # item_map has one entry per Zoho item, but a variant product (e.g. Penunjuk
     # Al-Quran) contributes multiple entries for one product card, so this can't
     # simply be len(products) - len(item_map) - that goes negative and is
