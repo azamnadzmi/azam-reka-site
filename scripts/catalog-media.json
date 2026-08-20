@@ -22,6 +22,11 @@
       "display_name": "Plaque",
       "category": "plaques",
       "tag": "Corporate & Awards",
+      "specs": {
+        "size": "120 × 100 mm",
+        "weight": "±27g",
+        "material": "Finished Plywood (Stained), Acrylic (clear) 2MM"
+      },
       "video": null,
       "images": [
         "assets/products/plaque-01.jpg",
@@ -35,6 +40,11 @@
       "display_name": "Desk Name Plaque",
       "category": "plaques",
       "tag": "Floré Minimal",
+      "specs": {
+        "size": "406 × 101 mm",
+        "weight": "±52g",
+        "material": "Laminated Plywood (Maple)"
+      },
       "video": null,
       "images": [
         "assets/products/desk-name-plaque-01.jpg",
@@ -48,6 +58,11 @@
       "display_name": "Plaque Wood+Acrylic",
       "category": "plaques",
       "tag": "Corporate & Awards",
+      "specs": {
+        "size": "290 × 210 mm",
+        "weight": "±266g",
+        "material": "Acrylic (clear) 2MM, Laminated Plywood (Maple)"
+      },
       "video": "assets/products/plaque-wood-acrylic-video.mp4",
       "images": [
         "assets/products/plaque-wood-acrylic-01.jpg",
@@ -59,6 +74,11 @@
       "display_name": "Plaque Portrait A4",
       "category": "plaques",
       "tag": "Corporate & Awards",
+      "specs": {
+        "size": "210 × 270 mm",
+        "weight": "±257g",
+        "material": "Finished Plywood"
+      },
       "video": "assets/products/plaque-portrait-a4-video.mp4",
       "images": [
         "assets/products/plaque-portrait-a4-01.jpg",
@@ -72,6 +92,11 @@
       "display_name": "Personalised Bookmark",
       "category": "keychains",
       "tag": "Floré Minimal",
+      "specs": {
+        "size": "50 × 130 mm",
+        "weight": "±14g",
+        "material": "Finished Plywood, Bookmark Ribbon"
+      },
       "video": null,
       "images": [
         "assets/products/bookmark-01.jpg",
@@ -96,6 +121,11 @@
       "display_name": "Keychain",
       "category": "keychains",
       "tag": "Gifting",
+      "specs": {
+        "size": "60 × 30 mm",
+        "weight": "±13g",
+        "material": "Finished Plywood, Key Ring (Basic)"
+      },
       "video": null,
       "images": [
         "assets/products/keychain-03.jpg",
@@ -107,6 +137,11 @@
       "display_name": "Phone Holder",
       "category": "decor",
       "tag": "Gifting",
+      "specs": {
+        "size": "140 × 270 mm",
+        "weight": "±53g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/phone-holder-01.jpg",
@@ -118,6 +153,11 @@
       "display_name": "Mas Kahwin/Hantaran Plaque",
       "category": "wedding",
       "tag": "Wedding",
+      "specs": {
+        "size": "310 × 310 mm",
+        "weight": "±195g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/maskahwin-plaque-01.jpg",
@@ -129,6 +169,11 @@
       "display_name": "Rehal Lite",
       "category": "decor",
       "tag": "Wedding",
+      "specs": {
+        "size": "310 × 450 mm",
+        "weight": "±683g",
+        "material": "Laminated Plywood (Black), Laminated Plywood (Maple)"
+      },
       "video": "assets/products/rehal-lite-video.mp4",
       "images": [
         "assets/products/rehal-lite-01.jpg",
@@ -140,7 +185,7 @@
     {
       "zoho_item_id": null,
       "_unresolved": "Qiblat direction indicator - no matching Zoho item yet. Create one in Zoho, then set zoho_item_id here. Photo is a placeholder (custom signage).",
-      "fallback_price": 30.00,
+      "fallback_price": 30.0,
       "display_name": "Arah Sujud",
       "active": false,
       "category": "wedding",
@@ -155,6 +200,11 @@
       "display_name": "Quran Cover",
       "category": "wedding",
       "tag": "Wedding",
+      "specs": {
+        "size": "175 × 260 mm",
+        "weight": "±95g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/quran-cover-01.jpg"
@@ -166,6 +216,11 @@
       "description": "A charming Aqiqah board, laser-cut and personalised to mark your little one's Aqiqah ceremony — a keepsake gift for family and guests.",
       "category": "decor",
       "tag": "Gifting",
+      "specs": {
+        "size": "310 × 310 mm",
+        "weight": "±195g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/maskahwin-plaque-01.jpg",
@@ -197,6 +252,11 @@
       "display_name": "Mini Frame 12x10",
       "category": "decor",
       "tag": "Hari Guru",
+      "specs": {
+        "size": "120 × 180 mm",
+        "weight": "±45g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/mini-frame-12x10-01.jpg",
@@ -208,6 +268,11 @@
       "display_name": "Mini Frame 8x10",
       "category": "decor",
       "tag": "Hari Guru",
+      "specs": {
+        "size": "120 × 180 mm",
+        "weight": "±45g",
+        "material": "Finished Plywood"
+      },
       "video": null,
       "images": [
         "assets/products/mini-frame-8x10-01.jpg",

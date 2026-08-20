@@ -187,6 +187,7 @@ def resolve_products(media, zoho):
             "images": images,
             "video": entry.get("video"),
             "variants": variants,
+            "specs": entry.get("specs") or {},
         })
 
     return products, warnings
@@ -262,6 +263,23 @@ def price_html(product):
                 f'<span style="text-decoration: line-through; color: var(--color-structural); '
                 f'margin-left: 0.4em;">RM {float(product["sale_price"]):.2f}</span>')
     return f'RM {product["price"]:.2f}'
+
+
+SPEC_FIELDS = [("material", "Material"), ("size", "Size"), ("weight", "Weight")]
+
+
+def build_specs_html(product):
+    """Material/Size/Weight list from catalog-media.json's per-product "specs"
+    (sourced from the team's pricing sheet). Falls back to an editable
+    placeholder for any field - or the whole block - not yet filled in."""
+    specs = product["specs"]
+    items = []
+    for key, label in SPEC_FIELDS:
+        value = specs.get(key)
+        items.append(f'<li>{label} — {esc(value)}</li>' if value
+                      else f'<li>{label} — <em>add {label.lower()}</em></li>')
+    placeholder_attr = "" if specs else " data-specs-placeholder"
+    return f'<ul class="spec-list"{placeholder_attr}>\n            ' + '\n            '.join(items) + '\n          </ul>'
 
 
 def build_variant_picker(product, indent="        ", hidden=False):
@@ -443,11 +461,7 @@ src="https://www.facebook.com/tr?id=2076031446636271&ev=PageView&noscript=1"
         <p class="body-base" style="margin-top: var(--space-3); max-width: 46ch; color: var(--color-char);">{description}</p>
         <div style="margin-top: var(--space-4);">
           <p class="font-micro" style="color: var(--color-structural); margin-bottom: 0.75em;">Specifications</p>
-          <ul class="spec-list" data-specs-placeholder>
-            <li>Material — <em>add material</em></li>
-            <li>Size — <em>add dimensions</em></li>
-            <li>Thickness — <em>add thickness</em></li>
-          </ul>
+          {specs_html}
         </div>
 
         <div style="display:flex; flex-direction: column; gap: 0.75rem; margin-top: var(--space-4); max-width: 340px;">
@@ -543,6 +557,7 @@ def build_detail_page(product):
         media_html=media,
         tag_html=tag,
         price_html=price_html(product),
+        specs_html=build_specs_html(product),
         action_html=build_action_html(product),
     )
 
