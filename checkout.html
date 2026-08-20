@@ -857,9 +857,12 @@ src="https://www.facebook.com/tr?id=2076031446636271&ev=PageView&noscript=1"
       <span id="subtotal">RM 0.00</span>
     </div>
 
-    <div class="summary-row">
+    <div class="summary-row" style="align-items: flex-start;">
       <span>Shipping</span>
-      <span id="shippingCost">RM 0.00</span>
+      <span style="text-align: right;">
+        <span id="shippingCost">RM 0.00</span>
+        <span id="shippingVoucherNote" style="display:none; font-family: var(--font-micro); font-size: 0.7rem; color: var(--color-ember); margin-top: 0.3em;">RM7 shipping voucher applied (orders over RM50)</span>
+      </span>
     </div>
 
     <div class="summary-row" id="rushChargeRow" style="display:none;">
@@ -931,20 +934,16 @@ const productImages = {
   'Plaque Wood+Acrylic': 'assets/products/plaque-wood-acrylic-01.jpg',
   'Plaque Portrait A4': 'assets/products/plaque-portrait-a4-01.jpg',
   'Personalised Bookmark': 'assets/products/bookmark-01.jpg',
-  'HG25 Keychain': 'assets/products/keychain-01.jpg',
   'Keychain': 'assets/products/keychain-03.jpg',
   'Phone Holder': 'assets/products/phone-holder-01.jpg',
   'Mas Kahwin/Hantaran Plaque': 'assets/products/maskahwin-plaque-01.jpg',
   'Rehal Lite': 'assets/products/rehal-lite-01.jpg',
-  'Arah Sujud': 'assets/products/arah-sujud-01.jpg',
   'Quran Cover': 'assets/products/quran-cover-01.jpg',
   'Aqiqah Board': 'assets/products/maskahwin-plaque-01.jpg',
   'Penunjuk Al-Quran (1 side)': 'assets/products/penunjuk-quran-01.jpg',
   'Penunjuk Al-Quran (2 side)': 'assets/products/penunjuk-quran-01.jpg',
   'Mini Frame 12x10': 'assets/products/mini-frame-12x10-01.jpg',
-  'Mini Frame 8x10': 'assets/products/mini-frame-8x10-01.jpg',
-  'Fridge Magnet 70mm': 'assets/products/magnetic-frame-01.jpg',
-  'Thank You Succulent HG25': 'assets/products/keychain-02.jpg'
+  'Mini Frame 8x10': 'assets/products/mini-frame-8x10-01.jpg'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1007,10 +1006,27 @@ document.addEventListener('DOMContentLoaded', () => {
   let rushCharge = 0;
   let rushChargePercent = 0;
 
+  // Orders above RM50 get RM7 off shipping — a flat voucher, not a percentage,
+  // so it never exceeds the actual shipping cost (floored at 0).
+  const SHIPPING_VOUCHER_MIN_SUBTOTAL = 50;
+  const SHIPPING_VOUCHER_AMOUNT = 7;
+  function getEffectiveShipping() {
+    const applies = subtotal > SHIPPING_VOUCHER_MIN_SUBTOTAL && shippingCost > 0;
+    return {
+      applies,
+      amount: applies ? Math.max(0, shippingCost - SHIPPING_VOUCHER_AMOUNT) : shippingCost
+    };
+  }
+
   function updateTotal() {
-    const total = subtotal + shippingCost + rushCharge;
+    const { applies, amount: effectiveShipping } = getEffectiveShipping();
+    const total = subtotal + effectiveShipping + rushCharge;
     document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
-    document.getElementById('shippingCost').textContent = `RM ${shippingCost.toFixed(2)}`;
+    document.getElementById('shippingCost').innerHTML = applies
+      ? `RM ${effectiveShipping.toFixed(2)} <span style="text-decoration:line-through; opacity:0.6; font-size:0.85em;">RM ${shippingCost.toFixed(2)}</span>`
+      : `RM ${shippingCost.toFixed(2)}`;
+    const voucherNote = document.getElementById('shippingVoucherNote');
+    if (voucherNote) voucherNote.style.display = applies ? 'block' : 'none';
 
     const rushRow = document.getElementById('rushChargeRow');
     if (rushChargePercent > 0) {
@@ -1278,7 +1294,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const total = subtotal + shippingCost + rushCharge;
+    const effectiveShipping = getEffectiveShipping().amount;
+    const total = subtotal + effectiveShipping + rushCharge;
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     const postcode = document.getElementById('postcode').value.trim();
@@ -1299,7 +1316,7 @@ document.addEventListener('DOMContentLoaded', () => {
       shipping: {
         courierName: shippingCourierName,
         serviceId: shippingServiceId,
-        cost: shippingCost
+        cost: effectiveShipping
       },
       notes: `Expected arrival: ${document.getElementById('arrivalDate').value}. Rush charge: +${Math.round((rushCharge / subtotal) * 100 || 0)}%`,
       // Send the bulk-discounted unit price, not the list price in `cart` —
