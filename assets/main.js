@@ -13,27 +13,48 @@ function escapeHtml(str) {
 
 // ============ BULK PRICING ============
 // Quantity discount applies per cart line (same product), not cart-wide qty.
-// Tiers are flat site-wide for now — override per-product later by keying
-// this off item name/category if a product ever needs a different curve.
-const BULK_TIERS = [
+// A tier's "min" is inclusive — e.g. {min:10, pct:0.05} means the 10th unit
+// already gets 5% off, not just the 11th onward.
+const BULK_TIERS_DEFAULT = [
   { min: 20, pct: 0.15 },
   { min: 10, pct: 0.10 },
   { min: 5, pct: 0.05 }
 ];
+// Per-product overrides (from the catalogue pricing sheet). Anything not
+// listed here falls back to BULK_TIERS_DEFAULT.
+const BULK_TIERS_BY_PRODUCT = {
+  'Plaque': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Desk Name Plaque': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Plaque Wood+Acrylic': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Plaque Portrait A4': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Phone Holder': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Aqiqah Board': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Mini Frame 12x10': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Mini Frame 8x10': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Rehal Lite': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Mas Kahwin/Hantaran Plaque': [{ min: 50, pct: 0.15 }, { min: 20, pct: 0.10 }, { min: 10, pct: 0.05 }],
+  'Personalised Bookmark': [{ min: 100, pct: 0.15 }, { min: 30, pct: 0.10 }, { min: 20, pct: 0.05 }],
+  'Keychain': [{ min: 100, pct: 0.15 }, { min: 30, pct: 0.10 }, { min: 20, pct: 0.05 }],
+  'Quran Cover': [{ min: 1, pct: 0.20 }]
+};
 const BulkPricing = {
-  getDiscountPct(qty) {
-    const tier = BULK_TIERS.find(t => qty >= t.min);
+  tiersFor(name) {
+    return BULK_TIERS_BY_PRODUCT[name] || BULK_TIERS_DEFAULT;
+  },
+  getDiscountPct(qty, name) {
+    const tier = this.tiersFor(name).find(t => qty >= t.min);
     return tier ? tier.pct : 0;
   },
-  getUnitPrice(price, qty) {
-    const pct = this.getDiscountPct(qty);
+  getUnitPrice(price, qty, name) {
+    const pct = this.getDiscountPct(qty, name);
     return pct ? Math.round(price * (1 - pct) * 100) / 100 : price;
   },
   // Human-readable note for the tier a given qty is currently in, and how
   // far to the next one — used both in the cart and on product pages.
-  describe(qty) {
-    const pct = this.getDiscountPct(qty);
-    const next = [...BULK_TIERS].reverse().find(t => qty < t.min);
+  describe(qty, name) {
+    const tiers = this.tiersFor(name);
+    const pct = this.getDiscountPct(qty, name);
+    const next = [...tiers].reverse().find(t => qty < t.min);
     if (pct && !next) return `${Math.round(pct * 100)}% bulk discount applied`;
     if (pct && next) return `${Math.round(pct * 100)}% off applied — ${next.min - qty} more for ${Math.round(next.pct * 100)}% off`;
     if (next) return `${next.min - qty} more for ${Math.round(next.pct * 100)}% off`;
@@ -60,7 +81,7 @@ const Cart = {
     }
     this.saveCart(cart);
     const finalQty = existing ? existing.qty : qty;
-    const unitPrice = BulkPricing.getUnitPrice(price, finalQty);
+    const unitPrice = BulkPricing.getUnitPrice(price, finalQty, name);
     if (window.fbq) {
       fbq('track', 'AddToCart', {
         content_name: name,
@@ -103,13 +124,13 @@ const Cart = {
   },
   getTotal() {
     const cart = this.getCart();
-    return cart.reduce((sum, item) => sum + (BulkPricing.getUnitPrice(item.price, item.qty) * item.qty), 0);
+    return cart.reduce((sum, item) => sum + (BulkPricing.getUnitPrice(item.price, item.qty, item.name) * item.qty), 0);
   },
   generateWhatsAppMessage() {
     const cart = this.getCart();
     if (cart.length === 0) return '';
     const items = cart.map(item => {
-      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty);
+      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty, item.name);
       const discountNote = unitPrice < item.price ? ` [bulk price, was RM ${item.price.toFixed(2)}]` : '';
       return `• ${item.name} (RM ${unitPrice.toFixed(2)}) x${item.qty}${discountNote}`;
     }).join('\n');
@@ -302,7 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
     stepper.insertAdjacentElement('afterend', hint);
     const updateHint = () => {
       const qty = parseInt(valueEl.textContent, 10) || 1;
-      hint.textContent = BulkPricing.describe(qty);
+      const addBtn = stepper.parentElement.querySelector('[data-add-to-cart]');
+      const productName = addBtn ? addBtn.dataset.addToCart : null;
+      hint.textContent = BulkPricing.describe(qty, productName);
       hint.style.display = hint.textContent ? 'block' : 'none';
     };
     updateHint();
@@ -465,11 +488,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cartItems.innerHTML = cart.map(item => {
       const imageUrl = CART_PRODUCT_IMAGES[item.name] || 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=120&h=120&fit=crop';
-      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty);
+      const unitPrice = BulkPricing.getUnitPrice(item.price, item.qty, item.name);
       const priceHtml = unitPrice < item.price
         ? `RM ${unitPrice.toFixed(2)} <span class="cart-modal__item-price--was">RM ${item.price.toFixed(2)}</span>`
         : `RM ${item.price.toFixed(2)}`;
-      const tierNote = BulkPricing.describe(item.qty);
+      const tierNote = BulkPricing.describe(item.qty, item.name);
       return `
       <div class="cart-modal__item">
         <div class="cart-modal__item-image">
