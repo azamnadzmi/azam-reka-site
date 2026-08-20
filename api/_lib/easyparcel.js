@@ -210,7 +210,7 @@ async function callEasyParcel(path, body) {
 
   const data = await response.json();
   if (data.status_code !== 200) {
-    throw new Error(`EasyParcel error ${data.status_code} on ${path}: ${data.message || 'no message'}`);
+    throw new Error(`EasyParcel error ${data.status_code} on ${path}: ${data.message || 'no message'} — HTTP ${response.status}, body: ${JSON.stringify(data).slice(0, 500)}`);
   }
   return data;
 }
