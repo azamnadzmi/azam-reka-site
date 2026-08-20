@@ -17,14 +17,24 @@ Admin manages production stage and shipment tracking from `admin.html`.
 
 ## The catalogue is generated, not hand-edited
 
-Zoho Books is the source of truth for product **name, price, and
-description**. `scripts/catalog-media.json` is the source of truth for
-everything Zoho doesn't know: which items are sold online, their category,
-collection tag, and their photos/video.
+Day-to-day catalogue edits (price, description, category, active/inactive)
+happen in the **[Azam Reka — Catalog & Pricing Google Sheet](https://docs.google.com/spreadsheets/d/1lYdqb1KlEpRqZ6_w8AqENRr2CPa8CnYcMpe45Fk6uOw/edit)**
+— that sheet is the working source of truth going forward. Edit a row there
+and tell Claude "update the site from the sheet"; it reads the sheet, diffs
+it against live Zoho Books data, and pushes verified changes to Zoho
+(price/description) and `scripts/catalog-media.json` (category/tag/active)
+before rebuilding.
 
-To change a price or product name → edit it in Zoho Books.
-To add/remove/re-photograph a product → edit `scripts/catalog-media.json`.
-Either way, then run:
+Underneath that sheet, the actual data flow is unchanged: Zoho Books remains
+the source of truth for product **name, price, and description** (the sheet
+is just the editable front-end to it), and `scripts/catalog-media.json` is
+still the source of truth for everything Zoho doesn't know: which items are
+sold online (`active: false` hides a product without deleting its config),
+category, collection tag, and photos/video.
+
+To change a price, name, or description directly (bypassing the sheet) →
+edit it in Zoho Books. To add/remove/re-photograph a product, or toggle
+active/inactive → edit `scripts/catalog-media.json`. Either way, then run:
 
 ```bash
 npm run build-catalog          # rebuild from the last Zoho snapshot
@@ -35,6 +45,11 @@ This regenerates `catalog.html`, every `products/*.html` page,
 `api/zoho-item-map.json`, the homepage's hardcoded product cards, and
 checkout's thumbnail map — all from those two inputs. It refuses to run if
 any product has no collection tag, or if two Zoho items would collide.
+
+**It does not delete stale files.** When a product goes `active: false`,
+its old `products/<slug>.html` page and `sitemap.xml` entry are left behind
+unless removed by hand — otherwise the page stays live at its old URL,
+unlinked but still reachable and showing stale data.
 
 Product photos/videos live in `assets/products/`, named `<slug>-NN.jpg`
 (sequence order = carousel order) with an optional `<slug>-video.mp4`, which

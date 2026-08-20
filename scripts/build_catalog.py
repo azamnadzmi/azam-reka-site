@@ -124,6 +124,8 @@ def resolve_products(media, zoho):
 
     for entry in media["products"]:
         name = entry["display_name"]
+        if entry.get("active") is False:
+            continue
         if not entry.get("tag"):
             raise SystemExit(f"{name} has no collection. Every product must belong to at least one - "
                              f'set "tag" in catalog-media.json.')
@@ -479,7 +481,11 @@ def main():
     print(f"\nWrote {len(products)} product cards into catalog.html")
     print(f"Wrote {len(products)} detail pages into products/")
     print(f"Wrote {len(item_map)} Zoho item mappings into api/zoho-item-map.json")
-    unlinked = len(products) - len(item_map)
+    # item_map has one entry per Zoho item, but a variant product (e.g. Penunjuk
+    # Al-Quran) contributes multiple entries for one product card, so this can't
+    # simply be len(products) - len(item_map) - that goes negative and is
+    # meaningless. Count actual unresolved products instead.
+    unlinked = sum(1 for p in products if not p["zoho_item_id"] and not p["variants"])
     if unlinked:
         print(f"  ({unlinked} product(s) still unlinked - see warnings above)")
 

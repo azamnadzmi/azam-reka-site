@@ -11,7 +11,10 @@
     "Leave display_name null to use the Zoho name verbatim.",
     "",
     "zoho_item_id: null means UNLINKED - the product still renders using fallback_price,",
-    "but orders for it cannot post a line item to Zoho. Resolve these."
+    "but orders for it cannot post a line item to Zoho. Resolve these.",
+    "",
+    "active: false hides the product from the site entirely (skipped by build_catalog.py)",
+    "while keeping its config here for later reactivation. Omit the field (or set true) to show it."
   ],
   "products": [
     {
@@ -79,6 +82,7 @@
     {
       "zoho_item_id": "4895811000000177003",
       "display_name": "HG25 Keychain",
+      "active": false,
       "category": "keychains",
       "tag": "Hari Guru",
       "video": null,
@@ -90,7 +94,7 @@
     {
       "zoho_item_id": "4895811000000405019",
       "display_name": "Keychain",
-      "category": "decor",
+      "category": "keychains",
       "tag": "Gifting",
       "video": null,
       "images": [
@@ -123,7 +127,7 @@
     {
       "zoho_item_id": "4895811000000114001",
       "display_name": "Rehal Lite",
-      "category": "wedding",
+      "category": "decor",
       "tag": "Wedding",
       "video": "assets/products/rehal-lite-video.mp4",
       "images": [
@@ -136,8 +140,9 @@
     {
       "zoho_item_id": null,
       "_unresolved": "Qiblat direction indicator - no matching Zoho item yet. Create one in Zoho, then set zoho_item_id here. Photo is a placeholder (custom signage).",
-      "fallback_price": 29.99,
+      "fallback_price": 30.00,
       "display_name": "Arah Sujud",
+      "active": false,
       "category": "wedding",
       "tag": "Wedding",
       "video": null,
@@ -158,7 +163,7 @@
     {
       "zoho_item_id": "4895811000000360029",
       "display_name": "Aqiqah Board",
-      "category": "decor",
+      "category": "wedding",
       "tag": "Gifting",
       "video": null,
       "images": [
@@ -211,6 +216,7 @@
     {
       "zoho_item_id": "4895811000000164001",
       "display_name": "Fridge Magnet 70mm",
+      "active": false,
       "category": "decor",
       "tag": "Gifting",
       "video": null,
@@ -222,6 +228,7 @@
     {
       "zoho_item_id": "4895811000000379019",
       "display_name": "Thank You Succulent HG25",
+      "active": false,
       "category": "decor",
       "tag": "Hari Guru",
       "video": null,
