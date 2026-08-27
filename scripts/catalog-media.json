@@ -237,6 +237,9 @@
       "display_name": "Penunjuk Al-Quran",
       "category": "decor",
       "tag": "Gifting",
+      "specs": {
+        "weight_g": 50
+      },
       "video": null,
       "variants": [
         {

@@ -19,10 +19,20 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    let totalWeight = 0;
+    for (const item of items) {
+      const itemWeight = productWeights[item.name] || 30; // Default 30g if not found
+      totalWeight += itemWeight * item.qty;
+    }
+    const weightKg = Math.max(totalWeight / 1000, 0.1); // EasyParcel rejects a 0kg parcel
+
     // TEMPORARY diagnostic path — remove once live EasyParcel rates are
     // confirmed working. Returns the raw, unfiltered EasyParcel response so
     // we can see the real error or the real courier/service names instead
     // of guessing. Not a secret-exposure risk (no credentials in the output).
+    // Uses the actual cart weight (was hardcoded to 0.5kg, which couldn't
+    // reproduce weight-dependent issues like a heavy order losing pickup
+    // eligibility on every courier).
     if (debug === 'azamreka-debug') {
       try {
         const raw = await debugRawRates({
@@ -30,20 +40,13 @@ module.exports = async function handler(req, res) {
           pickState: SENDER_ADDRESS.state,
           sendCode: postcode,
           sendState: state,
-          weight: 0.5
+          weight: weightKg
         });
-        return res.status(200).json({ debug: true, raw });
+        return res.status(200).json({ debug: true, weightKg, totalWeightGrams: totalWeight, raw });
       } catch (debugError) {
-        return res.status(200).json({ debug: true, error: debugError.message });
+        return res.status(200).json({ debug: true, weightKg, totalWeightGrams: totalWeight, error: debugError.message });
       }
     }
-
-    let totalWeight = 0;
-    for (const item of items) {
-      const itemWeight = productWeights[item.name] || 30; // Default 30g if not found
-      totalWeight += itemWeight * item.qty;
-    }
-    const weightKg = Math.max(totalWeight / 1000, 0.1); // EasyParcel rejects a 0kg parcel
 
     let rates;
     try {
