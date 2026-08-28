@@ -69,24 +69,26 @@ async function generateVouchers(count = 5, discountValue = 20) {
   }
 }
 
-// Parse command line arguments
-const args = process.argv.slice(2);
-let count = 5;
-let value = 20;
+// Only run as CLI if invoked directly (not imported as module)
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  let count = 5;
+  let value = 20;
 
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '--count' && args[i + 1]) {
-    count = parseInt(args[i + 1]);
-    i++;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--count' && args[i + 1]) {
+      count = parseInt(args[i + 1]);
+      i++;
+    }
+    if (args[i] === '--value' && args[i + 1]) {
+      value = parseInt(args[i + 1]);
+      i++;
+    }
   }
-  if (args[i] === '--value' && args[i + 1]) {
-    value = parseInt(args[i + 1]);
-    i++;
-  }
+
+  generateVouchers(count, value)
+    .catch(error => {
+      console.error('Error:', error.message);
+      process.exit(1);
+    });
 }
-
-generateVouchers(count, value)
-  .catch(error => {
-    console.error('Error:', error.message);
-    process.exit(1);
-  });
