@@ -44,13 +44,13 @@ When a voucher is applied to an order, the order document is updated with:
 Generate 5 RM20 voucher codes (default):
 
 ```bash
-node api/admin/generate-vouchers.js
+node scripts/generate-vouchers.js
 ```
 
 Generate 10 codes with RM30 discount:
 
 ```bash
-node api/admin/generate-vouchers.js --count 10 --value 30
+node scripts/generate-vouchers.js --count 10 --value 30
 ```
 
 **Output Example:**
