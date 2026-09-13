@@ -44,7 +44,7 @@
       "zoho_item_id": "4895811000000088051",
       "display_name": "Desk Name Plaque",
       "category": "plaques",
-      "tag": "Floré Minimal",
+      "tag": "Corporate & Awards",
       "specs": {
         "size": "406 × 101 mm",
         "weight_g": 52,
@@ -216,10 +216,10 @@
       ]
     },
     {
-      "zoho_item_id": "4895811000000320029",
+      "zoho_item_id": "4895811000000360029",
       "display_name": "Aqiqah Board",
       "description": "A charming Aqiqah board, laser-cut and personalised to mark your little one's Aqiqah ceremony — a keepsake gift for family and guests.",
-      "category": "decor",
+      "category": "wedding",
       "tag": "Gifting",
       "specs": {
         "size": "310 × 310 mm",
@@ -235,7 +235,7 @@
     {
       "_comment": "One card, two Zoho items behind a picker. Each variant carts under its own name so it still resolves to the right Zoho line item. Photo is a placeholder.",
       "display_name": "Penunjuk Al-Quran",
-      "category": "decor",
+      "category": "keychains",
       "tag": "Gifting",
       "video": null,
       "variants": [
@@ -274,8 +274,8 @@
       "category": "decor",
       "tag": "Hari Guru",
       "specs": {
-        "size": "120 × 180 mm",
-        "weight_g": 45,
+        "size": "120 × 80 mm",
+        "weight_g": 20,
         "material": "Finished Plywood"
       },
       "video": null,
@@ -300,11 +300,28 @@
       "zoho_item_id": "4895811000000379019",
       "display_name": "Thank You Succulent HG25",
       "active": false,
-      "category": "decor",
+      "category": "keychains",
       "tag": "Hari Guru",
       "video": null,
       "images": [
         "assets/products/keychain-02.jpg"
+      ]
+    },
+    {
+      "zoho_item_id": "4895811000000675002",
+      "display_name": "Welcome Board",
+      "description": "An elegant and beautifully crafted wooden welcome board made from laminated maple plywood, perfect for weddings, corporate receptions, and celebratory events.",
+      "category": "wedding",
+      "tag": "Wedding",
+      "specs": {
+        "size": "400 × 600 mm",
+        "weight_g": 900,
+        "material": "Laminated Plywood (Maple)"
+      },
+      "video": "assets/products/welcome-board-video.mp4",
+      "images": [
+        "assets/products/welcome-board-01.jpg",
+        "assets/products/welcome-board-02.jpg"
       ]
     }
   ]
