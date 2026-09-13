@@ -9,6 +9,7 @@ const { createSalesOrder } = require('../_lib/zoho-books');
 const mongoUri = process.env.MONGODB_URI;
 const resendApiKey = process.env.RESEND_API_KEY;
 const billplzApiKey = process.env.BILLPLZ_API_KEY;
+const ownerNotificationEmail = process.env.OWNER_NOTIFICATION_EMAIL || 'azamnadzmi@gmail.com';
 
 let cachedClient = null;
 
@@ -58,6 +59,34 @@ async function sendConfirmationEmail(order) {
     });
   } catch (error) {
     console.error('Email send error:', error);
+  }
+}
+
+async function sendOwnerNotification(order) {
+  const resend = new Resend(resendApiKey);
+
+  const itemsList = order.items.map(item => `• ${item.name} (RM ${item.price.toFixed(2)}) x${item.qty}`).join('\n');
+
+  try {
+    await resend.emails.send({
+      from: 'orders@azamreka.com',
+      to: ownerNotificationEmail,
+      subject: `New paid order #${order.billplzId} — RM ${order.totalAmount.toFixed(2)}`,
+      html: `
+        <h2>New order paid</h2>
+        <p><strong>Customer:</strong> ${order.customerName} (${order.customerEmail})</p>
+        <p><strong>Order ID:</strong> ${order.billplzId}</p>
+        <p><strong>Items:</strong></p>
+        <pre>${itemsList}</pre>
+        <p><strong>Total:</strong> RM ${order.totalAmount.toFixed(2)}</p>
+        <h3>Delivery Address</h3>
+        <p>${order.customerAddress}</p>
+      `
+    });
+  } catch (error) {
+    // Don't fail the webhook over this — the customer's confirmation email
+    // and the Zoho sales order are what actually matter downstream.
+    console.error('Owner notification email error:', error);
   }
 }
 
@@ -121,6 +150,7 @@ module.exports = async function handler(req, res) {
     if (result) {
       // Send confirmation email
       await sendConfirmationEmail(result);
+      await sendOwnerNotification(result);
 
       // Create the Sales Order in Zoho Books — guarded so a duplicate webhook
       // fire (Billplz can retry) never creates two Sales Orders for one order.
